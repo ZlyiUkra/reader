@@ -129,7 +129,7 @@ One model call on one document, classification or extraction; append-only (C12).
 | eval_count | integer | |
 | eval_duration_ns | bigint | |
 | total_duration_ns | bigint | |
-| cold | boolean not null | true when the server reported a model load for this call |
+| cold | boolean not null | true when the server reported a model load for this call, or this is the first call after a warm-up that had to load the model |
 | thresholds | jsonb not null | the thresholds in force (C13) |
 | created_at | timestamptz not null | |
 

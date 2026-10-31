@@ -254,6 +254,13 @@ export function createOllamaAdapter(deps: OllamaDeps): LlmAdapter {
     return { outcome: 'reply', response: { ...base, json: parsed } };
   }
 
+  /**
+   * True from a warm-up that had to load the model until the next call, which reports `cold` for it (contracts/llm-port.md).
+   * The load was paid by the warm-up, not by that call, but the model has just come up and the timings of its first real
+   * use are not those of a model that has been serving: the evaluation then prints the call with the cold ones.
+   */
+  let loadedByWarmup = false;
+
   /** The state of the readiness check, kept between polls: `/api/health` asks every two seconds, a warm-up must not. */
   let readyDigest: string | null = null;
   let failedAt = 0;
@@ -346,6 +353,7 @@ export function createOllamaAdapter(deps: OllamaDeps): LlmAdapter {
       if (result.outcome !== 'reply' || result.response.doneReason !== 'stop') {
         throw new LlmAdapterError('invalid-reply', 'The warm-up call did not return a complete valid reply.');
       }
+      loadedByWarmup = result.response.cold;
       const running = findModel(await request('GET', '/api/ps', undefined, noSignal), model.tag);
       const contextLength = running === undefined ? null : numberOrNull(running['context_length']);
       if (contextLength !== settings.numCtx) {
@@ -378,10 +386,12 @@ export function createOllamaAdapter(deps: OllamaDeps): LlmAdapter {
       for (const spec of attemptsFor(req)) {
         const result = interpret(await request('POST', spec.endpoint, spec.body, signal), spec, req.wireSchema);
         if (result.outcome === 'reply') {
+          const response = loadedByWarmup ? { ...result.response, cold: true } : result.response;
+          loadedByWarmup = false;
           if (problems.length > 0) {
             logger.warn({ documentNumber: req.documentNumber, kind: req.kind, fallback: spec.fallback, problems }, 'The model reply needed a fallback.');
           }
-          return result.response;
+          return response;
         }
         problems.push(`${spec.fallback}: ${result.problem}`);
       }

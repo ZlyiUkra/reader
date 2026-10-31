@@ -536,6 +536,26 @@ test('a ready model whose service was restarted with another context goes missin
   );
 });
 
+test('a call is cold when its own load was long, or when it is the first use of a model the warm-up had to load', async () => {
+  for (const warmupLoadNs of [3_000_000_000, 1_000_000]) {
+    await withModel(
+      (seen) => {
+        if (seen.url !== '/api/chat') return healthy()(seen);
+        const isWarmup = JSON.stringify(seen.body).includes('"ok"');
+        return { body: isWarmup ? chatReply('{"ok": true}', { load_duration: warmupLoadNs }) : chatReply(valid, { load_duration: 5_000_000 }) };
+      },
+      async (service) => {
+        const adapter = createOllamaAdapter({ baseUrl: service.url, model, settings, logger: recordingLogger().logger });
+        assert.equal((await adapter.readiness()).state, 'ready');
+        const signal = new AbortController().signal;
+        const loaded = warmupLoadNs > settings.coldLoadNs;
+        assert.equal((await adapter.call(request('first'), signal)).cold, loaded, 'the first call after the warm-up');
+        assert.equal((await adapter.call(request('second'), signal)).cold, false, 'only the first call carries it');
+      },
+    );
+  }
+});
+
 test('a model that was ready goes missing as soon as the listing shows another digest, and needs a new warm-up to return', async () => {
   let listed = digest;
   await withModel(

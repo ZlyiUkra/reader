@@ -61,7 +61,8 @@ runs at a time (C7).
   mismatch keeps the model `missing` and logs WARN with both numbers. The listing and, while the model is loaded, its
   context are checked on every poll; the warm-up runs once and, after a failure, not more often than every 10 s.
   Client timeout: `thresholds.model.client_timeout_s`.
-- `cold` is true when `load_duration` exceeds the threshold `model.cold_load_ns` or the warm-up had to load the model.
+- `cold` is true when `load_duration` exceeds the threshold `model.cold_load_ns`, and for the first call after a
+  readiness warm-up that itself exceeded it (the model has just come up).
 
 ## Replay adapter
 
