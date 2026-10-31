@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://reader.local/contracts/thresholds.v1.json",
+  "title": "Thresholds file (C13): every tunable value, each marked provisional until the evaluation measures it",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "values"],
+  "$defs": {
+    "entry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["value", "unit", "status", "source"],
+      "properties": {
+        "value": { "type": ["number", "string"] },
+        "unit": { "type": "string" },
+        "status": { "enum": ["provisional", "measured"] },
+        "source": { "type": "string", "minLength": 1 },
+        "measuredAt": { "type": "string", "format": "date" }
+      }
+    }
+  },
+  "properties": {
+    "version": { "const": 1 },
+    "values": {
+      "description": "Every key is listed: a misspelt or unknown key is refused, and so is a missing one.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["model.num_ctx", "model.num_predict_extract", "model.num_predict_classify", "model.client_timeout_s",
+                   "model.keep_alive", "model.chars_per_token", "model.cold_load_ns", "parser.convert_timeout_s",
+                   "parser.render_timeout_s_per_page", "parser.ocr_timeout_s_per_page", "parser.page_cap", "parser.ocr_dpi",
+                   "parser.render_width_px", "parser.manifest_max_bytes", "parser.png_max_bytes", "parser.png_max_side_px",
+                   "parser.text_max_bytes", "parser.tool_memory_mb", "intake.upload_max_bytes", "quality.ocr_low_confidence",
+                   "quality.ocr_low_share", "quality.empty_min_chars", "quality.scanned_page_max_chars", "run.bound_minutes",
+                   "ui.preview_width_px", "ui.poll_interval_ms", "eval.pass_required_match", "eval.max_false_accepts",
+                   "eval.ceiling_tokens_per_document", "eval.ceiling_seconds_per_page_warm"],
+      "properties": {
+        "model.num_ctx": { "$ref": "#/$defs/entry" },
+        "model.num_predict_extract": { "$ref": "#/$defs/entry" },
+        "model.num_predict_classify": { "$ref": "#/$defs/entry" },
+        "model.client_timeout_s": { "$ref": "#/$defs/entry" },
+        "model.keep_alive": { "$ref": "#/$defs/entry" },
+        "model.chars_per_token": { "$ref": "#/$defs/entry" },
+        "model.cold_load_ns": { "$ref": "#/$defs/entry" },
+        "parser.convert_timeout_s": { "$ref": "#/$defs/entry" },
+        "parser.render_timeout_s_per_page": { "$ref": "#/$defs/entry" },
+        "parser.ocr_timeout_s_per_page": { "$ref": "#/$defs/entry" },
+        "parser.page_cap": { "$ref": "#/$defs/entry" },
+        "parser.ocr_dpi": { "$ref": "#/$defs/entry" },
+        "parser.render_width_px": { "$ref": "#/$defs/entry" },
+        "parser.manifest_max_bytes": { "$ref": "#/$defs/entry" },
+        "parser.png_max_bytes": { "$ref": "#/$defs/entry" },
+        "parser.png_max_side_px": { "$ref": "#/$defs/entry" },
+        "parser.text_max_bytes": { "$ref": "#/$defs/entry" },
+        "parser.tool_memory_mb": { "$ref": "#/$defs/entry" },
+        "intake.upload_max_bytes": { "$ref": "#/$defs/entry" },
+        "quality.ocr_low_confidence": { "$ref": "#/$defs/entry" },
+        "quality.ocr_low_share": { "$ref": "#/$defs/entry" },
+        "quality.empty_min_chars": { "$ref": "#/$defs/entry" },
+        "quality.scanned_page_max_chars": { "$ref": "#/$defs/entry" },
+        "run.bound_minutes": { "$ref": "#/$defs/entry" },
+        "ui.preview_width_px": { "$ref": "#/$defs/entry" },
+        "ui.poll_interval_ms": { "$ref": "#/$defs/entry" },
+        "eval.pass_required_match": { "$ref": "#/$defs/entry" },
+        "eval.max_false_accepts": { "$ref": "#/$defs/entry" },
+        "eval.ceiling_tokens_per_document": { "$ref": "#/$defs/entry" },
+        "eval.ceiling_seconds_per_page_warm": { "$ref": "#/$defs/entry" }
+      }
+    }
+  }
+}

@@ -38,6 +38,35 @@
             "additionalProperties": false,
             "required": ["uk", "en"],
             "properties": { "uk": { "type": "string", "minLength": 1 }, "en": { "type": "string", "minLength": 1 } }
+          },
+          "variants": {
+            "description": "Alternative templates chosen by the stored params: the first variant whose `when` entries all equal the params wins; the base template and params apply when none matches. VALIDATION_FAILED uses it: its base template is the missing fragment, its variants are the registry checks.",
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["when", "params", "templates"],
+              "properties": {
+                "when": { "type": "object", "minProperties": 1, "additionalProperties": { "type": ["string", "integer", "boolean"] } },
+                "params": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": ["name", "kind"],
+                    "properties": { "name": { "type": "string", "pattern": "^[a-z][A-Za-z0-9]*$" },
+                                    "kind": { "enum": ["string", "integer", "number", "date"] } }
+                  }
+                },
+                "templates": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": ["uk", "en"],
+                  "properties": { "uk": { "type": "string", "minLength": 1 }, "en": { "type": "string", "minLength": 1 } }
+                }
+              }
+            }
           }
         }
       }

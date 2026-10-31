@@ -1,0 +1,229 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://reader.local/schemas/invoice.v1.json",
+  "title": "invoice",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "number",
+    "date",
+    "sellerName",
+    "sellerEdrpou",
+    "sellerIban",
+    "buyerName",
+    "buyerEdrpou",
+    "currency",
+    "totalNet",
+    "vat",
+    "totalGross"
+  ],
+  "properties": {
+    "number": {
+      "type": "string",
+      "x-reader": {
+        "kind": "string",
+        "labels": {
+          "uk": "Номер",
+          "en": "Number"
+        }
+      }
+    },
+    "date": {
+      "type": "string",
+      "format": "date",
+      "x-reader": {
+        "kind": "date",
+        "labels": {
+          "uk": "Дата",
+          "en": "Date"
+        }
+      }
+    },
+    "sellerName": {
+      "type": "string",
+      "x-reader": {
+        "kind": "string",
+        "labels": {
+          "uk": "Назва продавця",
+          "en": "Seller name"
+        }
+      }
+    },
+    "sellerEdrpou": {
+      "type": "string",
+      "pattern": "^[0-9]{8}$",
+      "x-reader": {
+        "kind": "edrpou",
+        "labels": {
+          "uk": "ЄДРПОУ продавця",
+          "en": "Seller EDRPOU"
+        }
+      }
+    },
+    "sellerIban": {
+      "type": "string",
+      "pattern": "^UA[0-9]{27}$",
+      "x-reader": {
+        "kind": "iban",
+        "labels": {
+          "uk": "IBAN продавця",
+          "en": "Seller IBAN"
+        }
+      }
+    },
+    "buyerName": {
+      "type": "string",
+      "x-reader": {
+        "kind": "string",
+        "labels": {
+          "uk": "Назва покупця",
+          "en": "Buyer name"
+        }
+      }
+    },
+    "buyerEdrpou": {
+      "type": "string",
+      "pattern": "^[0-9]{8}$",
+      "x-reader": {
+        "kind": "edrpou",
+        "labels": {
+          "uk": "ЄДРПОУ покупця",
+          "en": "Buyer EDRPOU"
+        }
+      }
+    },
+    "currency": {
+      "type": "string",
+      "enum": [
+        "UAH"
+      ],
+      "x-reader": {
+        "kind": "enum",
+        "labels": {
+          "uk": "Валюта",
+          "en": "Currency"
+        }
+      }
+    },
+    "totalNet": {
+      "type": "integer",
+      "x-reader": {
+        "kind": "money",
+        "labels": {
+          "uk": "Сума без ПДВ",
+          "en": "Total without VAT"
+        }
+      }
+    },
+    "vat": {
+      "type": "integer",
+      "x-reader": {
+        "kind": "money",
+        "labels": {
+          "uk": "Сума ПДВ",
+          "en": "VAT amount"
+        }
+      }
+    },
+    "totalGross": {
+      "type": "integer",
+      "x-reader": {
+        "kind": "money",
+        "labels": {
+          "uk": "Сума з ПДВ",
+          "en": "Total with VAT"
+        }
+      }
+    },
+    "vatRate": {
+      "type": "string",
+      "x-reader": {
+        "kind": "string",
+        "labels": {
+          "uk": "Ставка ПДВ",
+          "en": "VAT rate"
+        }
+      }
+    },
+    "dueDate": {
+      "type": "string",
+      "format": "date",
+      "x-reader": {
+        "kind": "date",
+        "labels": {
+          "uk": "Оплатити до",
+          "en": "Payment due date"
+        }
+      }
+    },
+    "contractRef": {
+      "type": "string",
+      "x-reader": {
+        "kind": "string",
+        "labels": {
+          "uk": "Посилання на договір",
+          "en": "Contract reference"
+        }
+      }
+    },
+    "paymentPurpose": {
+      "type": "string",
+      "x-reader": {
+        "kind": "string",
+        "labels": {
+          "uk": "Призначення платежу",
+          "en": "Payment purpose"
+        }
+      }
+    }
+  },
+  "x-reader": {
+    "labels": {
+      "uk": "Рахунок",
+      "en": "Invoice"
+    },
+    "order": [
+      "number",
+      "date",
+      "sellerName",
+      "sellerEdrpou",
+      "sellerIban",
+      "buyerName",
+      "buyerEdrpou",
+      "currency",
+      "totalNet",
+      "vat",
+      "totalGross",
+      "vatRate",
+      "dueDate",
+      "contractRef",
+      "paymentPurpose"
+    ],
+    "checks": [
+      {
+        "rule": "vat_sum",
+        "net": "totalNet",
+        "vat": "vat",
+        "gross": "totalGross",
+        "rate": 20
+      },
+      {
+        "rule": "date_order",
+        "earlier": "date",
+        "later": "dueDate"
+      },
+      {
+        "rule": "edrpou",
+        "field": "sellerEdrpou"
+      },
+      {
+        "rule": "edrpou",
+        "field": "buyerEdrpou"
+      },
+      {
+        "rule": "iban_ua",
+        "field": "sellerIban"
+      }
+    ]
+  }
+}

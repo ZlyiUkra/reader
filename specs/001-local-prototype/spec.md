@@ -314,6 +314,7 @@ Each item is a named simplification: visible as a start-up warning and in the he
 | No label-proximity rule against substitution | none | The evaluation shows substitutions above the threshold |
 | `LOW_CONFIDENCE` and `EXTRACTORS_DISAGREE` not emitted | Closed list | A second extraction attempt or a second extractor |
 | No human review form; NEEDS_REVIEW is a dead end | Round 1 | The owner asks for review |
+| Database passwords reach the containers as environment variables (visible in `docker inspect`), not as file-backed secrets | OWASP Docker security cheat sheet, rule 12 | The first deployment off the dev machine, or a second user of this machine |
 
 ## Out of Scope
 

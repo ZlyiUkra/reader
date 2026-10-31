@@ -70,7 +70,7 @@ codes; 3 browser views; 14 acceptance checks.
 | IX. Features wait for a consumer or a measurement | No ORM, no router, no state or i18n library, no second worker, no embeddings; each has no consumer yet (R3, R9) | PASS |
 | X. Personal data stays out of version control | Fixtures synthetic with fictional companies; `inbox/`, `results/`, `.env` ignored; no real document anywhere | PASS |
 | XI. Exact pins and contract tests | Every image by tag and digest, every package by exact version (research R1, R2, R4); Ollama contract test before trust | PASS |
-| XII. Named simplifications | Eleven deferred items as startup WARN and `/api/health` `todo`; listed in Complexity Tracking with triggers | PASS |
+| XII. Named simplifications | Twelve deferred items as startup WARN and `/api/health` `todo`; listed in Complexity Tracking with triggers | PASS |
 
 Security and Data Constraints of the constitution: internal ports unpublished; sha256 identity; model by tag and
 digest from the official source; LibreOffice without Java; application role not a superuser; gVisor deferred as a
@@ -220,6 +220,7 @@ Named simplifications: each is a startup WARN and a `/api/health` `todo` entry s
 | No label-proximity rule against substitution | Not yet measured | Would be a guess before the eval | eval shows substitutions above threshold |
 | `LOW_CONFIDENCE`, `EXTRACTORS_DISAGREE` not emitted | One extractor, one call | No lawful trigger exists | a second extraction or extractor |
 | No review form; NEEDS_REVIEW is terminal | Out of scope by the owner | A form without a reviewer has no consumer (IX) | the owner asks for review |
+| Database passwords in container environment variables, not file-backed secrets (OWASP Docker rule 12) | One machine, one user; `.env` is git-ignored and only the owner can run `docker inspect` | File-backed secrets need a secrets directory and a changed init script for a host with no second reader | first deployment off the dev machine, or a second user of the machine |
 
 ## Phase 0: Research
 

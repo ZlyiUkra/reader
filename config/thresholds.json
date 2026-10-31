@@ -1,0 +1,185 @@
+{
+  "version": 1,
+  "values": {
+    "model.num_ctx": {
+      "value": 16384,
+      "unit": "tokens",
+      "status": "provisional",
+      "source": "handoff 2026-10-17, C13"
+    },
+    "model.num_predict_extract": {
+      "value": 1536,
+      "unit": "tokens",
+      "status": "provisional",
+      "source": "handoff 2026-10-17, C13"
+    },
+    "model.num_predict_classify": {
+      "value": 64,
+      "unit": "tokens",
+      "status": "provisional",
+      "source": "handoff 2026-10-17, C13"
+    },
+    "model.client_timeout_s": {
+      "value": 180,
+      "unit": "s",
+      "status": "provisional",
+      "source": "handoff 2026-10-17, C13"
+    },
+    "model.keep_alive": {
+      "value": "30m",
+      "unit": "duration",
+      "status": "provisional",
+      "source": "handoff 2026-10-17, C13"
+    },
+    "model.chars_per_token": {
+      "value": 3,
+      "unit": "chars",
+      "status": "provisional",
+      "source": "estimate, research R14; calibrated by the evaluation"
+    },
+    "model.cold_load_ns": {
+      "value": 2000000000,
+      "unit": "ns",
+      "status": "provisional",
+      "source": "estimate, research R14; a load above this marks the call cold"
+    },
+    "parser.convert_timeout_s": {
+      "value": 120,
+      "unit": "s per document",
+      "status": "provisional",
+      "source": "handoff 2026-10-17, C13"
+    },
+    "parser.render_timeout_s_per_page": {
+      "value": 10,
+      "unit": "s",
+      "status": "provisional",
+      "source": "handoff 2026-10-17, C13"
+    },
+    "parser.ocr_timeout_s_per_page": {
+      "value": 30,
+      "unit": "s",
+      "status": "provisional",
+      "source": "handoff 2026-10-17, C13"
+    },
+    "parser.page_cap": {
+      "value": 50,
+      "unit": "pages",
+      "status": "provisional",
+      "source": "handoff 2026-10-17, C13"
+    },
+    "parser.ocr_dpi": {
+      "value": 300,
+      "unit": "dpi",
+      "status": "provisional",
+      "source": "handoff 2026-10-17, C13"
+    },
+    "parser.render_width_px": {
+      "value": 1240,
+      "unit": "px",
+      "status": "provisional",
+      "source": "handoff 2026-10-17, C15"
+    },
+    "parser.manifest_max_bytes": {
+      "value": 65536,
+      "unit": "bytes",
+      "status": "provisional",
+      "source": "estimate, research R14"
+    },
+    "parser.png_max_bytes": {
+      "value": 8388608,
+      "unit": "bytes",
+      "status": "provisional",
+      "source": "estimate, research R14"
+    },
+    "parser.text_max_bytes": {
+      "value": 1048576,
+      "unit": "bytes",
+      "status": "provisional",
+      "source": "estimate, research R14"
+    },
+    "parser.png_max_side_px": {
+      "value": 4000,
+      "unit": "px",
+      "status": "provisional",
+      "source": "estimate, research R14"
+    },
+    "parser.tool_memory_mb": {
+      "value": 1024,
+      "unit": "MB",
+      "status": "provisional",
+      "source": "estimate, research R14; the container limit is 2048"
+    },
+    "intake.upload_max_bytes": {
+      "value": 52428800,
+      "unit": "bytes",
+      "status": "provisional",
+      "source": "estimate, research R14; 50 MB"
+    },
+    "quality.ocr_low_confidence": {
+      "value": 60,
+      "unit": "tesseract confidence",
+      "status": "provisional",
+      "source": "estimate, research R14; a word under it is low"
+    },
+    "quality.ocr_low_share": {
+      "value": 0.4,
+      "unit": "share",
+      "status": "provisional",
+      "source": "estimate, research R14; a page with more low words than this is low quality"
+    },
+    "quality.scanned_page_max_chars": {
+      "value": 50,
+      "unit": "chars",
+      "status": "provisional",
+      "source": "estimate, research R14; a text layer under it goes to OCR"
+    },
+    "quality.empty_min_chars": {
+      "value": 20,
+      "unit": "chars",
+      "status": "provisional",
+      "source": "estimate, research R14; a page under it is blank"
+    },
+    "run.bound_minutes": {
+      "value": 15,
+      "unit": "min",
+      "status": "provisional",
+      "source": "estimate, research R14; warm run of the 11 fixtures, spec SC-002"
+    },
+    "ui.preview_width_px": {
+      "value": 1240,
+      "unit": "px",
+      "status": "provisional",
+      "source": "handoff 2026-10-17, C15"
+    },
+    "ui.poll_interval_ms": {
+      "value": 2000,
+      "unit": "ms",
+      "status": "provisional",
+      "source": "handoff 2026-10-17, C15"
+    },
+    "eval.pass_required_match": {
+      "value": 1.0,
+      "unit": "share",
+      "status": "provisional",
+      "source": "owner decision 2026-10-31, spec Measurement Contract"
+    },
+    "eval.max_false_accepts": {
+      "value": 0,
+      "unit": "count",
+      "status": "provisional",
+      "source": "owner decision 2026-10-31, spec Measurement Contract"
+    },
+    "eval.ceiling_tokens_per_document": {
+      "value": 6000,
+      "unit": "tokens",
+      "status": "provisional",
+      "source": "owner decision 2026-10-31, spec Measurement Contract"
+    },
+    "eval.ceiling_seconds_per_page_warm": {
+      "value": 60,
+      "unit": "s",
+      "status": "provisional",
+      "source": "owner decision 2026-10-31, spec Measurement Contract"
+    }
+  }
+}

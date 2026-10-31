@@ -1,0 +1,411 @@
+{
+  "version": 1,
+  "reasons": [
+    {
+      "code": "ENCRYPTED",
+      "outcome": "REJECTED",
+      "emitted": true,
+      "emittedBy": [
+        "parse"
+      ],
+      "trigger": "pdfinfo reports the file as encrypted (password-protected).",
+      "params": [],
+      "templates": {
+        "uk": "Файл захищений паролем, його неможливо прочитати.",
+        "en": "The file is password-protected and cannot be read."
+      }
+    },
+    {
+      "code": "CORRUPT",
+      "outcome": "REJECTED",
+      "emitted": true,
+      "emittedBy": [
+        "parse"
+      ],
+      "trigger": "A tool failed because of the content of the file: damaged, truncated or malformed.",
+      "params": [
+        {
+          "name": "tool",
+          "kind": "string"
+        }
+      ],
+      "templates": {
+        "uk": "Файл пошкоджений і не може бути прочитаний (інструмент {tool}).",
+        "en": "The file is damaged and could not be read (tool {tool})."
+      }
+    },
+    {
+      "code": "MALWARE",
+      "outcome": "QUARANTINED",
+      "emitted": false,
+      "emittedBy": [
+        "parse"
+      ],
+      "trigger": "Reserved, not emitted by the prototype: a malware scan flags the file (deferred until the first non-synthetic document).",
+      "params": [],
+      "templates": {
+        "uk": "Файл позначено сканером шкідливого коду.",
+        "en": "The file was flagged by the malware scan."
+      }
+    },
+    {
+      "code": "TOO_LARGE",
+      "outcome": "REJECTED",
+      "emitted": true,
+      "emittedBy": [
+        "parse",
+        "classify",
+        "extract"
+      ],
+      "trigger": "A size, page, time or memory limit was breached: the page cap, the image caps, a tool timeout or memory limit, the prompt over the context budget, or generation cut off at the cap. No retry.",
+      "params": [
+        {
+          "name": "limit",
+          "kind": "string"
+        },
+        {
+          "name": "actual",
+          "kind": "number"
+        },
+        {
+          "name": "max",
+          "kind": "number"
+        }
+      ],
+      "templates": {
+        "uk": "Документ перевищує обмеження: {limit} становить {actual}, максимум {max}.",
+        "en": "The document exceeds a limit: {limit} is {actual}, the maximum is {max}."
+      }
+    },
+    {
+      "code": "UNSUPPORTED_FORMAT",
+      "outcome": "REJECTED",
+      "emitted": true,
+      "emittedBy": [
+        "parse"
+      ],
+      "trigger": "The detected content type is not in the supported set.",
+      "params": [
+        {
+          "name": "mime",
+          "kind": "string"
+        }
+      ],
+      "templates": {
+        "uk": "Формат файлу {mime} не підтримується.",
+        "en": "The file format {mime} is not supported."
+      }
+    },
+    {
+      "code": "DUPLICATE",
+      "outcome": "DUPLICATE",
+      "emitted": true,
+      "emittedBy": [
+        "intake"
+      ],
+      "trigger": "The content hash is already known: reported at intake, never stored, never reaches the status function.",
+      "params": [
+        {
+          "name": "originalNumber",
+          "kind": "integer"
+        }
+      ],
+      "templates": {
+        "uk": "Такий самий вміст уже збережено як документ {originalNumber}.",
+        "en": "The same content is already stored as document {originalNumber}."
+      }
+    },
+    {
+      "code": "LOW_OCR_QUALITY",
+      "outcome": "NEEDS_REVIEW",
+      "emitted": true,
+      "emittedBy": [
+        "parse"
+      ],
+      "trigger": "More than half of the OCR pages have more low-confidence words than the cut-off share.",
+      "params": [
+        {
+          "name": "lowPages",
+          "kind": "integer"
+        },
+        {
+          "name": "ocrPages",
+          "kind": "integer"
+        },
+        {
+          "name": "share",
+          "kind": "number"
+        },
+        {
+          "name": "minConfidence",
+          "kind": "integer"
+        }
+      ],
+      "templates": {
+        "uk": "Якість розпізнавання тексту занизька: на {lowPages} із {ocrPages} сканованих сторінок понад {share} слів мають впевненість нижче {minConfidence}.",
+        "en": "Text recognition quality is too low: on {lowPages} of {ocrPages} scanned pages more than {share} of the words have confidence below {minConfidence}."
+      }
+    },
+    {
+      "code": "UNKNOWN_DOC_TYPE",
+      "outcome": "NEEDS_REVIEW",
+      "emitted": true,
+      "emittedBy": [
+        "classify"
+      ],
+      "trigger": "The classifier answered none of the registered types.",
+      "params": [],
+      "templates": {
+        "uk": "Документ не відповідає жодному зареєстрованому типу.",
+        "en": "The document does not match any registered type."
+      }
+    },
+    {
+      "code": "MISSING_REQUIRED_FIELD",
+      "outcome": "NEEDS_REVIEW",
+      "emitted": true,
+      "emittedBy": [
+        "check"
+      ],
+      "trigger": "A field the type schema marks required is absent or was not found.",
+      "params": [
+        {
+          "name": "field",
+          "kind": "string"
+        }
+      ],
+      "templates": {
+        "uk": "Обов'язкове поле «{field}» не знайдено.",
+        "en": "Required field \"{field}\" not found."
+      }
+    },
+    {
+      "code": "VALIDATION_FAILED",
+      "outcome": "NEEDS_REVIEW",
+      "emitted": true,
+      "emittedBy": [
+        "check"
+      ],
+      "trigger": "A quoted fragment is not in the stored page text (the base template), or a registry check failed: VAT sum, date order, EDRPOU or IBAN checksum (the variants).",
+      "params": [
+        {
+          "name": "field",
+          "kind": "string"
+        },
+        {
+          "name": "fragment",
+          "kind": "string"
+        },
+        {
+          "name": "page",
+          "kind": "integer"
+        }
+      ],
+      "templates": {
+        "uk": "Поле «{field}»: цитованого фрагмента «{fragment}» немає в тексті сторінки {page}.",
+        "en": "Field \"{field}\": the quoted fragment \"{fragment}\" is not in the text of page {page}."
+      },
+      "variants": [
+        {
+          "when": {
+            "check": "vat_sum"
+          },
+          "params": [
+            {
+              "name": "check",
+              "kind": "string"
+            },
+            {
+              "name": "net",
+              "kind": "string"
+            },
+            {
+              "name": "vat",
+              "kind": "string"
+            },
+            {
+              "name": "gross",
+              "kind": "string"
+            },
+            {
+              "name": "rate",
+              "kind": "integer"
+            }
+          ],
+          "templates": {
+            "uk": "Перевірка ПДВ не пройдена: сума без ПДВ {net} плюс ПДВ {vat} має дорівнювати сумі з ПДВ {gross}, а ПДВ має складати {rate}% від суми без ПДВ.",
+            "en": "VAT check failed: net {net} plus VAT {vat} must equal the total {gross}, and VAT must be {rate}% of net."
+          }
+        },
+        {
+          "when": {
+            "check": "date_order"
+          },
+          "params": [
+            {
+              "name": "check",
+              "kind": "string"
+            },
+            {
+              "name": "earlier",
+              "kind": "string"
+            },
+            {
+              "name": "later",
+              "kind": "string"
+            }
+          ],
+          "templates": {
+            "uk": "Перевірка дат не пройдена: дата «{earlier}» не може бути пізнішою за дату «{later}».",
+            "en": "Date check failed: \"{earlier}\" must not be later than \"{later}\"."
+          }
+        },
+        {
+          "when": {
+            "check": "edrpou"
+          },
+          "params": [
+            {
+              "name": "check",
+              "kind": "string"
+            },
+            {
+              "name": "field",
+              "kind": "string"
+            }
+          ],
+          "templates": {
+            "uk": "Перевірка не пройдена: «{field}» не є дійсним кодом ЄДРПОУ.",
+            "en": "Check failed: \"{field}\" is not a valid EDRPOU code."
+          }
+        },
+        {
+          "when": {
+            "check": "iban_ua"
+          },
+          "params": [
+            {
+              "name": "check",
+              "kind": "string"
+            },
+            {
+              "name": "field",
+              "kind": "string"
+            }
+          ],
+          "templates": {
+            "uk": "Перевірка не пройдена: «{field}» не є дійсним українським IBAN.",
+            "en": "Check failed: \"{field}\" is not a valid Ukrainian IBAN."
+          }
+        }
+      ]
+    },
+    {
+      "code": "LOW_CONFIDENCE",
+      "outcome": "NEEDS_REVIEW",
+      "emitted": false,
+      "emittedBy": [
+        "check"
+      ],
+      "trigger": "Reserved, not emitted by the prototype: model-reported confidence is never used (constitution V).",
+      "params": [
+        {
+          "name": "field",
+          "kind": "string"
+        }
+      ],
+      "templates": {
+        "uk": "Поле «{field}» витягнуто з низькою впевненістю.",
+        "en": "Field \"{field}\" was extracted with low confidence."
+      }
+    },
+    {
+      "code": "EMPTY",
+      "outcome": "NEEDS_REVIEW",
+      "emitted": true,
+      "emittedBy": [
+        "parse"
+      ],
+      "trigger": "More than half of the pages have fewer characters than the empty-page minimum.",
+      "params": [
+        {
+          "name": "blankPages",
+          "kind": "integer"
+        },
+        {
+          "name": "pages",
+          "kind": "integer"
+        },
+        {
+          "name": "minChars",
+          "kind": "integer"
+        }
+      ],
+      "templates": {
+        "uk": "Документ порожній: на {blankPages} із {pages} сторінок менше ніж {minChars} символів.",
+        "en": "The document is empty: {blankPages} of {pages} pages have fewer than {minChars} characters."
+      }
+    },
+    {
+      "code": "INTERNAL_ERROR",
+      "outcome": "RETRY",
+      "emitted": true,
+      "emittedBy": [
+        "parse",
+        "classify",
+        "extract",
+        "check",
+        "worker"
+      ],
+      "trigger": "Infrastructure failure, model timeout, invalid model output or an expired lease. Retried; FAILED after three attempts.",
+      "params": [
+        {
+          "name": "cause",
+          "kind": "string"
+        }
+      ],
+      "templates": {
+        "uk": "Внутрішня помилка: {cause}.",
+        "en": "Internal error: {cause}."
+      }
+    },
+    {
+      "code": "EXTRACTORS_DISAGREE",
+      "outcome": "NEEDS_REVIEW",
+      "emitted": false,
+      "emittedBy": [
+        "check"
+      ],
+      "trigger": "Reserved, not emitted by the prototype: needs a second extractor.",
+      "params": [
+        {
+          "name": "field",
+          "kind": "string"
+        }
+      ],
+      "templates": {
+        "uk": "Екстрактори розходяться щодо поля «{field}».",
+        "en": "Extractors disagree on field \"{field}\"."
+      }
+    },
+    {
+      "code": "TEXT_LAYER_MISMATCH",
+      "outcome": "NEEDS_REVIEW",
+      "emitted": false,
+      "emittedBy": [
+        "parse"
+      ],
+      "trigger": "Reserved, not emitted by the prototype: needs the invisible-text defence (deferred).",
+      "params": [
+        {
+          "name": "page",
+          "kind": "integer"
+        }
+      ],
+      "templates": {
+        "uk": "Текстовий шар сторінки {page} не збігається із зображенням сторінки.",
+        "en": "The text layer of page {page} does not match the page image."
+      }
+    }
+  ]
+}

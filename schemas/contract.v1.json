@@ -1,0 +1,195 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://reader.local/schemas/contract.v1.json",
+  "title": "contract",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "number",
+    "date",
+    "firstPartyName",
+    "firstPartyEdrpou",
+    "secondPartyName",
+    "secondPartyEdrpou",
+    "subject",
+    "currency",
+    "validFrom",
+    "validUntil"
+  ],
+  "properties": {
+    "number": {
+      "type": "string",
+      "x-reader": {
+        "kind": "string",
+        "labels": {
+          "uk": "Номер",
+          "en": "Number"
+        }
+      }
+    },
+    "date": {
+      "type": "string",
+      "format": "date",
+      "x-reader": {
+        "kind": "date",
+        "labels": {
+          "uk": "Дата",
+          "en": "Date"
+        }
+      }
+    },
+    "firstPartyName": {
+      "type": "string",
+      "x-reader": {
+        "kind": "string",
+        "labels": {
+          "uk": "Назва першої сторони",
+          "en": "First party name"
+        }
+      }
+    },
+    "firstPartyEdrpou": {
+      "type": "string",
+      "pattern": "^[0-9]{8}$",
+      "x-reader": {
+        "kind": "edrpou",
+        "labels": {
+          "uk": "ЄДРПОУ першої сторони",
+          "en": "First party EDRPOU"
+        }
+      }
+    },
+    "secondPartyName": {
+      "type": "string",
+      "x-reader": {
+        "kind": "string",
+        "labels": {
+          "uk": "Назва другої сторони",
+          "en": "Second party name"
+        }
+      }
+    },
+    "secondPartyEdrpou": {
+      "type": "string",
+      "pattern": "^[0-9]{8}$",
+      "x-reader": {
+        "kind": "edrpou",
+        "labels": {
+          "uk": "ЄДРПОУ другої сторони",
+          "en": "Second party EDRPOU"
+        }
+      }
+    },
+    "subject": {
+      "type": "string",
+      "x-reader": {
+        "kind": "string",
+        "labels": {
+          "uk": "Предмет договору",
+          "en": "Subject"
+        }
+      }
+    },
+    "currency": {
+      "type": "string",
+      "enum": [
+        "UAH"
+      ],
+      "x-reader": {
+        "kind": "enum",
+        "labels": {
+          "uk": "Валюта",
+          "en": "Currency"
+        }
+      }
+    },
+    "validFrom": {
+      "type": "string",
+      "format": "date",
+      "x-reader": {
+        "kind": "date",
+        "labels": {
+          "uk": "Діє з",
+          "en": "Valid from"
+        }
+      }
+    },
+    "validUntil": {
+      "type": "string",
+      "format": "date",
+      "x-reader": {
+        "kind": "date",
+        "labels": {
+          "uk": "Діє до",
+          "en": "Valid until"
+        }
+      }
+    },
+    "totalAmount": {
+      "type": "integer",
+      "x-reader": {
+        "kind": "money",
+        "labels": {
+          "uk": "Загальна сума",
+          "en": "Total amount"
+        }
+      }
+    },
+    "paymentTerms": {
+      "type": "string",
+      "x-reader": {
+        "kind": "string",
+        "labels": {
+          "uk": "Умови оплати",
+          "en": "Payment terms"
+        }
+      }
+    },
+    "placeOfSigning": {
+      "type": "string",
+      "x-reader": {
+        "kind": "string",
+        "labels": {
+          "uk": "Місце підписання",
+          "en": "Place of signing"
+        }
+      }
+    }
+  },
+  "x-reader": {
+    "labels": {
+      "uk": "Договір",
+      "en": "Contract"
+    },
+    "order": [
+      "number",
+      "date",
+      "firstPartyName",
+      "firstPartyEdrpou",
+      "secondPartyName",
+      "secondPartyEdrpou",
+      "subject",
+      "currency",
+      "validFrom",
+      "validUntil",
+      "totalAmount",
+      "paymentTerms",
+      "placeOfSigning"
+    ],
+    "checks": [
+      {
+        "rule": "date_order",
+        "earlier": "validFrom",
+        "later": "validUntil"
+      },
+      {
+        "rule": "edrpou",
+        "field": "firstPartyEdrpou"
+      },
+      {
+        "rule": "edrpou",
+        "field": "secondPartyEdrpou"
+      }
+    ]
+  }
+}

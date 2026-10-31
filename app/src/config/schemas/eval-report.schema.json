@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://reader.local/contracts/eval-report.v1.json",
+  "title": "Evaluation report, one file per run (FR-048a)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "runAt", "model", "schemaIds", "promptHash", "registryHash", "thresholds", "documents",
+               "fieldMatch", "requiredFieldMatchAccepted", "falseAccepts", "reasonShares", "secondsPerPage",
+               "tokensPerDocument", "charsPerToken", "verdict", "notATierDecision"],
+  "properties": {
+    "version": { "const": 1 },
+    "runAt": { "type": "string", "format": "date-time" },
+    "model": { "type": "object", "required": ["name", "digest"], "properties": { "name": { "type": "string" }, "digest": { "type": "string" } } },
+    "schemaIds": { "type": "array", "items": { "type": "string" } },
+    "promptHash": { "type": "string" },
+    "registryHash": { "type": "string" },
+    "thresholds": { "type": "object" },
+    "documents": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["number", "sha256", "expectedStatus", "status", "expectedCodes", "codes", "fieldsExpected", "fieldsMatched", "falseAccepts"],
+        "properties": {
+          "number": { "type": "integer" }, "sha256": { "type": "string" },
+          "expectedStatus": { "type": "string" }, "status": { "type": "string" },
+          "expectedCodes": { "type": "array", "items": { "type": "string" } },
+          "codes": { "type": "array", "items": { "type": "string" } },
+          "fieldsExpected": { "type": "integer" }, "fieldsMatched": { "type": "integer" },
+          "falseAccepts": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    },
+    "fieldMatch": { "type": "number", "minimum": 0, "maximum": 1 },
+    "requiredFieldMatchAccepted": { "type": "number", "minimum": 0, "maximum": 1 },
+    "falseAccepts": { "type": "integer", "minimum": 0 },
+    "reasonShares": { "type": "object", "additionalProperties": { "type": "number" } },
+    "secondsPerPage": {
+      "type": "object",
+      "required": ["parseCold", "parseWarm", "modelCold", "modelWarm"],
+      "properties": { "parseCold": { "type": ["number", "null"] }, "parseWarm": { "type": ["number", "null"] },
+                      "modelCold": { "type": ["number", "null"] }, "modelWarm": { "type": ["number", "null"] } }
+    },
+    "tokensPerDocument": { "type": "number" },
+    "charsPerToken": { "type": "number" },
+    "verdict": { "enum": ["pass", "fail"] },
+    "notATierDecision": { "const": true }
+  }
+}

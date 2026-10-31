@@ -83,7 +83,7 @@ Decision: `apt-get install --no-install-recommends` with these exact versions pi
 | librsvg2-bin | 2.54.7+dfsg-1~deb12u1 | rsvg-convert for SVG |
 | imagemagick | 8:6.9.11.60+dfsg-1.6+deb12u14 | rotate, blur, noise, resize (fixtures and image inputs) |
 | img2pdf | 0.4.4-3 | scanned PDF fixtures |
-| qpdf | bookworm version, read and recorded here by T007 | strips dates and ids from generated PDFs for byte-stable fixtures (R8) |
+| qpdf | 11.3.0-1+deb12u1 (read in the pinned image by T007, 2026-10-31) | strips dates and ids from generated PDFs for byte-stable fixtures (R8) |
 | file | 1:5.44-3 | content-based format detection |
 | fonts-dejavu-core, fonts-liberation | 2.37-6, 1:1.07.4-11 | Cyrillic fonts for rendering |
 
@@ -287,7 +287,7 @@ extract: client timeout; check: 30 s).
 ## Open items carried into tasks
 
 - Read the full sha256 of `qwen3.5:4b` from `/api/tags` after the first pull and pin it (R2).
-- Read qpdf's bookworm version at build time, pin it in `parser/Dockerfile` and record it in the R4 table (T007).
+- ~~Read qpdf's bookworm version~~ done by T007: 11.3.0-1+deb12u1, pinned in `parser/Dockerfile` and recorded in R4.
 - Verify byte-stable PDF output of LibreOffice under `SOURCE_DATE_EPOCH` plus qpdf on the first fixture (R8).
 - Confirm the EDRPOU weight boundaries against an official source if one is found; the fixtures only need
   self-consistency (R12).

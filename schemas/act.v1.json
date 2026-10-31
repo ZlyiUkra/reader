@@ -1,0 +1,216 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://reader.local/schemas/act.v1.json",
+  "title": "act",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "number",
+    "date",
+    "contractorName",
+    "contractorEdrpou",
+    "customerName",
+    "customerEdrpou",
+    "contractRef",
+    "periodStart",
+    "periodEnd",
+    "currency",
+    "totalNet",
+    "vat",
+    "totalGross"
+  ],
+  "properties": {
+    "number": {
+      "type": "string",
+      "x-reader": {
+        "kind": "string",
+        "labels": {
+          "uk": "Номер",
+          "en": "Number"
+        }
+      }
+    },
+    "date": {
+      "type": "string",
+      "format": "date",
+      "x-reader": {
+        "kind": "date",
+        "labels": {
+          "uk": "Дата",
+          "en": "Date"
+        }
+      }
+    },
+    "contractorName": {
+      "type": "string",
+      "x-reader": {
+        "kind": "string",
+        "labels": {
+          "uk": "Назва виконавця",
+          "en": "Contractor name"
+        }
+      }
+    },
+    "contractorEdrpou": {
+      "type": "string",
+      "pattern": "^[0-9]{8}$",
+      "x-reader": {
+        "kind": "edrpou",
+        "labels": {
+          "uk": "ЄДРПОУ виконавця",
+          "en": "Contractor EDRPOU"
+        }
+      }
+    },
+    "customerName": {
+      "type": "string",
+      "x-reader": {
+        "kind": "string",
+        "labels": {
+          "uk": "Назва замовника",
+          "en": "Customer name"
+        }
+      }
+    },
+    "customerEdrpou": {
+      "type": "string",
+      "pattern": "^[0-9]{8}$",
+      "x-reader": {
+        "kind": "edrpou",
+        "labels": {
+          "uk": "ЄДРПОУ замовника",
+          "en": "Customer EDRPOU"
+        }
+      }
+    },
+    "contractRef": {
+      "type": "string",
+      "x-reader": {
+        "kind": "string",
+        "labels": {
+          "uk": "Посилання на договір",
+          "en": "Contract reference"
+        }
+      }
+    },
+    "periodStart": {
+      "type": "string",
+      "format": "date",
+      "x-reader": {
+        "kind": "date",
+        "labels": {
+          "uk": "Початок періоду послуг",
+          "en": "Service period start"
+        }
+      }
+    },
+    "periodEnd": {
+      "type": "string",
+      "format": "date",
+      "x-reader": {
+        "kind": "date",
+        "labels": {
+          "uk": "Кінець періоду послуг",
+          "en": "Service period end"
+        }
+      }
+    },
+    "currency": {
+      "type": "string",
+      "enum": [
+        "UAH"
+      ],
+      "x-reader": {
+        "kind": "enum",
+        "labels": {
+          "uk": "Валюта",
+          "en": "Currency"
+        }
+      }
+    },
+    "totalNet": {
+      "type": "integer",
+      "x-reader": {
+        "kind": "money",
+        "labels": {
+          "uk": "Сума без ПДВ",
+          "en": "Total without VAT"
+        }
+      }
+    },
+    "vat": {
+      "type": "integer",
+      "x-reader": {
+        "kind": "money",
+        "labels": {
+          "uk": "Сума ПДВ",
+          "en": "VAT amount"
+        }
+      }
+    },
+    "totalGross": {
+      "type": "integer",
+      "x-reader": {
+        "kind": "money",
+        "labels": {
+          "uk": "Сума з ПДВ",
+          "en": "Total with VAT"
+        }
+      }
+    },
+    "placeOfSigning": {
+      "type": "string",
+      "x-reader": {
+        "kind": "string",
+        "labels": {
+          "uk": "Місце підписання",
+          "en": "Place of signing"
+        }
+      }
+    }
+  },
+  "x-reader": {
+    "labels": {
+      "uk": "Акт виконаних робіт",
+      "en": "Act of completed works"
+    },
+    "order": [
+      "number",
+      "date",
+      "contractorName",
+      "contractorEdrpou",
+      "customerName",
+      "customerEdrpou",
+      "contractRef",
+      "periodStart",
+      "periodEnd",
+      "currency",
+      "totalNet",
+      "vat",
+      "totalGross",
+      "placeOfSigning"
+    ],
+    "checks": [
+      {
+        "rule": "vat_sum",
+        "net": "totalNet",
+        "vat": "vat",
+        "gross": "totalGross",
+        "rate": 20
+      },
+      {
+        "rule": "date_order",
+        "earlier": "periodStart",
+        "later": "periodEnd"
+      },
+      {
+        "rule": "edrpou",
+        "field": "contractorEdrpou"
+      },
+      {
+        "rule": "edrpou",
+        "field": "customerEdrpou"
+      }
+    ]
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://reader.local/contracts/model-config.v1.json",
+  "title": "Model configuration: the tag and the pinned digest (research R2); the digest is empty until the first pull pins it",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "tag",
+    "digest"
+  ],
+  "properties": {
+    "tag": {
+      "type": "string",
+      "minLength": 1
+    },
+    "digest": {
+      "type": "string",
+      "pattern": "^([0-9a-f]{64})?$"
+    }
+  }
+}

@@ -1,0 +1,16 @@
+.git/
+.claude/
+.specify/
+AGENTS.md
+README.md
+docs/
+specs/
+inbox/
+results/
+.env
+.env.*
+**/node_modules/
+app/dist/
+**/*.log
+**/.DS_Store
+**/Thumbs.db

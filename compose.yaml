@@ -1,0 +1,215 @@
+# Reader local prototype: five services plus two one-off services (contracts/compose.md).
+# Every image is pinned by tag and digest (constitution XI, research R2). The file is read with `docker compose`;
+# secrets come from .env, which is never committed and never printed (.env.example has the placeholders).
+name: reader
+
+services:
+  # PostgreSQL 17 with the pgvector extension available but not created (embeddings are deferred).
+  # The init scripts run once, on an empty data directory; a schema change means `docker compose down -v` (FR-034).
+  db:
+    image: pgvector/pgvector:0.8.7-pg17@sha256:ac08538c6f8b9904c33c8224c5e5706dbe760aca29db1d096972b4052c22a75d
+    restart: unless-stopped
+    # Runs as the image's own `postgres` user (uid 999) with every capability dropped. The image entrypoint needs root only
+    # to chown the data directory and to switch user; the named volume is created owned by uid 999, so neither is needed.
+    # Started as root with the capabilities dropped, the entrypoint fails (chmod and user switch are refused).
+    user: "999:999"
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    environment:
+      POSTGRES_DB: reader
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is not set in .env}
+      APP_DB_PASSWORD: ${APP_DB_PASSWORD:?APP_DB_PASSWORD is not set in .env}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./db/init:/docker-entrypoint-initdb.d:ro
+    networks: [backend]
+    healthcheck:
+      # Over TCP: while the init scripts run, the temporary server listens on the Unix socket only, so a socket check
+      # can report ready before the application role exists.
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U postgres -d reader"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  # The model server. One server-wide context, one request at a time, one model loaded (C7). Port 11434 is never published.
+  # OLLAMA_CONTEXT_LENGTH must equal thresholds.model.num_ctx; the app checks it at readiness (contracts/llm-port.md).
+  model:
+    image: ollama/ollama:0.40.13@sha256:b2f0122c476bc9fe7ce679d8bb4bd555351e25e2554eefb156f61cb0a89cf429
+    restart: unless-stopped
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    environment:
+      # Ollama binds 127.0.0.1 unless told otherwise; the app reaches it over the internal backend network.
+      OLLAMA_HOST: 0.0.0.0:11434
+      OLLAMA_CONTEXT_LENGTH: "16384"
+      OLLAMA_NUM_PARALLEL: "1"
+      OLLAMA_MAX_LOADED_MODELS: "1"
+      OLLAMA_KEEP_ALIVE: 30m
+    volumes:
+      - models:/root/.ollama
+    networks: [backend]
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    healthcheck:
+      test: ["CMD", "ollama", "list"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+
+  # One-off: fetches the weights into the shared volume. The only service with egress (C5). It runs its own server
+  # because the pull needs one; the weights land in the same volume the `model` service reads. Exits 0 and downloads
+  # nothing when the layers are already present (acceptance check 2).
+  model-pull:
+    image: ollama/ollama:0.40.13@sha256:b2f0122c476bc9fe7ce679d8bb4bd555351e25e2554eefb156f61cb0a89cf429
+    restart: "no"
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    environment:
+      MODEL_TAG: ${MODEL_TAG:-qwen3.5:4b}
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        ollama serve >/tmp/ollama-serve.log 2>&1 &
+        server=$$!
+        waited=0
+        until ollama list >/dev/null 2>&1; do
+          waited=$$((waited + 1))
+          if [ "$$waited" -gt 60 ]; then echo "ollama server did not start" >&2; exit 1; fi
+          sleep 1
+        done
+        ollama pull "$$MODEL_TAG"
+        status=$$?
+        kill "$$server"
+        exit "$$status"
+    volumes:
+      - models:/root/.ollama
+    networks: [egress]
+
+  # The parser sandbox (C9, constitution VII): no network, read-only root, non-root, no capabilities, numeric limits.
+  # It serves POST /parse over the Unix socket /jobs/parser.sock. /jobs/in is the app's input, read-only here.
+  parser:
+    build:
+      context: .
+      dockerfile: parser/Dockerfile
+      target: parser
+    restart: unless-stopped
+    # TODO runtime: runsc (gVisor). Named simplification: the runc runtime until the first non-synthetic document.
+    runtime: runc
+    network_mode: none
+    read_only: true
+    user: "10001:10001"
+    init: true
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    mem_limit: 2g
+    memswap_limit: 2g
+    pids_limit: 256
+    tmpfs:
+      - /tmp:size=512m,mode=1777
+      - /home/parser:size=64m,uid=10001,gid=10001
+    environment:
+      HOME: /home/parser
+    volumes:
+      - jobs:/jobs
+      - type: volume
+        source: jobs_in
+        target: /jobs/in
+        read_only: true
+
+  # API, worker and the built front in one process (plan.md). The only published port, on loopback.
+  # config/ and schemas/ are read-only bind mounts: a change needs a restart, not a rebuild (acceptance check 10).
+  # The app starts at once and claims no model step until the model is ready (C5).
+  app:
+    build:
+      context: .
+      dockerfile: app/Dockerfile
+      target: runtime
+    restart: unless-stopped
+    user: "1000:10001"
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      PGHOST: db
+      PGPORT: "5432"
+      PGDATABASE: reader
+      PGUSER: app
+      PGPASSWORD: ${APP_DB_PASSWORD:?APP_DB_PASSWORD is not set in .env}
+      MODEL_URL: http://model:11434
+      MODEL_TAG: ${MODEL_TAG:-qwen3.5:4b}
+      READER_LISTEN_HOST: 0.0.0.0
+      READER_PORT: "3000"
+      READER_CONFIG_DIR: /app/config
+      READER_SCHEMAS_DIR: /app/schemas
+      READER_INBOX_DIR: /inbox
+      READER_BLOB_DIR: /data/blobs
+      READER_JOBS_DIR: /jobs
+      READER_RESULTS_DIR: /data/results
+      # The parser's runtime, reported by /api/health (contracts/api.md). Keep equal to `runtime:` of the parser.
+      READER_SANDBOX_RUNTIME: runc
+    ports:
+      - "127.0.0.1:${READER_PORT:-3000}:3000"
+    volumes:
+      - blobs:/data/blobs
+      - jobs:/jobs
+      - type: volume
+        source: jobs_in
+        target: /jobs/in
+      - ${READER_INBOX:-./inbox}:/inbox:ro
+      - ./config:/app/config:ro
+      - ./schemas:/app/schemas:ro
+      - ./results:/data/results
+    networks: [backend, ui]
+
+  # One-off: writes the synthetic documents, the manifest and the expected values into the inbox (C17).
+  # Run it with `docker compose run --rm fixtures`; it is not started by `up`.
+  fixtures:
+    build:
+      context: .
+      dockerfile: parser/Dockerfile
+      target: fixtures
+    profiles: [fixtures]
+    restart: "no"
+    network_mode: none
+    read_only: true
+    user: "${READER_UID:-1000}:${READER_GID:-1000}"
+    init: true
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    mem_limit: 2g
+    pids_limit: 256
+    tmpfs:
+      - /tmp:size=512m,mode=1777
+      - /home/fixtures:size=64m,uid=${READER_UID:-1000},gid=${READER_GID:-1000}
+    environment:
+      HOME: /home/fixtures
+      READER_INBOX_DIR: /inbox
+      READER_SCHEMAS_DIR: /schemas
+    volumes:
+      - ${READER_INBOX:-./inbox}:/inbox
+      - ./schemas:/schemas:ro
+
+networks:
+  # Internal: no route out of the host. Holds db, model and app; the parser has no network at all.
+  backend:
+    internal: true
+  # Only model-pull sits here: the one service allowed to reach the model registry.
+  egress: {}
+  # Carries the single published port of the app.
+  ui: {}
+
+volumes:
+  pgdata: {}
+  models: {}
+  blobs: {}
+  jobs: {}
+  # The app writes the parser's input here, the parser sees it read-only. A separate volume because a read-only
+  # subpath mount needs the subfolder to exist before the container starts.
+  jobs_in: {}
