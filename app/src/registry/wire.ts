@@ -1,3 +1,5 @@
+import { createHash } from 'node:crypto';
+import { canonicalJson } from '../shared/canonical-json.ts';
 import type { RegistryType } from './registry.ts';
 
 /**
@@ -37,6 +39,11 @@ export function wireSchema(type: RegistryType): WireSchema {
       ]),
     ),
   };
+}
+
+/** SHA-256 of a wire schema with its keys sorted: stored with every extraction, so a changed schema shows in the data (FR-032). */
+export function wireSchemaHash(schema: WireSchema): string {
+  return createHash('sha256').update(canonicalJson(schema)).digest('hex');
 }
 
 /**

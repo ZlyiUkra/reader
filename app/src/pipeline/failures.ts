@@ -5,9 +5,11 @@ import { insertReason } from '../db/queries.ts';
 import { withTransaction } from '../db/tx.ts';
 import { ParserClientError } from '../parser-client/client.ts';
 import type { ParserAnswer } from '../parser-client/client.ts';
+import { LlmAdapterError, LocalOnlyViolation, PromptOverBudget } from '../llm/port.ts';
 import { UnsafeOutputError } from '../parser-client/safe-read.ts';
 import { reasonCodes } from '../reasons/reasons.ts';
 import type { ReasonCode } from '../reasons/reasons.ts';
+import { ModelReplyError } from './model-call.ts';
 
 /**
  * How a failure becomes a reason (C6, FR-027). The rule is one table: a tool over its own limit on a file ends the document
@@ -23,8 +25,24 @@ export type Failure = {
   params: Record<string, string | number>;
 };
 
-/** Maps an error thrown by a step to the reason it leaves on the document. Nothing is swallowed: an unknown error is still recorded. */
+/**
+ * Maps an error thrown by a step to the reason it leaves on the document. Nothing is swallowed: an unknown error is still
+ * recorded. A prompt that does not fit the context is the document's own size and ends it `TOO_LARGE` without a retry
+ * (FR-022); a model server that fails, a reply that stays invalid and a refused class are infrastructure and are retried.
+ */
 export function failureOf(error: unknown): Failure {
+  if (error instanceof PromptOverBudget) {
+    return { code: 'TOO_LARGE', params: { limit: 'prompt_tokens', actual: error.estimatedTokens, max: error.availableTokens } };
+  }
+  if (error instanceof LlmAdapterError) {
+    return { code: 'INTERNAL_ERROR', params: { cause: `model_${error.kind.replaceAll('-', '_')}` } };
+  }
+  if (error instanceof LocalOnlyViolation) {
+    return { code: 'INTERNAL_ERROR', params: { cause: 'local_only' } };
+  }
+  if (error instanceof ModelReplyError) {
+    return { code: 'INTERNAL_ERROR', params: { cause: 'model_reply' } };
+  }
   if (error instanceof ParserClientError) {
     return { code: 'INTERNAL_ERROR', params: { cause: `parser_${error.kind}` } };
   }

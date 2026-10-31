@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { after, beforeEach, test } from 'node:test';
 import { LeaseLostError, claimNext, finishStep, recoverExpiredLeases, requeueOwn } from '../src/db/claim.ts';
 import type { Step } from '../src/db/claim.ts';
-import { reasonsOf, stepRunsOf } from '../src/db/queries.ts';
+import { markChecksDone, reasonsOf, stepRunsOf } from '../src/db/queries.ts';
 import { withTransaction } from '../src/db/tx.ts';
 import { recordFailure } from '../src/pipeline/failures.ts';
 import { addDocument, endOpenDocuments, stateOf, testDatabase } from './support/db.ts';
@@ -148,4 +148,58 @@ test('the boot requeue releases the rows of this instance and no others', async 
   const releasedState = await stateOf(pool, mine.id);
   assert.deepEqual({ status: releasedState.status, by: releasedState.locked_by, until: releasedState.locked_until }, { status: 'PARSE', by: null, until: null });
   assert.equal((await stateOf(pool, theirs.id)).locked_by, 'theirs');
+});
+
+/** Claim options for every step, with a lease of ten minutes. */
+function anyStepClaim(instanceId: string) {
+  return { steps: ['parse', 'classify', 'extract', 'check'] as Step[], leaseSeconds: () => 600, instanceId };
+}
+
+test('attempts are counted per step: a step that succeeds hands the next one a count of zero', async () => {
+  const doc = await addDocument(pool);
+  const parse = await claimNext(pool, anyStepClaim('a'));
+  assert.ok(parse);
+  await withTransaction(pool, (client) => finishStep(client, { documentId: doc.id, stepRunId: parse.stepRunId, step: 'parse', outcome: 'ok', details: {}, statusWhenOpen: 'CLASSIFY' }));
+  assert.equal((await stateOf(pool, doc.id)).attempts, 0, 'waiting for the next step, nothing of it spent');
+  const classify = await claimNext(pool, anyStepClaim('a'));
+  assert.deepEqual({ step: classify?.step, attempt: classify?.attempt }, { step: 'classify', attempt: 1 });
+  assert.deepEqual((await stepRunsOf(pool, doc.id)).map((run) => [run.step, run.attempt]), [['parse', 1], ['classify', 1]]);
+});
+
+test('three failures of a later step end the document FAILED, not the first one', async () => {
+  const doc = await addDocument(pool);
+  await pool.query("UPDATE documents SET status = 'EXTRACT' WHERE id = $1", [doc.id]);
+  const statuses: Array<string | null> = [];
+  for (let attempt = 1; attempt <= 3; attempt += 1) {
+    const claimed = await claimNext(pool, anyStepClaim('a'));
+    assert.deepEqual({ step: claimed?.step, attempt: claimed?.attempt }, { step: 'extract', attempt });
+    assert.ok(claimed);
+    statuses.push(await recordFailure(pool, claimed, { code: 'INTERNAL_ERROR', params: { cause: 'model_timeout' } }, {}));
+  }
+  assert.deepEqual(statuses, ['EXTRACT', 'EXTRACT', 'FAILED']);
+});
+
+test('an error of an earlier step, cured by a retry, does not hold back the end of the document', async () => {
+  const doc = await addDocument(pool);
+  const first = await claimNext(pool, anyStepClaim('a'));
+  assert.ok(first);
+  assert.equal(await recordFailure(pool, first, { code: 'INTERNAL_ERROR', params: { cause: 'parser_timeout' } }, {}), 'PARSE');
+  const statuses: string[] = [];
+  const next: Record<string, string> = { parse: 'CLASSIFY', classify: 'EXTRACT', extract: 'CHECK', check: 'CHECK' };
+  for (;;) {
+    const claimed = await claimNext(pool, anyStepClaim('a'));
+    if (claimed === null) {
+      break;
+    }
+    statuses.push(
+      await withTransaction(pool, async (client) => {
+        if (claimed.step === 'check') {
+          await markChecksDone(client, doc.id);
+        }
+        return finishStep(client, { documentId: doc.id, stepRunId: claimed.stepRunId, step: claimed.step, outcome: 'ok', details: {}, statusWhenOpen: next[claimed.step] ?? 'CHECK' });
+      }),
+    );
+  }
+  assert.deepEqual(statuses, ['CLASSIFY', 'EXTRACT', 'CHECK', 'ACCEPTED'], 'the parse error of attempt 1 is not counted against the check of attempt 1');
+  assert.deepEqual((await stepRunsOf(pool, doc.id)).map((run) => [run.step, run.attempt]), [['parse', 1], ['parse', 2], ['classify', 1], ['extract', 1], ['check', 1]]);
 });

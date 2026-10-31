@@ -1,0 +1,80 @@
+{
+  "raw": {
+    "request": {
+      "endpoint": "/api/chat",
+      "fallback": "none",
+      "body": {
+        "model": "qwen3.5:4b",
+        "messages": [
+          {
+            "role": "system",
+            "content": "You classify a document into exactly one of the listed types, or \"none\" if it is none of them. Answer only with JSON that matches the given schema. Do not explain."
+          },
+          {
+            "role": "user",
+            "content": "Choose the type of the document:\n- act: Акт виконаних робіт\n- contract: Договір\n- invoice: Рахунок\n- none: the document is none of the types above\n\nDocument text:\n--- Page 1 ---\nДоговір Ме Д-2026/12\nм. Дніпро, 1 лютого 2026 р.\n\nТОВ «Вишневий Прибій» (код ЄДРПОУ 99100215), далі Перша сторона, та ПП «Золота\nБджола» (код ЄДРПОУ 99103455), далі Друга сторона, уклали цей договір про наведене\nнижче.\n\n1. Предмет договору. Надання консультаційних послуг з автоматизації документообігу.\n2. Строк дії. Договір діє з 1 лютого 2026 р. до 31 грудня 2026 р..\n3. Вартість. Валюта договору: грн. Загальна сума договору становить 180 000,00.\n\n4. Умови оплати. Оплата протягом 14 календарних днів після підписання акта виконаних\nробіт.\n\nПерша сторона: Друга сторона:\n"
+          }
+        ],
+        "stream": false,
+        "think": false,
+        "format": {
+          "type": "object",
+          "required": [
+            "type"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "type": {
+              "enum": [
+                "act",
+                "contract",
+                "invoice",
+                "none"
+              ]
+            }
+          }
+        },
+        "keep_alive": "30m",
+        "options": {
+          "num_predict": 64,
+          "temperature": 0,
+          "seed": 7
+        }
+      }
+    },
+    "response": {
+      "model": "qwen3.5:4b",
+      "created_at": "2026-10-31T21:57:56.385239531Z",
+      "message": {
+        "role": "assistant",
+        "content": "{\"type\": \"contract\"}"
+      },
+      "done": true,
+      "done_reason": "stop",
+      "total_duration": 359044793,
+      "load_duration": 765697,
+      "prompt_eval_count": 369,
+      "prompt_eval_cached_count": 0,
+      "prompt_eval_duration": 177395000,
+      "eval_count": 7,
+      "eval_duration": 94295000
+    }
+  },
+  "modelName": "qwen3.5:4b",
+  "modelDigest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+  "doneReason": "stop",
+  "counts": {
+    "promptEval": 369,
+    "eval": 7
+  },
+  "durationsNs": {
+    "load": 765697,
+    "promptEval": 177395000,
+    "eval": 94295000,
+    "total": 359044793
+  },
+  "cold": false,
+  "json": {
+    "type": "contract"
+  }
+}

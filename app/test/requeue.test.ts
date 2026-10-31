@@ -65,7 +65,7 @@ test('a document left in flight by a dead instance is requeued at start and comp
   const count = await pool.query<{ count: number }>('SELECT count(*) AS count FROM documents WHERE sha256 = $1', [doc.sha256]);
   assert.equal(count.rows[0]?.count, 1, 'no second row for the document');
   const state = await stateOf(pool, doc.id);
-  assert.deepEqual({ status: state.status, attempts: state.attempts, by: state.locked_by }, { status: 'CLASSIFY', attempts: 2, by: null });
+  assert.deepEqual({ status: state.status, attempts: state.attempts, by: state.locked_by }, { status: 'CLASSIFY', attempts: 0, by: null }, 'the document waits for the next step with its attempts at zero');
   const runs = await stepRunsOf(pool, doc.id);
   assert.deepEqual(runs.map((run) => [run.attempt, run.outcome]), [[1, null], [2, 'ok']], 'the dead attempt is left open, the new one is complete');
   assert.ok(logger.lines.includes('Documents left in flight by the previous run were released.'));

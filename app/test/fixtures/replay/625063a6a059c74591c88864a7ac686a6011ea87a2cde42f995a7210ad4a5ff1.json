@@ -1,0 +1,80 @@
+{
+  "raw": {
+    "request": {
+      "endpoint": "/api/chat",
+      "fallback": "none",
+      "body": {
+        "model": "qwen3.5:4b",
+        "messages": [
+          {
+            "role": "system",
+            "content": "You classify a document into exactly one of the listed types, or \"none\" if it is none of them. Answer only with JSON that matches the given schema. Do not explain."
+          },
+          {
+            "role": "user",
+            "content": "Choose the type of the document:\n- act: Акт виконаних робіт\n- contract: Договір\n- invoice: Рахунок\n- none: the document is none of the types above\n\nDocument text:\n--- Page 1 ---\n       Акт здачі-приймання виконаних робіт № АВ-117\n                                   м. Харків, 31.05.2026\n\nВиконавець                     ТОВ «Синя Ворона Логістик»\nКод ЄДРПОУ виконавця           99106784\nЗамовник                       ПП «Золота Бджола»\nКод ЄДРПОУ замовника            99103455\nВиконавець надав, а Замовник прийняв послуги за період з 01.05.2026 по 31.05.2026.\nПретензій щодо якості та строків надання послуг Замовник не має.\n\nВалюта                                                                               UAH\nВартість робіт без ПДВ                                                          61 200,00\nПДВ                                                                             12 240,00\nРазом з ПДВ                                                                     73 440,00\n\n\nВід Виконавця: ____________                   Від Замовника: ____________\n"
+          }
+        ],
+        "stream": false,
+        "think": false,
+        "format": {
+          "type": "object",
+          "required": [
+            "type"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "type": {
+              "enum": [
+                "act",
+                "contract",
+                "invoice",
+                "none"
+              ]
+            }
+          }
+        },
+        "keep_alive": "30m",
+        "options": {
+          "num_predict": 64,
+          "temperature": 0,
+          "seed": 7
+        }
+      }
+    },
+    "response": {
+      "model": "qwen3.5:4b",
+      "created_at": "2026-10-31T21:57:49.11211893Z",
+      "message": {
+        "role": "assistant",
+        "content": "{\"type\": \"act\"}"
+      },
+      "done": true,
+      "done_reason": "stop",
+      "total_duration": 395900020,
+      "load_duration": 1062815,
+      "prompt_eval_count": 387,
+      "prompt_eval_cached_count": 0,
+      "prompt_eval_duration": 192312000,
+      "eval_count": 7,
+      "eval_duration": 94543000
+    }
+  },
+  "modelName": "qwen3.5:4b",
+  "modelDigest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+  "doneReason": "stop",
+  "counts": {
+    "promptEval": 387,
+    "eval": 7
+  },
+  "durationsNs": {
+    "load": 1062815,
+    "promptEval": 192312000,
+    "eval": 94543000,
+    "total": 395900020
+  },
+  "cold": false,
+  "json": {
+    "type": "act"
+  }
+}

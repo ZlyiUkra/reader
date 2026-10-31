@@ -3,6 +3,7 @@ import { readFile, stat } from 'node:fs/promises';
 import path from 'node:path/posix';
 import { createAjv } from '../config/ajv.ts';
 import { constants } from '../constants.ts';
+import { canonicalJson } from '../shared/canonical-json.ts';
 import { LlmAdapterError } from './port.ts';
 import type { LlmAdapter, LlmRequest, LlmResponse } from './port.ts';
 
@@ -23,20 +24,6 @@ export class ReplayRecordingMissing extends Error {
     this.key = key;
     this.file = file;
   }
-}
-
-/** Serialises a value with object keys sorted at every level, so equal data always gives equal text. */
-function canonicalJson(value: unknown): string {
-  if (Array.isArray(value)) {
-    return `[${value.map(canonicalJson).join(',')}]`;
-  }
-  if (typeof value === 'object' && value !== null) {
-    const entries = Object.entries(value)
-      .sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0))
-      .map(([key, item]) => `${JSON.stringify(key)}:${canonicalJson(item)}`);
-    return `{${entries.join(',')}}`;
-  }
-  return JSON.stringify(value) ?? 'null';
 }
 
 /**

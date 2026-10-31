@@ -270,6 +270,7 @@ of fragments (rejected: a near match is not evidence, constitution VI).
 | model.keep_alive | 30m | | |
 | model.chars_per_token | 3 | chars | calibrated by the eval |
 | model.cold_load_ns | 2000000000 | ns | load above this marks the call cold |
+| model.temperature / model.seed | 0 / 7 | | greedy decoding and a fixed seed, so a run can be repeated (owner decision, slice 6) |
 | parser.convert_timeout_s | 120 | s per document | |
 | parser.render_timeout_s_per_page / ocr_timeout_s_per_page | 10 / 30 | s | |
 | parser.page_cap | 50 | pages | |
@@ -292,7 +293,8 @@ of fragments (rejected: a near match is not evidence, constitution VI).
 
 `LOW_OCR_QUALITY` fires when more than half of the OCR pages of a document are low quality (round 1 example: 3 of
 5 pages); the lease of a step is the sum of its timeouts (parse: the parser's job deadline, convert + pages x
-(2 x render + OCR) + 30 s, plus 30 s for the database work; classify and extract: client timeout; check: 30 s).
+(2 x render + OCR) + 30 s, plus 30 s for the database work; classify and extract: 3 x client timeout (chat, generate,
+chat with thinking) + 30 s; check: 30 s).
 
 ## Open items carried into tasks
 

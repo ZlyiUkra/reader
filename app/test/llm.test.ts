@@ -27,6 +27,8 @@ const settings: ModelSettings = {
   keepAlive: '30m',
   charsPerToken: 3,
   coldLoadNs: 2_000_000_000,
+  temperature: 0,
+  seed: 7,
 };
 
 const digest = 'a'.repeat(64);
@@ -303,7 +305,7 @@ test('the Ollama adapter sends the structured chat request of research R5 and ma
         think: false,
         format: schema,
         keep_alive: '30m',
-        options: { num_predict: 64 },
+        options: { num_predict: 64, temperature: 0, seed: 7 },
       });
       assert.deepEqual(result.json, { type: 'invoice' });
       assert.equal(result.doneReason, 'stop');
@@ -349,7 +351,7 @@ test('an invalid structured reply falls back to /api/generate, then to thinking,
         think: false,
         format: schema,
         keep_alive: '30m',
-        options: { num_predict: 64 },
+        options: { num_predict: 64, temperature: 0, seed: 7 },
       });
       assert.equal((service.seen[2]?.body as { think: boolean }).think, true);
       assert.equal((result.raw.request as { fallback: string }).fallback, 'think');
@@ -458,7 +460,7 @@ test('readiness is true only for the pinned digest, after one warm-up, with the 
     assert.deepEqual(await adapter.readiness(), { state: 'ready', digest });
     const chats = service.seen.filter((entry) => entry.url === '/api/chat');
     assert.equal(chats.length, 1, 'one warm-up for two polls');
-    assert.deepEqual((chats[0]?.body as { options: object }).options, { num_predict: 16 });
+    assert.deepEqual((chats[0]?.body as { options: object }).options, { num_predict: 16, temperature: 0, seed: 7 });
     assert.equal(service.seen.filter((entry) => entry.url === '/api/tags').length, 2, 'the listing is checked on every poll');
     assert.equal(service.seen.filter((entry) => entry.url === '/api/ps').length, 2, 'and so is the loaded context');
     assert.equal(log.warn.length, 0);

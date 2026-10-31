@@ -1,0 +1,421 @@
+{
+  "raw": {
+    "request": {
+      "endpoint": "/api/chat",
+      "fallback": "none",
+      "body": {
+        "model": "qwen3.5:4b",
+        "messages": [
+          {
+            "role": "system",
+            "content": "You read a document and report fields from it. Answer only with JSON that matches the given schema. For every field give \"verbatim\", the value itself exactly as it is written in the document, copied character by character, and nothing else: not the name of the field, not a word such as \"від\", \"№\", \"код\" or \"до\" in front of it, and no other words around it. For example, for the line \"Дата: від 12.03.2026\" the verbatim of a date is \"12.03.2026\". Also give \"page\", the number of the page (the first page is 1) where that value is. If the document does not contain the field, give null for both. Never guess and never invent a value. Do not explain."
+          },
+          {
+            "role": "user",
+            "content": "The document is of the type \"Договір\". Report these fields:\n- number (text): Номер\n- date (a date): Дата\n- firstPartyName (text): Назва першої сторони\n- firstPartyEdrpou (an 8-digit company code (EDRPOU)): ЄДРПОУ першої сторони\n- secondPartyName (text): Назва другої сторони\n- secondPartyEdrpou (an 8-digit company code (EDRPOU)): ЄДРПОУ другої сторони\n- subject (text): Предмет договору\n- currency (one of a closed list of values): Валюта\n- validFrom (a date): Діє з\n- validUntil (a date): Діє до\n- totalAmount (an amount of money): Загальна сума\n- paymentTerms (text): Умови оплати\n- placeOfSigning (text): Місце підписання\n\nDocument text:\n--- Page 1 ---\n                               Договір № Д-2026/27\n                                     м. Львів, 10.03.2026\nПП «Золота Бджола» (код ЄДРПОУ 99103455), далі Перша сторона, та ТОВ «Синя Ворона\nЛогістик» (код ЄДРПОУ 99106784), далі Друга сторона, уклали цей договір про наведене\nнижче.\n1. Предмет договору. Перевезення вантажів автомобільним транспортом по території\nУкраїни.\n2. Строк дії. Договір діє з 15.03.2026 до 14.03.2027.\n3. Вартість. Валюта договору: грн.\n4. Умови оплати. Післяплата протягом 5 банківських днів після доставки.\n\n\n\nПерша сторона: ____________                     Друга сторона: ____________\n"
+          }
+        ],
+        "stream": false,
+        "think": false,
+        "format": {
+          "type": "object",
+          "required": [
+            "number",
+            "date",
+            "firstPartyName",
+            "firstPartyEdrpou",
+            "secondPartyName",
+            "secondPartyEdrpou",
+            "subject",
+            "currency",
+            "validFrom",
+            "validUntil",
+            "totalAmount",
+            "paymentTerms",
+            "placeOfSigning"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "number": {
+              "type": "object",
+              "required": [
+                "verbatim",
+                "page"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "verbatim": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "page": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ]
+                }
+              }
+            },
+            "date": {
+              "type": "object",
+              "required": [
+                "verbatim",
+                "page"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "verbatim": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "page": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ]
+                }
+              }
+            },
+            "firstPartyName": {
+              "type": "object",
+              "required": [
+                "verbatim",
+                "page"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "verbatim": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "page": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ]
+                }
+              }
+            },
+            "firstPartyEdrpou": {
+              "type": "object",
+              "required": [
+                "verbatim",
+                "page"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "verbatim": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "page": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ]
+                }
+              }
+            },
+            "secondPartyName": {
+              "type": "object",
+              "required": [
+                "verbatim",
+                "page"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "verbatim": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "page": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ]
+                }
+              }
+            },
+            "secondPartyEdrpou": {
+              "type": "object",
+              "required": [
+                "verbatim",
+                "page"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "verbatim": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "page": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ]
+                }
+              }
+            },
+            "subject": {
+              "type": "object",
+              "required": [
+                "verbatim",
+                "page"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "verbatim": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "page": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ]
+                }
+              }
+            },
+            "currency": {
+              "type": "object",
+              "required": [
+                "verbatim",
+                "page"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "verbatim": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "page": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ]
+                }
+              }
+            },
+            "validFrom": {
+              "type": "object",
+              "required": [
+                "verbatim",
+                "page"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "verbatim": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "page": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ]
+                }
+              }
+            },
+            "validUntil": {
+              "type": "object",
+              "required": [
+                "verbatim",
+                "page"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "verbatim": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "page": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ]
+                }
+              }
+            },
+            "totalAmount": {
+              "type": "object",
+              "required": [
+                "verbatim",
+                "page"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "verbatim": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "page": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ]
+                }
+              }
+            },
+            "paymentTerms": {
+              "type": "object",
+              "required": [
+                "verbatim",
+                "page"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "verbatim": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "page": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ]
+                }
+              }
+            },
+            "placeOfSigning": {
+              "type": "object",
+              "required": [
+                "verbatim",
+                "page"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "verbatim": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "page": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "keep_alive": "30m",
+        "options": {
+          "num_predict": 1536,
+          "temperature": 0,
+          "seed": 7
+        }
+      }
+    },
+    "response": {
+      "model": "qwen3.5:4b",
+      "created_at": "2026-10-31T21:58:12.49887365Z",
+      "message": {
+        "role": "assistant",
+        "content": "{\n  \"number\": {\n    \"verbatim\": \"Д-2026/27\",\n    \"page\": 1\n  },\n  \"date\": {\n    \"verbatim\": \"10.03.2026\",\n    \"page\": 1\n  },\n  \"firstPartyName\": {\n    \"verbatim\": \"ПП «Золота Бджола»\",\n    \"page\": 1\n  },\n  \"firstPartyEdrpou\": {\n    \"verbatim\": \"99103455\",\n    \"page\": 1\n  },\n  \"secondPartyName\": {\n    \"verbatim\": \"ТОВ «Синя Ворона Логістик»\",\n    \"page\": 1\n  },\n  \"secondPartyEdrpou\": {\n    \"verbatim\": \"99106784\",\n    \"page\": 1\n  },\n  \"subject\": {\n    \"verbatim\": \"Перевезення вантажів автомобільним транспортом по території України.\",\n    \"page\": 1\n  },\n  \"currency\": {\n    \"verbatim\": \"грн.\",\n    \"page\": 1\n  },\n  \"validFrom\": {\n    \"verbatim\": \"15.03.2026\",\n    \"page\": 1\n  },\n  \"validUntil\": {\n    \"verbatim\": \"14.03.2027\",\n    \"page\": 1\n  },\n  \"totalAmount\": {\n    \"verbatim\": null,\n    \"page\": null\n  },\n  \"paymentTerms\": {\n    \"verbatim\": \"Післяплата протягом 5 банківських днів після доставки.\",\n    \"page\": 1\n  },\n  \"placeOfSigning\": {\n    \"verbatim\": \"м. Львів\",\n    \"page\": 1\n  }\n}"
+      },
+      "done": true,
+      "done_reason": "stop",
+      "total_duration": 6862376696,
+      "load_duration": 857358,
+      "prompt_eval_count": 644,
+      "prompt_eval_cached_count": 0,
+      "prompt_eval_duration": 259545000,
+      "eval_count": 436,
+      "eval_duration": 6533920000
+    }
+  },
+  "modelName": "qwen3.5:4b",
+  "modelDigest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+  "doneReason": "stop",
+  "counts": {
+    "promptEval": 644,
+    "eval": 436
+  },
+  "durationsNs": {
+    "load": 857358,
+    "promptEval": 259545000,
+    "eval": 6533920000,
+    "total": 6862376696
+  },
+  "cold": false,
+  "json": {
+    "number": {
+      "verbatim": "Д-2026/27",
+      "page": 1
+    },
+    "date": {
+      "verbatim": "10.03.2026",
+      "page": 1
+    },
+    "firstPartyName": {
+      "verbatim": "ПП «Золота Бджола»",
+      "page": 1
+    },
+    "firstPartyEdrpou": {
+      "verbatim": "99103455",
+      "page": 1
+    },
+    "secondPartyName": {
+      "verbatim": "ТОВ «Синя Ворона Логістик»",
+      "page": 1
+    },
+    "secondPartyEdrpou": {
+      "verbatim": "99106784",
+      "page": 1
+    },
+    "subject": {
+      "verbatim": "Перевезення вантажів автомобільним транспортом по території України.",
+      "page": 1
+    },
+    "currency": {
+      "verbatim": "грн.",
+      "page": 1
+    },
+    "validFrom": {
+      "verbatim": "15.03.2026",
+      "page": 1
+    },
+    "validUntil": {
+      "verbatim": "14.03.2027",
+      "page": 1
+    },
+    "totalAmount": {
+      "verbatim": null,
+      "page": null
+    },
+    "paymentTerms": {
+      "verbatim": "Післяплата протягом 5 банківських днів після доставки.",
+      "page": 1
+    },
+    "placeOfSigning": {
+      "verbatim": "м. Львів",
+      "page": 1
+    }
+  }
+}

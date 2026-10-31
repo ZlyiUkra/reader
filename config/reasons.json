@@ -186,7 +186,7 @@
       "emittedBy": [
         "check"
       ],
-      "trigger": "A quoted fragment is not in the stored page text (the base template), or a registry check failed: VAT sum, date order, EDRPOU or IBAN checksum (the variants).",
+      "trigger": "A quoted fragment is not in the stored page text (the base template), or a located fragment is not a value of the field's kind, or a registry check failed: VAT sum, date order, EDRPOU or IBAN checksum (the variants).",
       "params": [
         {
           "name": "field",
@@ -296,6 +296,29 @@
           "templates": {
             "uk": "Перевірка не пройдена: «{field}» не є дійсним українським IBAN.",
             "en": "Check failed: \"{field}\" is not a valid Ukrainian IBAN."
+          }
+        },
+        {
+          "when": {
+            "check": "value"
+          },
+          "params": [
+            {
+              "name": "check",
+              "kind": "string"
+            },
+            {
+              "name": "field",
+              "kind": "string"
+            },
+            {
+              "name": "fragment",
+              "kind": "string"
+            }
+          ],
+          "templates": {
+            "uk": "Поле «{field}»: фрагмент «{fragment}» не вдалося прочитати як значення поля.",
+            "en": "Field \"{field}\": the fragment \"{fragment}\" could not be read as a value of the field."
           }
         }
       ]

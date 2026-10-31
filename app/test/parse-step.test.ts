@@ -63,7 +63,7 @@ test('a good output is stored: pages, texts with the thresholds in force, the mi
   await step(claimed);
 
   const state = await stateOf(pool, doc.id);
-  assert.deepEqual({ status: state.status, attempts: state.attempts, by: state.locked_by }, { status: 'CLASSIFY', attempts: 1, by: null });
+  assert.deepEqual({ status: state.status, attempts: state.attempts, by: state.locked_by }, { status: 'CLASSIFY', attempts: 0, by: null });
   const pages = await pool.query<{ page_no: number; width_px: number; png_blob_key: string; source: string; engine: string; dpi: number | null; text: string; thresholds: Record<string, number> }>(
     `SELECT p.page_no, p.width_px, p.png_blob_key, t.source, t.engine, t.dpi, t.text, t.thresholds
      FROM pages p JOIN page_texts t ON t.page_id = p.id WHERE p.document_id = $1 ORDER BY p.page_no`,

@@ -182,7 +182,7 @@ export function createOllamaAdapter(deps: OllamaDeps): LlmAdapter {
       think,
       format: req.wireSchema,
       keep_alive: settings.keepAlive,
-      options: { num_predict: req.numPredict },
+      options: { num_predict: req.numPredict, temperature: settings.temperature, seed: settings.seed },
     };
   }
 
@@ -196,7 +196,7 @@ export function createOllamaAdapter(deps: OllamaDeps): LlmAdapter {
       think: false,
       format: req.wireSchema,
       keep_alive: settings.keepAlive,
-      options: { num_predict: req.numPredict },
+      options: { num_predict: req.numPredict, temperature: settings.temperature, seed: settings.seed },
     };
   }
 

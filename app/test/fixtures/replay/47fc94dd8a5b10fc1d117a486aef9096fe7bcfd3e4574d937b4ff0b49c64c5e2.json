@@ -1,0 +1,421 @@
+{
+  "raw": {
+    "request": {
+      "endpoint": "/api/chat",
+      "fallback": "none",
+      "body": {
+        "model": "qwen3.5:4b",
+        "messages": [
+          {
+            "role": "system",
+            "content": "You read a document and report fields from it. Answer only with JSON that matches the given schema. For every field give \"verbatim\", the value itself exactly as it is written in the document, copied character by character, and nothing else: not the name of the field, not a word such as \"від\", \"№\", \"код\" or \"до\" in front of it, and no other words around it. For example, for the line \"Дата: від 12.03.2026\" the verbatim of a date is \"12.03.2026\". Also give \"page\", the number of the page (the first page is 1) where that value is. If the document does not contain the field, give null for both. Never guess and never invent a value. Do not explain."
+          },
+          {
+            "role": "user",
+            "content": "The document is of the type \"Договір\". Report these fields:\n- number (text): Номер\n- date (a date): Дата\n- firstPartyName (text): Назва першої сторони\n- firstPartyEdrpou (an 8-digit company code (EDRPOU)): ЄДРПОУ першої сторони\n- secondPartyName (text): Назва другої сторони\n- secondPartyEdrpou (an 8-digit company code (EDRPOU)): ЄДРПОУ другої сторони\n- subject (text): Предмет договору\n- currency (one of a closed list of values): Валюта\n- validFrom (a date): Діє з\n- validUntil (a date): Діє до\n- totalAmount (an amount of money): Загальна сума\n- paymentTerms (text): Умови оплати\n- placeOfSigning (text): Місце підписання\n\nDocument text:\n--- Page 1 ---\nДоговір Ме Д-2026/12\nм. Дніпро, 1 лютого 2026 р.\n\nТОВ «Вишневий Прибій» (код ЄДРПОУ 99100215), далі Перша сторона, та ПП «Золота\nБджола» (код ЄДРПОУ 99103455), далі Друга сторона, уклали цей договір про наведене\nнижче.\n\n1. Предмет договору. Надання консультаційних послуг з автоматизації документообігу.\n2. Строк дії. Договір діє з 1 лютого 2026 р. до 31 грудня 2026 р..\n3. Вартість. Валюта договору: грн. Загальна сума договору становить 180 000,00.\n\n4. Умови оплати. Оплата протягом 14 календарних днів після підписання акта виконаних\nробіт.\n\nПерша сторона: Друга сторона:\n"
+          }
+        ],
+        "stream": false,
+        "think": false,
+        "format": {
+          "type": "object",
+          "required": [
+            "number",
+            "date",
+            "firstPartyName",
+            "firstPartyEdrpou",
+            "secondPartyName",
+            "secondPartyEdrpou",
+            "subject",
+            "currency",
+            "validFrom",
+            "validUntil",
+            "totalAmount",
+            "paymentTerms",
+            "placeOfSigning"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "number": {
+              "type": "object",
+              "required": [
+                "verbatim",
+                "page"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "verbatim": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "page": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ]
+                }
+              }
+            },
+            "date": {
+              "type": "object",
+              "required": [
+                "verbatim",
+                "page"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "verbatim": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "page": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ]
+                }
+              }
+            },
+            "firstPartyName": {
+              "type": "object",
+              "required": [
+                "verbatim",
+                "page"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "verbatim": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "page": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ]
+                }
+              }
+            },
+            "firstPartyEdrpou": {
+              "type": "object",
+              "required": [
+                "verbatim",
+                "page"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "verbatim": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "page": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ]
+                }
+              }
+            },
+            "secondPartyName": {
+              "type": "object",
+              "required": [
+                "verbatim",
+                "page"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "verbatim": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "page": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ]
+                }
+              }
+            },
+            "secondPartyEdrpou": {
+              "type": "object",
+              "required": [
+                "verbatim",
+                "page"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "verbatim": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "page": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ]
+                }
+              }
+            },
+            "subject": {
+              "type": "object",
+              "required": [
+                "verbatim",
+                "page"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "verbatim": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "page": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ]
+                }
+              }
+            },
+            "currency": {
+              "type": "object",
+              "required": [
+                "verbatim",
+                "page"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "verbatim": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "page": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ]
+                }
+              }
+            },
+            "validFrom": {
+              "type": "object",
+              "required": [
+                "verbatim",
+                "page"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "verbatim": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "page": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ]
+                }
+              }
+            },
+            "validUntil": {
+              "type": "object",
+              "required": [
+                "verbatim",
+                "page"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "verbatim": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "page": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ]
+                }
+              }
+            },
+            "totalAmount": {
+              "type": "object",
+              "required": [
+                "verbatim",
+                "page"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "verbatim": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "page": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ]
+                }
+              }
+            },
+            "paymentTerms": {
+              "type": "object",
+              "required": [
+                "verbatim",
+                "page"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "verbatim": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "page": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ]
+                }
+              }
+            },
+            "placeOfSigning": {
+              "type": "object",
+              "required": [
+                "verbatim",
+                "page"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "verbatim": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "page": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "keep_alive": "30m",
+        "options": {
+          "num_predict": 1536,
+          "temperature": 0,
+          "seed": 7
+        }
+      }
+    },
+    "response": {
+      "model": "qwen3.5:4b",
+      "created_at": "2026-10-31T21:58:03.213741383Z",
+      "message": {
+        "role": "assistant",
+        "content": "{\n  \"number\": {\n    \"verbatim\": \"Договір Ме Д-2026/12\",\n    \"page\": 1\n  },\n  \"date\": {\n    \"verbatim\": \"1 лютого 2026 р.\",\n    \"page\": 1\n  },\n  \"firstPartyName\": {\n    \"verbatim\": \"ТОВ «Вишневий Прибій»\",\n    \"page\": 1\n  },\n  \"firstPartyEdrpou\": {\n    \"verbatim\": \"99100215\",\n    \"page\": 1\n  },\n  \"secondPartyName\": {\n    \"verbatim\": \"ПП «Золота Бджола»\",\n    \"page\": 1\n  },\n  \"secondPartyEdrpou\": {\n    \"verbatim\": \"99103455\",\n    \"page\": 1\n  },\n  \"subject\": {\n    \"verbatim\": \"Надання консультаційних послуг з автоматизації документообігу.\",\n    \"page\": 1\n  },\n  \"currency\": {\n    \"verbatim\": \"грн.\",\n    \"page\": 1\n  },\n  \"validFrom\": {\n    \"verbatim\": \"1 лютого 2026 р.\",\n    \"page\": 1\n  },\n  \"validUntil\": {\n    \"verbatim\": \"31 грудня 2026 р.\",\n    \"page\": 1\n  },\n  \"totalAmount\": {\n    \"verbatim\": \"180 000,00\",\n    \"page\": 1\n  },\n  \"paymentTerms\": {\n    \"verbatim\": \"Оплата протягом 14 календарних днів після підписання акта виконаних робіт.\",\n    \"page\": 1\n  },\n  \"placeOfSigning\": {\n    \"verbatim\": \"м. Дніпро\",\n    \"page\": 1\n  }\n}"
+      },
+      "done": true,
+      "done_reason": "stop",
+      "total_duration": 6811311627,
+      "load_duration": 2567706,
+      "prompt_eval_count": 666,
+      "prompt_eval_cached_count": 0,
+      "prompt_eval_duration": 282379000,
+      "eval_count": 459,
+      "eval_duration": 6447907000
+    }
+  },
+  "modelName": "qwen3.5:4b",
+  "modelDigest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+  "doneReason": "stop",
+  "counts": {
+    "promptEval": 666,
+    "eval": 459
+  },
+  "durationsNs": {
+    "load": 2567706,
+    "promptEval": 282379000,
+    "eval": 6447907000,
+    "total": 6811311627
+  },
+  "cold": false,
+  "json": {
+    "number": {
+      "verbatim": "Договір Ме Д-2026/12",
+      "page": 1
+    },
+    "date": {
+      "verbatim": "1 лютого 2026 р.",
+      "page": 1
+    },
+    "firstPartyName": {
+      "verbatim": "ТОВ «Вишневий Прибій»",
+      "page": 1
+    },
+    "firstPartyEdrpou": {
+      "verbatim": "99100215",
+      "page": 1
+    },
+    "secondPartyName": {
+      "verbatim": "ПП «Золота Бджола»",
+      "page": 1
+    },
+    "secondPartyEdrpou": {
+      "verbatim": "99103455",
+      "page": 1
+    },
+    "subject": {
+      "verbatim": "Надання консультаційних послуг з автоматизації документообігу.",
+      "page": 1
+    },
+    "currency": {
+      "verbatim": "грн.",
+      "page": 1
+    },
+    "validFrom": {
+      "verbatim": "1 лютого 2026 р.",
+      "page": 1
+    },
+    "validUntil": {
+      "verbatim": "31 грудня 2026 р.",
+      "page": 1
+    },
+    "totalAmount": {
+      "verbatim": "180 000,00",
+      "page": 1
+    },
+    "paymentTerms": {
+      "verbatim": "Оплата протягом 14 календарних днів після підписання акта виконаних робіт.",
+      "page": 1
+    },
+    "placeOfSigning": {
+      "verbatim": "м. Дніпро",
+      "page": 1
+    }
+  }
+}

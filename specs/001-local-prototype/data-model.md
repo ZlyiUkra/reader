@@ -41,7 +41,7 @@ its value in one step and never changes after.
 | doc_type | text | mutable, once; registry type name after classification; null before and for "none" |
 | schema_id | text | mutable, once; `$id` of the type schema version used; null until classified |
 | status | text not null | mutable; see State machine |
-| attempts | integer not null default 0 | mutable; incremented on each claim of a step |
+| attempts | integer not null default 0 | mutable; the attempt number of the step the document is in: incremented on each claim, set back to 0 when the step ends and the document moves on to the next one; a terminal status keeps the count of its last step |
 | checks_done | boolean not null default false | mutable; true once the checks step ran |
 | locked_until | timestamptz | mutable; the lease; null when unclaimed |
 | locked_by | text | mutable; worker instance id |
@@ -209,10 +209,11 @@ any step --INTERNAL_ERROR, attempts >= 3--> FAILED
 - On start the single worker requeues rows it left in flight: `locked_until` is cleared for rows locked by its own
   instance id (named simplification).
 - `status(reasons, attempts, checksDone)` is the one function of FR-026. `INTERNAL_ERROR` reasons count only when
-  their `attempt` equals the document's current `attempts`; every other code counts whatever its attempt. First
-  matching rule wins: rejection codes give REJECTED; `INTERNAL_ERROR` with attempts >= 3 gives FAILED; `INTERNAL_ERROR`
-  with attempts < 3 gives the current step; review codes give NEEDS_REVIEW; no reasons and `checksDone` gives
-  ACCEPTED; otherwise the current step. A table test covers all 15 codes (acceptance check 9).
+  their `attempt` equals the document's current `attempts` and the step being settled emitted them (attempts are
+  counted per step, so an earlier step's error with the same number is not this step's); every other code counts
+  whatever its attempt. First matching rule wins: rejection codes give REJECTED; `INTERNAL_ERROR` with attempts >= 3
+  gives FAILED; `INTERNAL_ERROR` with attempts < 3 gives the current step; review codes give NEEDS_REVIEW; no reasons
+  and `checksDone` gives ACCEPTED; otherwise the current step. A table test covers all 15 codes (acceptance check 9).
 - Review codes emitted at parse (`LOW_OCR_QUALITY`, `EMPTY`) end the document in NEEDS_REVIEW without classification;
   `UNKNOWN_DOC_TYPE` ends it after classification without extraction (FR-016).
 

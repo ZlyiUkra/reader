@@ -1,0 +1,448 @@
+{
+  "raw": {
+    "request": {
+      "endpoint": "/api/chat",
+      "fallback": "none",
+      "body": {
+        "model": "qwen3.5:4b",
+        "messages": [
+          {
+            "role": "system",
+            "content": "You read a document and report fields from it. Answer only with JSON that matches the given schema. For every field give \"verbatim\", the value itself exactly as it is written in the document, copied character by character, and nothing else: not the name of the field, not a word such as \"від\", \"№\", \"код\" or \"до\" in front of it, and no other words around it. For example, for the line \"Дата: від 12.03.2026\" the verbatim of a date is \"12.03.2026\". Also give \"page\", the number of the page (the first page is 1) where that value is. If the document does not contain the field, give null for both. Never guess and never invent a value. Do not explain."
+          },
+          {
+            "role": "user",
+            "content": "The document is of the type \"Акт виконаних робіт\". Report these fields:\n- number (text): Номер\n- date (a date): Дата\n- contractorName (text): Назва виконавця\n- contractorEdrpou (an 8-digit company code (EDRPOU)): ЄДРПОУ виконавця\n- customerName (text): Назва замовника\n- customerEdrpou (an 8-digit company code (EDRPOU)): ЄДРПОУ замовника\n- contractRef (text): Посилання на договір\n- periodStart (a date): Початок періоду послуг\n- periodEnd (a date): Кінець періоду послуг\n- currency (one of a closed list of values): Валюта\n- totalNet (an amount of money): Сума без ПДВ\n- vat (an amount of money): Сума ПДВ\n- totalGross (an amount of money): Сума з ПДВ\n- placeOfSigning (text): Місце підписання\n\nDocument text:\n--- Page 1 ---\nАкт здачі-приймання виконаних робіт No ДП-0062\n\nВиконавець\n\nКод ЄДРПОУ виконавця\nЗамовник\n\nКод ЄДРПОУ замовника\nДоговір Ne\n\n30 квітня 2026 р.\n\nПП «Золота Бджола»\n99103455\n\nТОВ «Вишневий Прибій»\n99100215\n\nД-2026/27 від 10.03.2026\n\nВиконавець надав, а Замовник прийняв послуги за період з 1 квітня 2026 р. по 30 квітня 2026\n\np.. Претензій щодо якості та строків надання послуг Замовник не має.\n\nВалюта\n\nпдв\nРазом з ПДВ\n\nВартість робіт без ПДВ\n\nгрн\n7 800,40\n1 560,08\n\n9 360,48\n\nВід Виконавця:\n\nВід Замовника:\n"
+          }
+        ],
+        "stream": false,
+        "think": false,
+        "format": {
+          "type": "object",
+          "required": [
+            "number",
+            "date",
+            "contractorName",
+            "contractorEdrpou",
+            "customerName",
+            "customerEdrpou",
+            "contractRef",
+            "periodStart",
+            "periodEnd",
+            "currency",
+            "totalNet",
+            "vat",
+            "totalGross",
+            "placeOfSigning"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "number": {
+              "type": "object",
+              "required": [
+                "verbatim",
+                "page"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "verbatim": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "page": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ]
+                }
+              }
+            },
+            "date": {
+              "type": "object",
+              "required": [
+                "verbatim",
+                "page"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "verbatim": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "page": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ]
+                }
+              }
+            },
+            "contractorName": {
+              "type": "object",
+              "required": [
+                "verbatim",
+                "page"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "verbatim": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "page": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ]
+                }
+              }
+            },
+            "contractorEdrpou": {
+              "type": "object",
+              "required": [
+                "verbatim",
+                "page"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "verbatim": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "page": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ]
+                }
+              }
+            },
+            "customerName": {
+              "type": "object",
+              "required": [
+                "verbatim",
+                "page"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "verbatim": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "page": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ]
+                }
+              }
+            },
+            "customerEdrpou": {
+              "type": "object",
+              "required": [
+                "verbatim",
+                "page"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "verbatim": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "page": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ]
+                }
+              }
+            },
+            "contractRef": {
+              "type": "object",
+              "required": [
+                "verbatim",
+                "page"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "verbatim": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "page": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ]
+                }
+              }
+            },
+            "periodStart": {
+              "type": "object",
+              "required": [
+                "verbatim",
+                "page"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "verbatim": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "page": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ]
+                }
+              }
+            },
+            "periodEnd": {
+              "type": "object",
+              "required": [
+                "verbatim",
+                "page"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "verbatim": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "page": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ]
+                }
+              }
+            },
+            "currency": {
+              "type": "object",
+              "required": [
+                "verbatim",
+                "page"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "verbatim": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "page": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ]
+                }
+              }
+            },
+            "totalNet": {
+              "type": "object",
+              "required": [
+                "verbatim",
+                "page"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "verbatim": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "page": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ]
+                }
+              }
+            },
+            "vat": {
+              "type": "object",
+              "required": [
+                "verbatim",
+                "page"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "verbatim": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "page": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ]
+                }
+              }
+            },
+            "totalGross": {
+              "type": "object",
+              "required": [
+                "verbatim",
+                "page"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "verbatim": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "page": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ]
+                }
+              }
+            },
+            "placeOfSigning": {
+              "type": "object",
+              "required": [
+                "verbatim",
+                "page"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "verbatim": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "page": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "keep_alive": "30m",
+        "options": {
+          "num_predict": 1536,
+          "temperature": 0,
+          "seed": 7
+        }
+      }
+    },
+    "response": {
+      "model": "qwen3.5:4b",
+      "created_at": "2026-10-31T21:57:48.67198574Z",
+      "message": {
+        "role": "assistant",
+        "content": "{\n  \"number\": {\n    \"verbatim\": \"ДП-0062\",\n    \"page\": 1\n  },\n  \"date\": {\n    \"verbatim\": \"30 квітня 2026 р.\",\n    \"page\": 1\n  },\n  \"contractorName\": {\n    \"verbatim\": \"ПП «Золота Бджола»\",\n    \"page\": 1\n  },\n  \"contractorEdrpou\": {\n    \"verbatim\": \"99103455\",\n    \"page\": 1\n  },\n  \"customerName\": {\n    \"verbatim\": \"ТОВ «Вишневий Прибій»\",\n    \"page\": 1\n  },\n  \"customerEdrpou\": {\n    \"verbatim\": \"99100215\",\n    \"page\": 1\n  },\n  \"contractRef\": {\n    \"verbatim\": \"Д-2026/27 від 10.03.2026\",\n    \"page\": 1\n  },\n  \"periodStart\": {\n    \"verbatim\": \"1 квітня 2026 р.\",\n    \"page\": 1\n  },\n  \"periodEnd\": {\n    \"verbatim\": \"30 квітня 2026\",\n    \"page\": 1\n  },\n  \"currency\": {\n    \"verbatim\": \"грн\",\n    \"page\": 1\n  },\n  \"totalNet\": {\n    \"verbatim\": \"7 800,40\",\n    \"page\": 1\n  },\n  \"vat\": {\n    \"verbatim\": \"1 560,08\",\n    \"page\": 1\n  },\n  \"totalGross\": {\n    \"verbatim\": \"9 360,48\",\n    \"page\": 1\n  },\n  \"placeOfSigning\": {\n    \"verbatim\": null,\n    \"page\": null\n  }\n}"
+      },
+      "done": true,
+      "done_reason": "stop",
+      "total_duration": 7501144239,
+      "load_duration": 918648,
+      "prompt_eval_count": 724,
+      "prompt_eval_cached_count": 0,
+      "prompt_eval_duration": 322053000,
+      "eval_count": 465,
+      "eval_duration": 7088974000
+    }
+  },
+  "modelName": "qwen3.5:4b",
+  "modelDigest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+  "doneReason": "stop",
+  "counts": {
+    "promptEval": 724,
+    "eval": 465
+  },
+  "durationsNs": {
+    "load": 918648,
+    "promptEval": 322053000,
+    "eval": 7088974000,
+    "total": 7501144239
+  },
+  "cold": false,
+  "json": {
+    "number": {
+      "verbatim": "ДП-0062",
+      "page": 1
+    },
+    "date": {
+      "verbatim": "30 квітня 2026 р.",
+      "page": 1
+    },
+    "contractorName": {
+      "verbatim": "ПП «Золота Бджола»",
+      "page": 1
+    },
+    "contractorEdrpou": {
+      "verbatim": "99103455",
+      "page": 1
+    },
+    "customerName": {
+      "verbatim": "ТОВ «Вишневий Прибій»",
+      "page": 1
+    },
+    "customerEdrpou": {
+      "verbatim": "99100215",
+      "page": 1
+    },
+    "contractRef": {
+      "verbatim": "Д-2026/27 від 10.03.2026",
+      "page": 1
+    },
+    "periodStart": {
+      "verbatim": "1 квітня 2026 р.",
+      "page": 1
+    },
+    "periodEnd": {
+      "verbatim": "30 квітня 2026",
+      "page": 1
+    },
+    "currency": {
+      "verbatim": "грн",
+      "page": 1
+    },
+    "totalNet": {
+      "verbatim": "7 800,40",
+      "page": 1
+    },
+    "vat": {
+      "verbatim": "1 560,08",
+      "page": 1
+    },
+    "totalGross": {
+      "verbatim": "9 360,48",
+      "page": 1
+    },
+    "placeOfSigning": {
+      "verbatim": null,
+      "page": null
+    }
+  }
+}

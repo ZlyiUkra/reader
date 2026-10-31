@@ -119,22 +119,36 @@ export class LeaseLostError extends Error {
 /**
  * Moves a document to the status its reasons give (the one status function, FR-026) and releases its lease. When the
  * reasons do not end the document, it takes `statusWhenOpen`: the next step after a success, the same step for a retry.
+ *
+ * Attempts are counted per step: `documents.attempts` is the attempt number of the step the document is in, so three
+ * failures of one step end the document FAILED whichever step it is, and a document that moves on to the next step starts
+ * its attempts from zero. For the same reason an `INTERNAL_ERROR` counts here only when the step now settled emitted it; an
+ * earlier step's error, whose attempt number may coincide with this step's, belongs to a step that has since succeeded.
  */
 export async function settleDocument(db: Queryable, documentId: number, statusWhenOpen: string): Promise<string> {
-  const document = await db.query<{ attempts: number; checks_done: boolean }>('SELECT attempts, checks_done FROM documents WHERE id = $1 FOR UPDATE', [documentId]);
+  const document = await db.query<{ status: string; attempts: number; checks_done: boolean }>('SELECT status, attempts, checks_done FROM documents WHERE id = $1 FOR UPDATE', [documentId]);
   const row = document.rows[0];
   if (row === undefined) {
     throw new Error(`Document ${documentId} does not exist`);
   }
-  const reasons = (await reasonsOf(db, documentId)).map((reason) => {
-    if (!isReasonCode(reason.code)) {
-      throw new Error(`Document ${documentId} carries the unknown reason code ${reason.code}`);
-    }
-    return { code: reason.code, attempt: reason.attempt };
-  });
+  const settling = stepOf(row.status);
+  const reasons = (await reasonsOf(db, documentId))
+    .filter((reason) => reason.code !== 'INTERNAL_ERROR' || settling === null || reason.step === settling)
+    .map((reason) => {
+      if (!isReasonCode(reason.code)) {
+        throw new Error(`Document ${documentId} carries the unknown reason code ${reason.code}`);
+      }
+      return { code: reason.code, attempt: reason.attempt };
+    });
   const verdict = status(reasons, row.attempts, row.checks_done);
   const next = verdict === currentStep ? statusWhenOpen : verdict;
-  await db.query('UPDATE documents SET status = $2, locked_until = NULL, locked_by = NULL, updated_at = now() WHERE id = $1', [documentId, next]);
+  // The attempts start again when the document waits for another step; a terminal status keeps the count of its last step.
+  const movesOn = next !== row.status && stepOf(next) !== null;
+  await db.query('UPDATE documents SET status = $2, attempts = CASE WHEN $3::boolean THEN 0 ELSE attempts END, locked_until = NULL, locked_by = NULL, updated_at = now() WHERE id = $1', [
+    documentId,
+    next,
+    movesOn,
+  ]);
   return next;
 }
 

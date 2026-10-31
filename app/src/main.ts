@@ -10,8 +10,12 @@ import { createPool } from './db/pool.ts';
 import { assertSchemaVersion, SchemaVersionError } from './db/startup.ts';
 import { assertIntakeClasses } from './intake/take.ts';
 import type { IntakeDeps } from './intake/take.ts';
+import { createDispatcher } from './llm/dispatcher.ts';
 import { createOllamaAdapter } from './llm/ollama.ts';
 import { modelSettings } from './llm/settings.ts';
+import { createCheckStep } from './pipeline/check.ts';
+import { createClassifyStep } from './pipeline/classify.ts';
+import { createExtractStep } from './pipeline/extract.ts';
 import { leaseSeconds } from './pipeline/lease.ts';
 import { createParseStep } from './pipeline/parse.ts';
 import { createReasons, ReasonsError } from './reasons/reasons.ts';
@@ -155,13 +159,26 @@ const app = await buildServer({
 logTodoWarnings(app.log);
 await app.listen({ host: env['READER_LISTEN_HOST'] ?? '127.0.0.1', port: listenPort });
 
-// The worker starts after the server and takes its own dependencies, never the server (AGENTS.md). Only the parse step has a
-// handler in this build; the model steps join it in a later slice, and until then documents wait at CLASSIFY.
+// The worker starts after the server and takes its own dependencies, never the server (AGENTS.md). The model steps reach the
+// model only through the dispatcher, which refuses a class that may not leave, a prompt that does not fit and a second call
+// at the same time; they are not claimed while the model is not ready (FR-037).
 const validators = await createContractValidators();
+const modelStepDeps = {
+  pool,
+  port: createDispatcher({ adapter: modelAdapter, classes: config.classes, settings, logger }),
+  adapterName: modelAdapter.name,
+  registry,
+  thresholds: config.thresholds,
+  settings,
+  logger,
+};
 startWorker({
   pool,
   handlers: {
     parse: createParseStep({ pool, thresholds: config.thresholds, validateManifest: validators.parserManifest, jobsDir, blobRoot, logger }),
+    classify: createClassifyStep(modelStepDeps),
+    extract: createExtractStep(modelStepDeps),
+    check: createCheckStep({ pool, registry, logger }),
   },
   modelReady: async () => (await modelAdapter.readiness()).state === 'ready',
   leaseSeconds: (step) => leaseSeconds(step, config.thresholds),

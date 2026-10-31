@@ -35,8 +35,10 @@ const classifySystem =
 
 const extractSystem =
   'You read a document and report fields from it. Answer only with JSON that matches the given schema. ' +
-  'For every field give "verbatim", the exact fragment of the document text that contains the value, copied character by character, ' +
-  'and "page", the number of the page (the first page is 1) where that fragment is. ' +
+  'For every field give "verbatim", the value itself exactly as it is written in the document, copied character by character, ' +
+  'and nothing else: not the name of the field, not a word such as "від", "№", "код" or "до" in front of it, and no other words around it. ' +
+  'For example, for the line "Дата: від 12.03.2026" the verbatim of a date is "12.03.2026". ' +
+  'Also give "page", the number of the page (the first page is 1) where that value is. ' +
   'If the document does not contain the field, give null for both. Never guess and never invent a value. Do not explain.';
 
 /** Joins the page texts under their page numbers; the model answers with the same numbers. */

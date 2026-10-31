@@ -1,6 +1,7 @@
 import type { Step } from '../db/claim.ts';
 import type { ThresholdsFile } from '../config/types.ts';
 import { jobDeadlineMs, parserTimeouts } from '../parser-client/client.ts';
+import { thresholdNumber } from '../config/thresholds.ts';
 
 /**
  * How long a claim holds a document before another pass may take it over (FR-031, research R14): the sum of the step's own
@@ -9,17 +10,29 @@ import { jobDeadlineMs, parserTimeouts } from '../parser-client/client.ts';
  * long only delays the recovery of a dead one.
  */
 
-/** Seconds added to the parser's own deadline for the database work around the call. */
-const parseLeaseSlackSeconds = 30;
+/** Seconds added to the step's own timeouts for the database work around the call. */
+const databaseSlackSeconds = 30;
+
+/**
+ * How many requests one model call may send: chat without thinking, then generate, then chat with thinking (C4). Each has
+ * the client timeout, so the worst case of a call is this many timeouts.
+ */
+const modelRequestsPerCall = 3;
 
 /**
  * The lease of a step in seconds. The parse step may take as long as the client waits for the parser (the conversion plus,
- * per page, two renders and an OCR, with the parser's own slack), so the lease is that plus a margin for the database
- * work. The model steps get their lease with their handlers in a later slice; asking for one now is a defect.
+ * per page, two renders and an OCR, with the parser's own slack). A model step may take every request of the adapter's
+ * fallbacks to its client timeout. The check step only reads and writes the database. Each adds a margin for the database
+ * work around it.
  */
 export function leaseSeconds(step: Step, thresholds: ThresholdsFile): number {
-  if (step === 'parse') {
-    return Math.ceil(jobDeadlineMs(parserTimeouts(thresholds)) / 1000) + parseLeaseSlackSeconds;
+  switch (step) {
+    case 'parse':
+      return Math.ceil(jobDeadlineMs(parserTimeouts(thresholds)) / 1000) + databaseSlackSeconds;
+    case 'classify':
+    case 'extract':
+      return modelRequestsPerCall * thresholdNumber(thresholds, 'model.client_timeout_s') + databaseSlackSeconds;
+    case 'check':
+      return databaseSlackSeconds;
   }
-  throw new Error(`No lease is defined for the step ${step}: it has no handler yet`);
 }

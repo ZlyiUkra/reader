@@ -135,7 +135,7 @@ test('meta lists the registered types, the reasons with their variants and the s
   assert.deepEqual(invoice.fields[0], { name: 'number', kind: 'string', required: true, labels: { uk: 'Номер', en: 'Number' } });
   assert.equal(meta.reasons.length, 15);
   const failed = meta.reasons.find((reason: { code: string }) => reason.code === 'VALIDATION_FAILED');
-  assert.equal(failed.variants.length, 4);
+  assert.equal(failed.variants.length, 5);
   assert.deepEqual(failed.params, ['field', 'fragment', 'page']);
   assert.equal(meta.reasons.find((reason: { code: string }) => reason.code === 'ENCRYPTED').variants, undefined);
   assert.deepEqual(meta.statuses, ['RECEIVED', 'PARSE', 'CLASSIFY', 'EXTRACT', 'CHECK', 'ACCEPTED', 'NEEDS_REVIEW', 'REJECTED', 'FAILED']);

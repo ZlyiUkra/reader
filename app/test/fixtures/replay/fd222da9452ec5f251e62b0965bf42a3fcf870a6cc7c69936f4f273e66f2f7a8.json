@@ -1,0 +1,80 @@
+{
+  "raw": {
+    "request": {
+      "endpoint": "/api/chat",
+      "fallback": "none",
+      "body": {
+        "model": "qwen3.5:4b",
+        "messages": [
+          {
+            "role": "system",
+            "content": "You classify a document into exactly one of the listed types, or \"none\" if it is none of them. Answer only with JSON that matches the given schema. Do not explain."
+          },
+          {
+            "role": "user",
+            "content": "Choose the type of the document:\n- act: Акт виконаних робіт\n- contract: Договір\n- invoice: Рахунок\n- none: the document is none of the types above\n\nDocument text:\n--- Page 1 ---\n                       Рахунок на оплату № РФ-0147\n                                      від 12.03.2026\n\nПостачальник                   ТОВ «Вишневий Прибій»\nКод ЄДРПОУ постачальника       99100215\nРахунок постачальника\n                               UA589900010000026001234567890\n(IBAN)\nПокупець                       ПП «Золота Бджола»\nКод ЄДРПОУ покупця             99103455\nПідстава (договір №)           Д-2026/12 від 01.02.2026\nПризначення платежу            Оплата консультаційних послуг за березень 2026 року\n\n\nВалюта                                                                               грн\nСума без ПДВ                                                                  12 500,00\nСтавка ПДВ                                                                           20%\nПДВ                                                                             2 500,00\nВсього до сплати (з ПДВ)                                                      15 000,00\nРахунок дійсний для оплати до 26.03.2026.\n"
+          }
+        ],
+        "stream": false,
+        "think": false,
+        "format": {
+          "type": "object",
+          "required": [
+            "type"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "type": {
+              "enum": [
+                "act",
+                "contract",
+                "invoice",
+                "none"
+              ]
+            }
+          }
+        },
+        "keep_alive": "30m",
+        "options": {
+          "num_predict": 64,
+          "temperature": 0,
+          "seed": 7
+        }
+      }
+    },
+    "response": {
+      "model": "qwen3.5:4b",
+      "created_at": "2026-10-31T21:58:20.19511709Z",
+      "message": {
+        "role": "assistant",
+        "content": "{\"type\": \"invoice\"}"
+      },
+      "done": true,
+      "done_reason": "stop",
+      "total_duration": 440233200,
+      "load_duration": 881550,
+      "prompt_eval_count": 414,
+      "prompt_eval_cached_count": 0,
+      "prompt_eval_duration": 211007000,
+      "eval_count": 7,
+      "eval_duration": 95897000
+    }
+  },
+  "modelName": "qwen3.5:4b",
+  "modelDigest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+  "doneReason": "stop",
+  "counts": {
+    "promptEval": 414,
+    "eval": 7
+  },
+  "durationsNs": {
+    "load": 881550,
+    "promptEval": 211007000,
+    "eval": 95897000,
+    "total": 440233200
+  },
+  "cold": false,
+  "json": {
+    "type": "invoice"
+  }
+}

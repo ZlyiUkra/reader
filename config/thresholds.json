@@ -43,6 +43,18 @@
       "status": "provisional",
       "source": "estimate, research R14; a load above this marks the call cold"
     },
+    "model.temperature": {
+      "value": 0,
+      "unit": "temperature",
+      "status": "provisional",
+      "source": "owner decision 2026-10-31, slice 6; greedy decoding so two runs of the same document give the same reply"
+    },
+    "model.seed": {
+      "value": 7,
+      "unit": "seed",
+      "status": "provisional",
+      "source": "owner decision 2026-10-31, slice 6; fixed so a run can be repeated"
+    },
     "parser.convert_timeout_s": {
       "value": 120,
       "unit": "s per document",

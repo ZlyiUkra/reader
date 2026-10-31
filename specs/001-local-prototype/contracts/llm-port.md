@@ -46,8 +46,9 @@ runs at a time (C7).
 ## Ollama adapter
 
 - `POST /api/chat` with `model`, `messages` (system, user), `think: false`, `format: <wireSchema>`, `stream: false`,
-  `keep_alive: thresholds.model.keep_alive`, `options: { num_predict }`. The context is the server-wide
-  `OLLAMA_CONTEXT_LENGTH` (C7); the adapter sends no `num_ctx`.
+  `keep_alive: thresholds.model.keep_alive`, `options: { num_predict, temperature, seed }` (the last two from
+  `thresholds.model.temperature` and `thresholds.model.seed`, so the same request gives the same reply). The context
+  is the server-wide `OLLAMA_CONTEXT_LENGTH` (C7); the adapter sends no `num_ctx`.
 - Fallback 1 on an invalid or empty structured reply: the same request on `/api/generate`, with the system text in
   `system` and the user text in `prompt`. Fallback 2: `think: true` with `format` (C4). The fallback used is recorded
   in `raw.request`.

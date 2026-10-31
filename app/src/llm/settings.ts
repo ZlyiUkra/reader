@@ -18,6 +18,10 @@ export type ModelSettings = {
   charsPerToken: number;
   /** A load longer than this marks a call cold. */
   coldLoadNs: number;
+  /** Sampling temperature of every call; 0 makes the reply a function of the request, so a run can be repeated. */
+  temperature: number;
+  /** Seed of the sampler, fixed for the same reason. */
+  seed: number;
 };
 
 /** Reads one number of the thresholds file; a missing or non-numeric row is a configuration error naming the key. */
@@ -50,5 +54,7 @@ export function modelSettings(thresholds: ThresholdsFile): ModelSettings {
     keepAlive: stringOf(thresholds, 'model.keep_alive'),
     charsPerToken: numberOf(thresholds, 'model.chars_per_token'),
     coldLoadNs: numberOf(thresholds, 'model.cold_load_ns'),
+    temperature: numberOf(thresholds, 'model.temperature'),
+    seed: numberOf(thresholds, 'model.seed'),
   };
 }

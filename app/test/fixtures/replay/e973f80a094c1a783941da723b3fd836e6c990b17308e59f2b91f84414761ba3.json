@@ -1,0 +1,80 @@
+{
+  "raw": {
+    "request": {
+      "endpoint": "/api/chat",
+      "fallback": "none",
+      "body": {
+        "model": "qwen3.5:4b",
+        "messages": [
+          {
+            "role": "system",
+            "content": "You classify a document into exactly one of the listed types, or \"none\" if it is none of them. Answer only with JSON that matches the given schema. Do not explain."
+          },
+          {
+            "role": "user",
+            "content": "Choose the type of the document:\n- act: Акт виконаних робіт\n- contract: Договір\n- invoice: Рахунок\n- none: the document is none of the types above\n\nDocument text:\n--- Page 1 ---\nРахунок на оплату No ДЛ-2026-071\n\nПостачальник\nКод ЄДРПОУ постачальника\n\nРахунок постачальника\n(ВАМ)\n\nПокупець\nПідстава (договір Ne)\n\nПризначення платежу\n\nвід 20 травня 2026 р.\n\nТОВ «Синя Ворона Логістик»\n99106784\n\nUA029900030000026005551112223\n\nТОВ «Вишневий Прибій»\nД-2026/41 від 22.04.2026\n\nОплата за перевезення вантажів у травні 2026 року\n\nВалюта\n\nСума без ПДВ.\nСлавна пдв б\nie\nBeers до Con (3 пдв)\n\nгрн\n\n48 000,00\n2096\n\n9 600,00\n\n57 600,00\n\nРахунок дійсний для оплати до 3 червня 2026 р..\n\n"
+          }
+        ],
+        "stream": false,
+        "think": false,
+        "format": {
+          "type": "object",
+          "required": [
+            "type"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "type": {
+              "enum": [
+                "act",
+                "contract",
+                "invoice",
+                "none"
+              ]
+            }
+          }
+        },
+        "keep_alive": "30m",
+        "options": {
+          "num_predict": 64,
+          "temperature": 0,
+          "seed": 7
+        }
+      }
+    },
+    "response": {
+      "model": "qwen3.5:4b",
+      "created_at": "2026-10-31T21:58:36.482613512Z",
+      "message": {
+        "role": "assistant",
+        "content": "{\n  \"type\": \"invoice\"\n}"
+      },
+      "done": true,
+      "done_reason": "stop",
+      "total_duration": 355689873,
+      "load_duration": 841691,
+      "prompt_eval_count": 400,
+      "prompt_eval_cached_count": 396,
+      "prompt_eval_duration": 73415000,
+      "eval_count": 12,
+      "eval_duration": 180669000
+    }
+  },
+  "modelName": "qwen3.5:4b",
+  "modelDigest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+  "doneReason": "stop",
+  "counts": {
+    "promptEval": 400,
+    "eval": 12
+  },
+  "durationsNs": {
+    "load": 841691,
+    "promptEval": 73415000,
+    "eval": 180669000,
+    "total": 355689873
+  },
+  "cold": false,
+  "json": {
+    "type": "invoice"
+  }
+}

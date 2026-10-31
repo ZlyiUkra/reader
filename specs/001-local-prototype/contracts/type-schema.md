@@ -80,6 +80,7 @@ extraction and printed by the evaluation.
 | `iban_ua` | field | `VALIDATION_FAILED` when length, `UA` prefix or mod 97 fails |
 | required (business) | from `required` | `MISSING_REQUIRED_FIELD {field}` when the field is absent or not found |
 | fragment located | every field | `VALIDATION_FAILED {field, fragment, page}` when the fragment is not in the page text |
+| value readable | every field | `VALIDATION_FAILED {check: "value", field, fragment}` when the located fragment is not a value of the field's kind |
 
 ## Normalisation (C11), pinned
 

@@ -124,6 +124,44 @@ export async function insertPageText(db: Queryable, reading: NewPageText): Promi
   return result.rows[0]?.id ?? failed('insert a page text');
 }
 
+/** One reading of a page as the model steps use it: the page number, the reading's id and its stored text. */
+export type PageReading = {
+  pageNo: number;
+  pageTextId: number;
+  text: string;
+};
+
+/**
+ * The text of every page of a document in page order, one reading per page (the first one stored: the prototype reads each
+ * page once, constitution V). The model steps build their prompts from these and the evidence step searches them, so both
+ * work on the same stored text and the offsets they compute refer to it.
+ */
+export async function pageReadingsOf(db: Queryable, documentId: number): Promise<PageReading[]> {
+  const result = await db.query<{ page_no: number; id: number; text: string }>(
+    `SELECT DISTINCT ON (p.page_no) p.page_no, t.id, t.text
+     FROM pages p JOIN page_texts t ON t.page_id = p.id
+     WHERE p.document_id = $1
+     ORDER BY p.page_no, t.id`,
+    [documentId],
+  );
+  return result.rows.map((row) => ({ pageNo: row.page_no, pageTextId: row.id, text: row.text }));
+}
+
+/** Records the registry type the classifier chose and the schema version it was read with. It moves from null once, in the classify step. */
+export async function setDocType(db: Queryable, documentId: number, docType: string, schemaId: string): Promise<void> {
+  await db.query('UPDATE documents SET doc_type = $2, schema_id = $3, updated_at = now() WHERE id = $1 AND doc_type IS NULL', [documentId, docType, schemaId]);
+}
+
+/** Records that the checks ran, which is what lets the status function say ACCEPTED when no reason was found (FR-026). */
+export async function markChecksDone(db: Queryable, documentId: number): Promise<void> {
+  await db.query('UPDATE documents SET checks_done = true, updated_at = now() WHERE id = $1', [documentId]);
+}
+
+/** Points an accepted document at the extraction whose fields were accepted. */
+export async function setAcceptedExtraction(db: Queryable, documentId: number, extractionId: number): Promise<void> {
+  await db.query('UPDATE documents SET accepted_extraction_id = $2, updated_at = now() WHERE id = $1', [documentId, extractionId]);
+}
+
 /** A reason as stored: a code and its named parameters, never a message (FR-025). */
 export type NewReason = {
   documentId: number;
@@ -261,6 +299,55 @@ export async function insertExtraction(db: Queryable, extraction: NewExtraction)
     ],
   );
   return result.rows[0]?.id ?? failed('insert an extraction');
+}
+
+/** A stored model call, as far as the pipeline reads it back: which one it was and exactly what the model answered. */
+export type ExtractionRow = {
+  id: number;
+  document_id: number;
+  kind: 'classify' | 'extract';
+  attempt: number;
+  adapter: string;
+  schema_id: string | null;
+  raw_request: Record<string, unknown>;
+  raw_response: Record<string, unknown>;
+  done_reason: string | null;
+  cold: boolean;
+};
+
+/** The newest model call of a kind on a document, or null. A retried step adds a new row, so the newest is the one that finished the step. */
+export async function latestExtractionOf(db: Queryable, documentId: number, kind: 'classify' | 'extract'): Promise<ExtractionRow | null> {
+  const result = await db.query<ExtractionRow>(
+    `SELECT id, document_id, kind, attempt, adapter, schema_id, raw_request, raw_response, done_reason, cold
+     FROM extractions WHERE document_id = $1 AND kind = $2 ORDER BY id DESC LIMIT 1`,
+    [documentId, kind],
+  );
+  return result.rows[0] ?? null;
+}
+
+/** A stored field with its evidence. */
+export type FieldRow = {
+  id: number;
+  extraction_id: number;
+  document_id: number;
+  name: string;
+  kind: string;
+  value: unknown;
+  verbatim: string | null;
+  page_text_id: number | null;
+  offset_start: number | null;
+  offset_end: number | null;
+  found: boolean;
+  source: string;
+};
+
+/** The fields of one extraction in the order they were written. */
+export async function fieldsOfExtraction(db: Queryable, extractionId: number): Promise<FieldRow[]> {
+  const result = await db.query<FieldRow>(
+    'SELECT id, extraction_id, document_id, name, kind, value, verbatim, page_text_id, offset_start, offset_end, found, source FROM fields WHERE extraction_id = $1 ORDER BY id',
+    [extractionId],
+  );
+  return result.rows;
 }
 
 /** One extracted field with its evidence: `found` is computed by the database from the offsets. */

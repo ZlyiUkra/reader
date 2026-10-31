@@ -1,0 +1,475 @@
+{
+  "raw": {
+    "request": {
+      "endpoint": "/api/chat",
+      "fallback": "none",
+      "body": {
+        "model": "qwen3.5:4b",
+        "messages": [
+          {
+            "role": "system",
+            "content": "You read a document and report fields from it. Answer only with JSON that matches the given schema. For every field give \"verbatim\", the value itself exactly as it is written in the document, copied character by character, and nothing else: not the name of the field, not a word such as \"від\", \"№\", \"код\" or \"до\" in front of it, and no other words around it. For example, for the line \"Дата: від 12.03.2026\" the verbatim of a date is \"12.03.2026\". Also give \"page\", the number of the page (the first page is 1) where that value is. If the document does not contain the field, give null for both. Never guess and never invent a value. Do not explain."
+          },
+          {
+            "role": "user",
+            "content": "The document is of the type \"Рахунок\". Report these fields:\n- number (text): Номер\n- date (a date): Дата\n- sellerName (text): Назва продавця\n- sellerEdrpou (an 8-digit company code (EDRPOU)): ЄДРПОУ продавця\n- sellerIban (a bank account number (IBAN)): IBAN продавця\n- buyerName (text): Назва покупця\n- buyerEdrpou (an 8-digit company code (EDRPOU)): ЄДРПОУ покупця\n- currency (one of a closed list of values): Валюта\n- totalNet (an amount of money): Сума без ПДВ\n- vat (an amount of money): Сума ПДВ\n- totalGross (an amount of money): Сума з ПДВ\n- vatRate (text): Ставка ПДВ\n- dueDate (a date): Оплатити до\n- contractRef (text): Посилання на договір\n- paymentPurpose (text): Призначення платежу\n\nDocument text:\n--- Page 1 ---\n                                                     Sheet1\n\nунок на оплату № БД-0032\n         від 03.04.2026\n\n          Постачальник\n                   ПП «Золота Бджола»\n   Код ЄДРПОУ постачальника\n                          99103455\n  Рахунок постачальника\n              UA899900020000026009876543210\n                        (IBAN)\n            Покупець\n               ТОВ «Синя Ворона Логістик»\n      Код ЄДРПОУ покупця  99106784\n\n\n\n\n         Валюта                 UAH\n         Сума без ПДВ        3 240,50\n         Ставка ПДВ              20%\n         ПДВ                   648,10\n         Всього до спл       3 888,60\n\n         Рахунок дійсний для оплати до 17.04.2026.\n\n\n\n\n                                                     Page 1\n"
+          }
+        ],
+        "stream": false,
+        "think": false,
+        "format": {
+          "type": "object",
+          "required": [
+            "number",
+            "date",
+            "sellerName",
+            "sellerEdrpou",
+            "sellerIban",
+            "buyerName",
+            "buyerEdrpou",
+            "currency",
+            "totalNet",
+            "vat",
+            "totalGross",
+            "vatRate",
+            "dueDate",
+            "contractRef",
+            "paymentPurpose"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "number": {
+              "type": "object",
+              "required": [
+                "verbatim",
+                "page"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "verbatim": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "page": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ]
+                }
+              }
+            },
+            "date": {
+              "type": "object",
+              "required": [
+                "verbatim",
+                "page"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "verbatim": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "page": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ]
+                }
+              }
+            },
+            "sellerName": {
+              "type": "object",
+              "required": [
+                "verbatim",
+                "page"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "verbatim": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "page": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ]
+                }
+              }
+            },
+            "sellerEdrpou": {
+              "type": "object",
+              "required": [
+                "verbatim",
+                "page"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "verbatim": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "page": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ]
+                }
+              }
+            },
+            "sellerIban": {
+              "type": "object",
+              "required": [
+                "verbatim",
+                "page"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "verbatim": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "page": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ]
+                }
+              }
+            },
+            "buyerName": {
+              "type": "object",
+              "required": [
+                "verbatim",
+                "page"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "verbatim": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "page": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ]
+                }
+              }
+            },
+            "buyerEdrpou": {
+              "type": "object",
+              "required": [
+                "verbatim",
+                "page"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "verbatim": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "page": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ]
+                }
+              }
+            },
+            "currency": {
+              "type": "object",
+              "required": [
+                "verbatim",
+                "page"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "verbatim": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "page": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ]
+                }
+              }
+            },
+            "totalNet": {
+              "type": "object",
+              "required": [
+                "verbatim",
+                "page"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "verbatim": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "page": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ]
+                }
+              }
+            },
+            "vat": {
+              "type": "object",
+              "required": [
+                "verbatim",
+                "page"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "verbatim": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "page": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ]
+                }
+              }
+            },
+            "totalGross": {
+              "type": "object",
+              "required": [
+                "verbatim",
+                "page"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "verbatim": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "page": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ]
+                }
+              }
+            },
+            "vatRate": {
+              "type": "object",
+              "required": [
+                "verbatim",
+                "page"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "verbatim": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "page": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ]
+                }
+              }
+            },
+            "dueDate": {
+              "type": "object",
+              "required": [
+                "verbatim",
+                "page"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "verbatim": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "page": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ]
+                }
+              }
+            },
+            "contractRef": {
+              "type": "object",
+              "required": [
+                "verbatim",
+                "page"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "verbatim": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "page": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ]
+                }
+              }
+            },
+            "paymentPurpose": {
+              "type": "object",
+              "required": [
+                "verbatim",
+                "page"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "verbatim": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "page": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "keep_alive": "30m",
+        "options": {
+          "num_predict": 1536,
+          "temperature": 0,
+          "seed": 7
+        }
+      }
+    },
+    "response": {
+      "model": "qwen3.5:4b",
+      "created_at": "2026-10-31T21:58:36.105800701Z",
+      "message": {
+        "role": "assistant",
+        "content": "{\n  \"number\": {\n    \"verbatim\": \"БД-0032\",\n    \"page\": 1\n  },\n  \"date\": {\n    \"verbatim\": \"03.04.2026\",\n    \"page\": 1\n  },\n  \"sellerName\": {\n    \"verbatim\": \"ПП «Золота Бджола»\",\n    \"page\": 1\n  },\n  \"sellerEdrpou\": {\n    \"verbatim\": \"99103455\",\n    \"page\": 1\n  },\n  \"sellerIban\": {\n    \"verbatim\": \"UA899900020000026009876543210\",\n    \"page\": 1\n  },\n  \"buyerName\": {\n    \"verbatim\": \"ТОВ «Синя Ворона Логістик»\",\n    \"page\": 1\n  },\n  \"buyerEdrpou\": {\n    \"verbatim\": \"99106784\",\n    \"page\": 1\n  },\n  \"currency\": {\n    \"verbatim\": \"UAH\",\n    \"page\": 1\n  },\n  \"totalNet\": {\n    \"verbatim\": \"3 240,50\",\n    \"page\": 1\n  },\n  \"vat\": {\n    \"verbatim\": \"648,10\",\n    \"page\": 1\n  },\n  \"totalGross\": {\n    \"verbatim\": \"3 888,60\",\n    \"page\": 1\n  },\n  \"vatRate\": {\n    \"verbatim\": \"20%\",\n    \"page\": 1\n  },\n  \"dueDate\": {\n    \"verbatim\": \"17.04.2026\",\n    \"page\": 1\n  },\n  \"contractRef\": {\n    \"verbatim\": null,\n    \"page\": null\n  },\n  \"paymentPurpose\": {\n    \"verbatim\": null,\n    \"page\": null\n  }\n}"
+      },
+      "done": true,
+      "done_reason": "stop",
+      "total_duration": 7512483377,
+      "load_duration": 1319310,
+      "prompt_eval_count": 696,
+      "prompt_eval_cached_count": 0,
+      "prompt_eval_duration": 312705000,
+      "eval_count": 484,
+      "eval_duration": 7105697000
+    }
+  },
+  "modelName": "qwen3.5:4b",
+  "modelDigest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+  "doneReason": "stop",
+  "counts": {
+    "promptEval": 696,
+    "eval": 484
+  },
+  "durationsNs": {
+    "load": 1319310,
+    "promptEval": 312705000,
+    "eval": 7105697000,
+    "total": 7512483377
+  },
+  "cold": false,
+  "json": {
+    "number": {
+      "verbatim": "БД-0032",
+      "page": 1
+    },
+    "date": {
+      "verbatim": "03.04.2026",
+      "page": 1
+    },
+    "sellerName": {
+      "verbatim": "ПП «Золота Бджола»",
+      "page": 1
+    },
+    "sellerEdrpou": {
+      "verbatim": "99103455",
+      "page": 1
+    },
+    "sellerIban": {
+      "verbatim": "UA899900020000026009876543210",
+      "page": 1
+    },
+    "buyerName": {
+      "verbatim": "ТОВ «Синя Ворона Логістик»",
+      "page": 1
+    },
+    "buyerEdrpou": {
+      "verbatim": "99106784",
+      "page": 1
+    },
+    "currency": {
+      "verbatim": "UAH",
+      "page": 1
+    },
+    "totalNet": {
+      "verbatim": "3 240,50",
+      "page": 1
+    },
+    "vat": {
+      "verbatim": "648,10",
+      "page": 1
+    },
+    "totalGross": {
+      "verbatim": "3 888,60",
+      "page": 1
+    },
+    "vatRate": {
+      "verbatim": "20%",
+      "page": 1
+    },
+    "dueDate": {
+      "verbatim": "17.04.2026",
+      "page": 1
+    },
+    "contractRef": {
+      "verbatim": null,
+      "page": null
+    },
+    "paymentPurpose": {
+      "verbatim": null,
+      "page": null
+    }
+  }
+}
