@@ -22,6 +22,10 @@ file is started by an agent: the owner starts the servers and says "yes" to each
 5. Stop the slice's servers with its stop command, unless the next slice follows at once: its start command skips a
    server that is already listening.
 
+A slice that inherits tasks written ahead of it (slices 2 and 3) has a **Re-check first** step. Those tasks were written
+in slice 0 without a recorded set of documentation servers, so the slice does not trust them: before its own tasks it
+confirms that its whole server set answers and compares the inherited files with their sources.
+
 ## Order
 
 Slice 0 is done. The order of the rest differs from the numbering in one place: **slice 2 runs before slice 1**,
@@ -61,7 +65,7 @@ carried to the first slice that can, and named in both places:
   - T014 database pool and the `schema_version` check (`app/src/db/`)
   - T037 the named simplifications (`app/src/config/todo.ts`)
   - T007, T010, T011 done ahead of their slices: parser image (slice 3), `config/reasons.json` and the three type
-    schemas (slice 2)
+    schemas (slice 2); each is re-checked from the start when its own slice runs
 - **Closed by** (all shown on 2026-10-31): `docker compose config` valid; `db` healthy with `schema_version` 1 and the
   role `app` neither superuser nor able to delete or rewrite journal tables; `reader_backend` is `internal` and the
   only published port is the UI on 127.0.0.1; the parser and fixtures images build with no Java and OCR `ukr` and
@@ -88,6 +92,21 @@ cd ~/Projects/docfactory && for n in docker linux owasp postgres-image postgresq
   `db: ok` ping of `/api/health`).
 - **Start set** (12): patterns, jsonschema, nodejs, owasp, typescript, fastify, helmet, docker, vite, react, mdn,
   node-postgres.
+- **Re-check first** (T010 and T011 were written in slice 0, ahead of this slice, with no record of which servers were
+  up):
+  1. Before any task, confirm that all 12 servers of the start set answer: the status loop of the start command
+     below, with no launch (a bare GET on `/mcp` gives 400 when alive). The agent starts nothing; if one does not
+     answer, it stops and names it, and the owner starts it.
+  2. Re-check T010 and T011 from the start, against their sources and not against the earlier result: read
+     `config/reasons.json` and the three `schemas/*.v1.json`, and look up every claim in the source it comes from. For
+     the reasons file: the 15 codes, outcome, `emitted` and `emittedBy`, trigger, params and both templates (spec
+     FR-024 and C1, the `VALIDATION_FAILED` fragment template verbatim). For each type schema: the field set, the
+     `x-reader` labels, `order` and `checks` (the Key Entities of the spec, `contracts/type-schema.md`,
+     `data-model.md`), and the JSON Schema keywords and formats used, which the jsonschema server settles, with the
+     other servers of this slice where they apply.
+  3. Show a report with a row per finding: file, what was checked, the source, and the verdict (matches, differs, not
+     verifiable). Change nothing; if anything differs, stop and wait for the owner, and fix only what the owner
+     approves.
 - **Tasks**:
   - T039 first: the front skeleton (`app/web/`: Vite config, `App.tsx`, `api.ts`, the two language files); the `web`
     stage of `app/Dockerfile` needs it and every later slice needs the `app` image
@@ -100,6 +119,7 @@ cd ~/Projects/docfactory && for n in docker linux owasp postgres-image postgresq
   - T036 Fastify server with the Host and Origin hook, helmet, static front, `/api/health`, `/api/meta`, and
     `app/src/main.ts` (start order: config, classes, `schema_version`, server)
   - T070 registry test with the `receipt.v1.json` example
+  - T010, T011 (written in slice 0): re-checked as described above, not rewritten
 - **Closes when**:
   1. `docker compose build app` succeeds and `docker compose run --rm app node --test` is green with no GPU: the
      status table over all 15 codes, the wire-schema snapshots, the checks and normalisation tests, the registry test.
@@ -111,6 +131,8 @@ cd ~/Projects/docfactory && for n in docker linux owasp postgres-image postgresq
   5. A changed schema version: `app` refuses to start and says so.
   6. The `app` container has no capabilities: `docker compose exec app grep -E 'CapEff|NoNewPrivs' /proc/1/status`
      shows `CapEff` all zero and `NoNewPrivs` 1.
+  7. The re-check report of T010 and T011 is shown, with every difference listed and each one fixed with the owner's
+     approval or accepted in writing.
 
 **Start the servers** (12):
 
@@ -127,12 +149,17 @@ cd ~/Projects/docfactory && for n in patterns jsonschema nodejs owasp typescript
 **Run** (type `/speckit-implement`, then paste):
 
 ```text
-Slice 2 only: first T039, then T017, T018, T019, T020, T021, T022, T036, T070. Do not start any other task. T036
-also writes app/src/main.ts. Finish with the slice 2 closing checks and show their output: docker compose build app;
-docker compose run --rm app node --test with no GPU; docker compose up -d db app, then GET /api/health and
+Slice 2 only. Step 0, before any task: confirm that all 12 servers of this slice answer, using the status loop of the
+start command without launching anything (a bare GET on /mcp gives 400); if one does not answer, stop and name it.
+Then re-check T010 and T011, written ahead in slice 0, from the start against spec FR-024, C1,
+contracts/type-schema.md, data-model.md and the servers of this slice; show a report with a row per finding (file,
+what was checked, source, matches / differs / not verifiable); change nothing, and if anything differs stop and wait
+for my answer. Then run first T039, then T017, T018, T019, T020, T021, T022, T036, T070. Do not start any other task.
+T036 also writes app/src/main.ts. Finish with the slice 2 closing checks and show their output: docker compose build
+app; docker compose run --rm app node --test with no GPU; docker compose up -d db app, then GET /api/health and
 /api/meta; receipt.v1.json copied into schemas/ and app restarted, then removed; a class without may_leave; a
-changed schema_version; CapEff and NoNewPrivs of the app container. Mark each finished task [X] in tasks.md. Then
-run the after_implement hook (agile-tasks).
+changed schema_version; CapEff and NoNewPrivs of the app container; the re-check report. Mark each finished task [X]
+in tasks.md. Then run the after_implement hook (agile-tasks).
 ```
 
 ## Slice 1 - Model and contract
@@ -182,6 +209,19 @@ after_implement hook (agile-tasks).
   expected values are instances of the type schemas); tesseract (the scanned fixtures must still OCR to their expected
   values); mdn (the HTML templates).
 - **Start set** (10): docker, linux, libreoffice, doc-tools, nodejs, patterns, typescript, jsonschema, tesseract, mdn.
+- **Re-check first** (T007 was written in slice 0, ahead of this slice, with no record of which servers were up):
+  1. Before any task, confirm that all 10 servers of the start set answer: the status loop of the start command
+     below, with no launch (a bare GET on `/mcp` gives 400 when alive). The agent starts nothing; if one does not
+     answer, it stops and names it, and the owner starts it.
+  2. Re-check T007 from the start, against its sources and not against the earlier result: read `parser/Dockerfile`
+     and look up every claim in the source it comes from. The base image and its digest; each pinned apt package
+     and version against research R4 and the bookworm package pages; `--no-install-recommends` and no Java; user
+     `10001`; the `parser` and `fixtures` targets and what `fixtures` copies; and the options the Dockerfile and the
+     later tasks rely on (LibreOffice headless conversion, poppler, Tesseract `ukr+eng`, rsvg, `file`, qpdf), which the
+     docker, linux, libreoffice, doc-tools and tesseract servers settle.
+  3. Show a report with a row per finding: file, what was checked, the source, and the verdict (matches, differs, not
+     verifiable). Change nothing; if anything differs, stop and wait for the owner, and fix only what the owner
+     approves.
 - **Tasks**:
   - T032 three fictional companies with valid EDRPOU and IBAN, and the fixed data object of the 11 documents
   - T033 Ukrainian HTML templates of the three types
@@ -189,8 +229,11 @@ after_implement hook (agile-tasks).
     expected values
   - T035 the hostile set (5000-page PDF, 30000 x 30000 PNG, encrypted, truncated, zip, blank, noise), written on
     demand
+  - T007 (written in slice 0): re-checked as described above, not rewritten
 - **Closes when**: two generator runs give the same sha256 list; the inbox holds 11 files, `manifest.json` and one
-  `expected/<sha256>.json` per fixture; the hostile set writes on demand and is not listed in the manifest.
+  `expected/<sha256>.json` per fixture; the hostile set writes on demand and is not listed in the manifest; the
+  re-check report of T007 is shown, with every difference listed and each one fixed with the owner's approval or
+  accepted in writing.
 
 **Start the servers** (10):
 
@@ -207,10 +250,15 @@ cd ~/Projects/docfactory && for n in docker linux libreoffice doc-tools nodejs p
 **Run** (type `/speckit-implement`, then paste):
 
 ```text
-Slice 3 only: T032, T033, T034, T035 (T007 is already done). Do not start any other task. Finish with the slice 3
-closing checks and show their output: two generator runs give the same sha256 list; the inbox holds 11 files,
-manifest.json and one expected/<sha256>.json per fixture; the hostile set is written on demand and is not listed in
-the manifest. Mark each finished task [X] in tasks.md. Then run the after_implement hook (agile-tasks).
+Slice 3 only. Step 0, before any task: confirm that all 10 servers of this slice answer, using the status loop of the
+start command without launching anything (a bare GET on /mcp gives 400); if one does not answer, stop and name it.
+Then re-check T007, written ahead in slice 0, from the start: parser/Dockerfile against research R4, the Debian
+bookworm package pages and the servers of this slice; show a report with a row per finding (file, what was checked,
+source, matches / differs / not verifiable); change nothing, and if anything differs stop and wait for my answer. Then
+run T032, T033, T034, T035 and do not start any other task. Finish with the slice 3 closing checks and show their
+output: two generator runs give the same sha256 list; the inbox holds 11 files, manifest.json and one
+expected/<sha256>.json per fixture; the hostile set is written on demand and is not listed in the manifest; the
+re-check report. Mark each finished task [X] in tasks.md. Then run the after_implement hook (agile-tasks).
 ```
 
 ## Slice 4 - Sandbox and parsing
