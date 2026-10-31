@@ -10,6 +10,16 @@
 
 The owner wants to see the document-reading idea work end to end on one machine before any product decision. Documents of many formats go in, a local language model recognises each one and extracts its fields, the results and their evidence are visible in a browser, and an evaluation prints numbers that say how well and how fast it works. The prototype is a demonstration and a measuring instrument, not the product. It keeps the invariants of the earlier board rounds (`docs/document-ingestion-decision.md`, `docs/document-reader-decision.md`) and the constitution (version 1.0.0) true in a small working system, so that later steps (a cloud model, a human review form, deployment to a cluster) are additions, not rewrites. Condition numbers (C1-C17) and acceptance check numbers in brackets point to the handoff for the full wording.
 
+## Clarifications
+
+### Session 2026-10-31
+
+- Q: Does "Read folder" descend into subfolders of the inbox, and what happens to hidden files and the generator's own files? -> A: Top level only; dot-files and the generator's manifest and expected-value files are skipped.
+- Q: Does the evaluation leave a file behind, or only print to the screen? -> A: Both: human-readable text on the screen and one JSON report file per run in a results folder, named by run date and model identity, with the same figures.
+- Q: Does the document detail view show the raw model request and response? -> A: Yes, as a collapsed plain-text block, fetched by a separate per-document request; the list endpoint still never carries them.
+- Q: Which interface language opens first, and is the switch remembered? -> A: Ukrainian by default; the browser remembers the chosen language between visits; English stays available through the switch at all times.
+- Q: What identifies a document for the owner in the table and in the DUPLICATE answer? -> A: A short sequential number as the visible id, used in the table, the detail view and the DUPLICATE answer; the content hash stays the identity and is shown in the detail view.
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Read the synthetic folder end to end (Priority: P1)
@@ -24,7 +34,7 @@ The owner generates the synthetic document set into the inbox folder, opens the 
 
 1. **Given** a running system with the model ready and eleven fixtures in the inbox, **When** the owner presses "Read folder", **Then** within the bound of the thresholds file every document has a terminal status: 6 ACCEPTED, 3 NEEDS_REVIEW with `MISSING_REQUIRED_FIELD`, the wrong-VAT invoice NEEDS_REVIEW with `VALIDATION_FAILED`, the untyped document NEEDS_REVIEW with `UNKNOWN_DOC_TYPE` and no field rows (check 4).
 2. **Given** the run above, **When** the owner inspects any document that is not ACCEPTED, **Then** it shows at least one reason code with a message rendered from that code's template and filled parameters (check 4).
-3. **Given** the run above, **When** the owner presses "Read folder" a second time, regenerates the fixtures, or copies one fixture under a new name and reads again, **Then** the documents count does not change and each repeated file is reported as `DUPLICATE` with the original's id (check 5).
+3. **Given** the run above, **When** the owner presses "Read folder" a second time, regenerates the fixtures, or copies one fixture under a new name and reads again, **Then** the documents count does not change and each repeated file is reported as `DUPLICATE` with the original's number (check 5).
 4. **Given** the model is stopped, **When** a document is read, **Then** it stays queued, the health view shows the model as missing, and once the model is back the document completes with zero attempts spent during the outage (check 11).
 
 ---
@@ -40,6 +50,7 @@ The owner opens a document from the table and sees the fields that were extracte
 **Acceptance Scenarios**:
 
 1. **Given** an ACCEPTED document, **When** its detail view opens, **Then** every field shows its typed value, the verbatim fragment, the page number and that the fragment was found in the stored page text; the view also shows the model identity, the schema version and the duration of each pipeline step.
+5. **Given** any document with at least one extraction, **When** the owner expands "Model request and response" in the detail view, **Then** the raw request and the raw response of each extraction are fetched for that one document and shown as plain text, collapsed by default.
 2. **Given** a NEEDS_REVIEW document, **When** its detail view opens, **Then** every reason is shown as a rendered message (for example `Required field "Contract date" not found.`), never as a bare code.
 3. **Given** any document, **When** its page images are shown, **Then** they are rendered previews of capped width, loaded lazily, and the original file is never offered for download or display (C15).
 4. **Given** the documents table, **When** it refreshes (every 2 seconds), **Then** it shows status, type and reason codes, and never carries page texts or raw model requests and responses (C15).
@@ -57,7 +68,7 @@ The owner drops a file into the browser view. It is stored under its content has
 **Acceptance Scenarios**:
 
 1. **Given** a file whose content hash is not known, **When** it is uploaded, **Then** a new document appears with class `unverified`, and it reaches a terminal status like a folder document (check 6).
-2. **Given** a file whose content hash is already known, **When** it is uploaded under any name, **Then** the response reports `DUPLICATE` with the original's id and no new document is created (C3).
+2. **Given** a file whose content hash is already known, **When** it is uploaded under any name, **Then** the response reports `DUPLICATE` with the original's number and no new document is created (C3).
 3. **Given** a fixture listed in the generator manifest, **When** it is read or uploaded, **Then** its class is `synthetic`; a file outside the manifest never receives `synthetic` (C2).
 
 ---
@@ -127,6 +138,7 @@ The owner adds a new versioned type schema file and restarts. The classifier off
 - The folder is read while the model is missing: documents stay queued, no attempt is spent, health shows the model as missing (check 11).
 - A document is read again after it ended REJECTED or FAILED: its content hash is known, so it is reported as `DUPLICATE` and is not processed again (see the Re-read Cases table).
 - Two documents of different types are present in one file: out of scope; the classifier picks one type or "none".
+- A subfolder, a dot-file or a generator file (manifest, expected values) sits in the inbox: "Read folder" neither lists nor reads it.
 
 ## Requirements *(mandatory)*
 
@@ -135,10 +147,10 @@ The owner adds a new versioned type schema file and restarts. The classifier off
 Intake and identity
 
 - **FR-001**: The system MUST accept documents from a local inbox folder, read only when the owner asks ("Read folder"), and from a browser upload.
-- **FR-002**: The system MUST identify every document by the hash of its content (sha256). The file name and path are stored as descriptions only and never decide identity or processing (C3).
-- **FR-003**: When a document's content hash is already known, the system MUST report `DUPLICATE` with the original's id in the upload response or the folder-read result, MUST NOT store the document again, and MUST NOT change the documents count (owner decision, C3).
+- **FR-002**: The system MUST identify every document by the hash of its content (sha256). The file name and path are stored as descriptions only and never decide identity or processing (C3). Each new document MUST receive a short sequential number as its visible id; the table, the detail view and the `DUPLICATE` answer use that number, and the detail view also shows the content hash.
+- **FR-003**: When a document's content hash is already known, the system MUST report `DUPLICATE` with the original's number in the upload response or the folder-read result, MUST NOT store the document again, and MUST NOT change the documents count (owner decision, C3).
 - **FR-004**: The system MUST store an uploaded file to disk as a stream under its content hash, with explicit size limits, and keep the original name only as metadata (C8).
-- **FR-005**: Reading the folder MUST list files without hashing them first; hashing and intake happen only when the owner asks for the read.
+- **FR-005**: Reading the folder MUST consider only the regular files at the top level of the inbox: subfolders, files whose name starts with a dot, and the generator's own files (the manifest and the expected-value files) are skipped and not listed. Listing does not hash; hashing and intake happen only when the owner asks for the read.
 
 Sensitivity class and egress
 
@@ -209,6 +221,7 @@ Fixtures
 Evaluation
 
 - **FR-048**: An evaluation command MUST compare the stored results with the expected results and print: per-field match, the share of each reason code, seconds per page split into parsing and model time with cold and warm starts separate, tokens per document, false accepts listed separately, and the model identity, schema versions and prompt hash (C14).
+- **FR-048a**: The evaluation MUST also write one JSON report file per run into a results folder, named by the run date and the model identity, carrying the same figures, the thresholds in force and the pass or fail verdict; the measurement journal in the README and the project dashboard take their numbers from this file, never from a copy of the screen text.
 - **FR-049**: The evaluation MUST exit non-zero when the result is below the pass threshold of the Measurement Contract and MUST print "not a tier decision" (C14).
 - **FR-050**: A replay model adapter fed from stored raw responses MUST exist so that the pipeline tests, the status function table test over all 15 codes, the request-schema snapshots per type, the parser manifest validation and the three-failures-to-FAILED path all run without a GPU (C14, check 9).
 
@@ -220,15 +233,16 @@ Thresholds and named simplifications
 Browser view
 
 - **FR-053**: The browser page MUST offer three views: the inbox folder contents with a "Read folder" action and an upload control; the documents table with status, type and reason codes, refreshed every 2 seconds; and a document detail view with fields, fragments, pages, model identity and step durations (C15).
+- **FR-053a**: The detail view MUST offer the raw model request and response of each extraction in a block that is collapsed by default and rendered as plain text; they are fetched by a separate request that serves one document at a time and never by the documents table endpoint.
 - **FR-054**: The documents table endpoint MUST never return page texts or raw model requests and responses; page images MUST be served as images with a no-sniff marker, previews capped at about 1,240 pixels wide and loaded lazily; originals MUST never be served (C15).
 - **FR-055**: The page MUST render document text, fragments and reason messages as plain text only; no HTML or markdown rendering of document content (C15).
 - **FR-056**: The user interface MUST listen only on the loopback address. The server MUST reject requests with a foreign Host, and state-changing requests without a same-origin marker and the custom header, with 403 or 421 and no side effect; the content security policy MUST allow only the page's own origin (C15, check 13).
-- **FR-057**: The browser page MUST offer its texts in two languages, Ukrainian and English, with a language switch; the choice applies to labels, buttons, field names and rendered reason messages alike (owner decision of 2026-10-31).
+- **FR-057**: The browser page MUST offer its texts in two languages, Ukrainian and English, with a language switch; the choice applies to labels, buttons, field names and rendered reason messages alike (owner decision of 2026-10-31). Ukrainian is the default; the browser remembers the chosen language between visits without any server-side state, and English MUST stay reachable through the switch at all times.
 - **FR-058**: Every field label in the schema registry and every message template in the reasons file MUST exist in both languages; a label or template missing in one language is a defect caught by a test, and a rendered message MUST follow the language chosen in the browser.
 
 ### Key Entities *(include if feature involves data)*
 
-- **Document**: one file identified by its content hash; attributes: original name (description), sensitivity class (mandatory), detected type (optional), status, attempts, current lease, the accepted extraction (optional), a parent document (reserved for containers), creation time. Statuses: RECEIVED, the pending status of each step, ACCEPTED, NEEDS_REVIEW, REJECTED, FAILED; QUARANTINED is reserved.
+- **Document**: one file identified by its content hash, shown to the owner by a short sequential number (visible id); attributes: original name (description), sensitivity class (mandatory), detected type (optional), status, attempts, current lease, the accepted extraction (optional), a parent document (reserved for containers), creation time. Statuses: RECEIVED, the pending status of each step, ACCEPTED, NEEDS_REVIEW, REJECTED, FAILED; QUARANTINED is reserved.
 - **Page**: one page of a document with its rendered preview image; several pages per document.
 - **Page text**: one reading of one page: text, source (text layer or OCR), engine, version, resolution, timings per parser step; append-only.
 - **Extraction**: one model call on one document: model identity, schema version, prompt hash, raw request and response, stop reason, token counts and durations, the thresholds in force; append-only.
@@ -242,7 +256,7 @@ Browser view
 - **Fixture manifest and expected result**: the generator's list of produced files with content hashes, and per file the expected schema instance, status and codes.
 - **Thresholds**: the single file of tunable values with their "provisional" marks.
 - **Health**: database state, model state (missing or ready), sandbox runtime name, TODO list of named simplifications.
-- **Evaluation report**: the printed figures of one run with the identities of model, schemas and prompt.
+- **Evaluation report**: the figures of one run with the identities of model, schemas and prompt, the thresholds in force and the verdict; printed as text and saved as one JSON file per run.
 
 ## Success Criteria *(mandatory)*
 
@@ -268,6 +282,7 @@ Written before the first measured run, as the constitution requires (principle I
 - **Pass threshold** (owner decision of 2026-10-31): 100% exact match on the required fields of the six fixtures expected ACCEPTED, and zero false accepts over all eleven fixtures. One wrong required field, or one accepted value that differs from the expected value, fails the run.
 - **Ceiling** (owner decision of 2026-10-31, values provisional until the first run): at most 6,000 tokens per document (prompt and generation together) and at most 60 seconds per page in the warm run, parsing and model time together. The cold run is printed but not judged.
 - **Printed by the evaluation**: per-field match; share of each reason code; seconds per page split into parsing and model time, cold and warm separately; tokens per document; false accepts; model identity, schema versions, prompt hash; the line "not a tier decision".
+- **Saved by the evaluation**: one JSON report file per run in a results folder, named by run date and model identity, with the same figures, the thresholds in force and the verdict (FR-048a). Report files are kept, never overwritten.
 - **Calibration**: the characters-per-token ratio used by the context budget check is calibrated by the evaluation and recorded.
 
 ## Re-read Cases
@@ -276,7 +291,7 @@ Required by C3. Identity is the content hash; the path is a description.
 
 | Case | Outcome |
 | --- | --- |
-| A known content hash under any name or path, by folder read or upload | `DUPLICATE` with the original's id; no new document; count unchanged |
+| A known content hash under any name or path, by folder read or upload | `DUPLICATE` with the original's number; no new document; count unchanged |
 | A known path with a new content hash | A new document; the old one is untouched |
 | A fixture regenerated by the deterministic generator | Same hashes, therefore `DUPLICATE` for every file |
 | A file read again after its document ended REJECTED or FAILED | `DUPLICATE`; the document is not processed again (no retry action in the prototype) |
