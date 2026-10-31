@@ -44,5 +44,5 @@ one Docker Compose file. A later port of the same prototype to Go is planned and
 
 ## Repository
 
-Git since 2026-10-31, branch `master`. Tracked: `README.md`, `docs/`, `specs/`, `.gitignore`. Ignored: `.claude/`,
+Git since 2026-10-31, branch `main`. Tracked: `README.md`, `docs/`, `specs/`, `.gitignore`. Ignored: `.claude/`,
 `.specify/`, `AGENTS.md`.

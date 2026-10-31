@@ -1,6 +1,6 @@
 # Implementation Plan: Local Prototype of the Document Reader
 
-**Branch**: `001-local-prototype` | **Date**: 2026-10-31 | **Spec**: [spec.md](spec.md)
+**Branch**: `main` (feature directory `specs/001-local-prototype`) | **Date**: 2026-10-31 | **Spec**: [spec.md](spec.md)
 
 **Input**: Feature specification from `/specs/001-local-prototype/spec.md`
 

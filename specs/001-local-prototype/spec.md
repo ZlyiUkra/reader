@@ -1,6 +1,6 @@
 # Feature Specification: Local Prototype of the Document Reader
 
-**Feature Branch**: `001-local-prototype`
+**Feature directory**: `specs/001-local-prototype` (the work happens on the `main` branch; there is no feature branch)
 
 **Created**: 2026-10-31
 
