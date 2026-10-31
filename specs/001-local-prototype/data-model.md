@@ -242,11 +242,13 @@ Contract: [contracts/thresholds.schema.json](contracts/thresholds.schema.json).
 Flat key to string maps for the page's own texts; field labels and reason templates come from the API, which
 reads them from the registry and the reasons file (FR-058). A test asserts both dictionaries have the same key set.
 
-### Fixtures: `inbox/manifest.json`, `fixtures/expected/<sha256>.json`
+### Fixtures: `inbox/manifest.json`, `inbox/expected/<sha256>.json`
 
-The generator writes the manifest (`[{file, sha256, type, format, expected}]`) and one expected file per fixture
-(the schema instance, expected status and codes), keyed by sha256 (FR-044, FR-047). The manifest and expected files
-are skipped by "Read folder" (clarification 1).
+The generator writes the manifest (`[{file, sha256, type, format, expected}]`) at the top level of the inbox and one
+expected file per fixture (the schema instance, expected status and codes), keyed by sha256, into the `expected/`
+subfolder of the inbox (FR-044, FR-047). Both live in the inbox because the `fixtures` container is one-off and the
+`app` container mounts the inbox read-only: the evaluation reads `inbox/expected/*.json` there. "Read folder" skips
+the manifest and every subfolder (clarification 1, FR-005).
 
 ### Evaluation reports: `results/eval-<YYYYMMDD-HHMMSS>-<model digest prefix>.json`
 

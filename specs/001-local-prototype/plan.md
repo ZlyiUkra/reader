@@ -173,8 +173,10 @@ results/                     # eval reports; ignored by git
 the handoff fixes one process serving all three; `parser/` is a separate package and image because it must contain
 the document tools and nothing else, run without network and never share dependencies with the app. No root
 `package.json` (owner rule: a monorepo root is not created without agreement); each package is built by its own
-Dockerfile. Configuration and schemas live at the root so that both packages and the fixtures generator read the
-same files.
+Dockerfile with the repository root as build context, so the parser's `fixtures` target can copy `app/src/shared/`
+(contracts/compose.md). Configuration and schemas live at the root and reach the containers as read-only bind
+mounts, never copied into an image, so that both packages and the fixtures generator read the same files and a
+schema or config change needs a restart only (acceptance check 10).
 
 ## Dependencies to approve (owner rule)
 
@@ -210,7 +212,6 @@ Named simplifications: each is a startup WARN and a `/api/health` `todo` entry s
 | No label-proximity rule against substitution | Not yet measured | Would be a guess before the eval | eval shows substitutions above threshold |
 | `LOW_CONFIDENCE`, `EXTRACTORS_DISAGREE` not emitted | One extractor, one call | No lawful trigger exists | a second extraction or extractor |
 | No review form; NEEDS_REVIEW is terminal | Out of scope by the owner | A form without a reviewer has no consumer (IX) | the owner asks for review |
-| Two Node packages instead of one | The sandbox must not share dependencies or image layers with the app | One package would put Fastify and the app's modules inside the network-less container | none; this is the intended shape |
 
 ## Phase 0: Research
 

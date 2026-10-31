@@ -48,9 +48,13 @@ runs at a time (C7).
   the messages. Fallback 2: `think: true` with `format` (C4). The fallback used is recorded in `raw.request`.
 - Every reply is parsed and validated against the wire schema, whatever the server claims (FR-039). An invalid
   reply after the fallbacks is an adapter error mapped to `INTERNAL_ERROR`; `done_reason: "length"` is returned as
-  such and mapped by the pipeline to a reason code without retry (C7).
+  such and mapped by the pipeline to REJECTED `TOO_LARGE` with the generation cap (`num_predict`) as the breached
+  limit, without retry (FR-022, C7).
 - Readiness: `GET /api/tags` lists the configured model name with the pinned digest, then one warm-up call with a
-  trivial wire schema succeeds (FR-037). Client timeout: `thresholds.model.client_timeout_s`.
+  trivial wire schema succeeds, then `GET /api/ps` shows the loaded model with `context_length` equal to
+  `thresholds.model.num_ctx` (FR-037). The server-wide `OLLAMA_CONTEXT_LENGTH` and the thresholds file must agree; a
+  mismatch keeps the model `missing` and logs WARN with both numbers. Client timeout:
+  `thresholds.model.client_timeout_s`.
 - `cold` is true when `load_duration` exceeds the threshold `model.cold_load_ns` or the warm-up had to load the model.
 
 ## Replay adapter

@@ -51,10 +51,11 @@ Expected: only `lo`; a non-zero uid; `touch` fails; `none true [ALL] [no-new-pri
 ```sh
 docker compose run --rm fixtures
 docker compose run --rm fixtures            # second run
-ls inbox; sha256sum inbox/* | sort > /tmp/a; docker compose run --rm fixtures; sha256sum inbox/* | sort > /tmp/b; diff /tmp/a /tmp/b && echo same
+ls inbox; find inbox -type f -exec sha256sum {} + | sort > /tmp/a; docker compose run --rm fixtures; find inbox -type f -exec sha256sum {} + | sort > /tmp/b; diff /tmp/a /tmp/b && echo same
 ```
 
-Expected: 11 files plus `manifest.json` in the inbox, one expected file per fixture; identical hashes on every run.
+Expected: 11 files plus `manifest.json` at the top level of the inbox, one expected file per fixture in
+`inbox/expected/`; identical hashes on every run.
 
 ## Folder run (check 4) and re-read (check 5)
 
@@ -86,11 +87,13 @@ Expected: `"class":"unverified"`; every fixture row shows `synthetic`. Remove th
 
 ```sh
 docker compose run --rm app node --test test/safe-read.test.ts     # symlink, hard link, 1 GB manifest
-docker compose run --rm fixtures node src/hostile.ts               # writes a 5000-page PDF and a 30000x30000 PNG into the inbox
+docker compose run --rm fixtures node src/hostile.ts               # the hostile set of T035 into the inbox: two oversized files plus one file per parser reason code
 ```
 
-Then "Read folder". Expected: the safe-read tests fail the job before anything is read or served; both hostile
-documents end REJECTED `TOO_LARGE` after one attempt; `docker compose ps` shows every container still up.
+Then "Read folder". Expected: the safe-read tests fail the job before anything is read or served; the two oversized
+documents end REJECTED `TOO_LARGE` after one attempt; the password-protected PDF ends REJECTED `ENCRYPTED`, the
+truncated DOCX `CORRUPT`, the `.zip` `UNSUPPORTED_FORMAT`; the blank-page PDF ends NEEDS_REVIEW `EMPTY` and the
+noise-only PNG NEEDS_REVIEW `LOW_OCR_QUALITY`; `docker compose ps` shows every container still up.
 
 ## GPU-free suite (check 9)
 
@@ -106,11 +109,14 @@ snapshots per type, manifest validation of golden parser outputs, `INTERNAL_ERRO
 ## Registry (check 10)
 
 ```sh
-cp specs/001-local-prototype/contracts/examples/receipt.v1.json schemas/   # or write a minimal receipt schema
+cp app/test/fixtures/registry/receipt.v1.json schemas/   # a minimal fourth type; schemas/ is a bind mount of app
 docker compose restart app
+cp inbox/<a text PDF fixture> /tmp/receipt-probe.pdf && printf ' ' >> /tmp/receipt-probe.pdf   # a new content hash
 ```
 
-Then upload any fixture copy and inspect `GET /api/documents/{number}/raw`: the classify `rawRequest` lists `receipt`.
+Then upload `/tmp/receipt-probe.pdf` (a fixture copy itself is a `DUPLICATE` and runs no classification) and inspect
+`GET /api/documents/{number}/raw`: the classify `rawRequest` lists `receipt`. Remove the file from `schemas/`
+afterwards.
 
 ## Model outage (check 11)
 

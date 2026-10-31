@@ -130,7 +130,7 @@ The owner adds a new versioned type schema file and restarts. The classifier off
 - The model server does not answer, the container dies without a result, or the model returns invalid JSON: the document gets `INTERNAL_ERROR`, is retried, and is FAILED after three attempts (C6, check 9).
 - A step's lease expires because the worker died: the expiry counts as an attempt and the document is picked up again; on restart the single worker requeues the documents it left in progress (owner decision, named simplification).
 - The prompt would exceed the model's context budget: the document ends with `TOO_LARGE` before any model call (C7).
-- The model stops generating because it hit the generation cap: the document gets a reason code and is not retried (C7).
+- The model stops generating because it hit the generation cap: the document ends REJECTED with `TOO_LARGE` naming the generation cap as the breached limit, and is not retried (C7).
 - A field's verbatim fragment is not found in the stored page text: the field is not accepted and the document gets `VALIDATION_FAILED` with the template `Field "{field}": the quoted fragment "{fragment}" is not in the text of page {page}.`; `LOW_CONFIDENCE` is never used for this (C1).
 - Scanned pages are unreadable: `LOW_OCR_QUALITY`; pages are blank: `EMPTY`; both with the cut-off values from the thresholds file in the message.
 - The classifier answers "none of the registered types": NEEDS_REVIEW with `UNKNOWN_DOC_TYPE` and zero field rows; no extraction runs.
@@ -176,7 +176,7 @@ Classification, extraction and evidence
 - **FR-019**: The system MUST derive the typed value from the located fragment (ISO date, integer money in kopiyky, enumeration, string) and MUST NOT accept a field whose fragment was not found or whose checks failed (constitution VI).
 - **FR-020**: The system MUST NOT use any confidence reported by the model.
 - **FR-021**: The system MUST run deterministic checks written as rules: the VAT rule (net plus VAT equals total, exact integer comparison) and the VAT rate, date order, EDRPOU checksums and Ukrainian IBAN checksums; a tolerance that lets the wrong-VAT fixture pass is a defect (C11).
-- **FR-022**: Before each model call the system MUST check the prompt against the context budget using a characters-per-token ratio calibrated in the evaluation; over budget ends the document with `TOO_LARGE`. A generation cut off at the cap MUST map to a reason code and MUST NOT be retried (C7).
+- **FR-022**: Before each model call the system MUST check the prompt against the context budget using a characters-per-token ratio calibrated in the evaluation; over budget ends the document with `TOO_LARGE`. A generation cut off at the generation cap (the model server reports the stop reason "length") ends the document REJECTED with `TOO_LARGE`, the cap named as the breached limit, and MUST NOT be retried (C7).
 - **FR-023**: The system MUST run one model call at a time and MUST never hold a database row lock while a model call is in flight (C7).
 
 Reasons and status
@@ -246,6 +246,7 @@ Browser view
 - **Page**: one page of a document with its rendered preview image; several pages per document.
 - **Page text**: one reading of one page: text, source (text layer or OCR), engine, version, resolution, timings per parser step; append-only.
 - **Extraction**: one model call on one document: model identity, schema version, prompt hash, raw request and response, stop reason, token counts and durations, the thresholds in force; append-only.
+- **Step run**: one execution of one pipeline step on one document: step name, attempt number, start and end time, duration, outcome; the source of the per-step durations in the detail view and of the parse and model time split in the evaluation; append-only.
 - **Field**: one extracted value of one extraction: field name from the registry, typed value, verbatim fragment, page text reference, offsets, found flag, source (model); bounding box reserved.
 - **Reason**: a code from the closed list with filled parameters, attached to a document; several per document.
 - **Document type schema**: a versioned description of one type's fields, their kinds, which are required, their labels in both interface languages, and the rules checked; the single source for prompts, checks, labels and fixtures. Initial types and field sets (the registry version may refine them):
