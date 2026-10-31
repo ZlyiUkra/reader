@@ -4,7 +4,7 @@
 
 **Created**: 2026-10-31
 
-**Status**: Draft
+**Status**: Analysed on 2026-10-31, ready for implementation
 
 **Input**: User description: "Local Docker prototype of the document reader, as agreed by the five-archetype review board on 2026-10-17: handoff `.specify/consilium/2026-10-17-local-prototype.md`, verdict approved-with-conditions, conditions C1-C17, acceptance checks 1-14, route speckit with Agile Tasks."
 
@@ -50,10 +50,10 @@ The owner opens a document from the table and sees the fields that were extracte
 **Acceptance Scenarios**:
 
 1. **Given** an ACCEPTED document, **When** its detail view opens, **Then** every field shows its typed value, the verbatim fragment, the page number and that the fragment was found in the stored page text; the view also shows the model identity, the schema version and the duration of each pipeline step.
-5. **Given** any document with at least one extraction, **When** the owner expands "Model request and response" in the detail view, **Then** the raw request and the raw response of each extraction are fetched for that one document and shown as plain text, collapsed by default.
-2. **Given** a NEEDS_REVIEW document, **When** its detail view opens, **Then** every reason is shown as a rendered message (for example `Required field "Contract date" not found.`), never as a bare code.
-3. **Given** any document, **When** its page images are shown, **Then** they are rendered previews of capped width, loaded lazily, and the original file is never offered for download or display (C15).
-4. **Given** the documents table, **When** it refreshes (every 2 seconds), **Then** it shows status, type and reason codes, and never carries page texts or raw model requests and responses (C15).
+2. **Given** any document with at least one extraction, **When** the owner expands "Model request and response" in the detail view, **Then** the raw request and the raw response of each extraction are fetched for that one document and shown as plain text, collapsed by default.
+3. **Given** a NEEDS_REVIEW document, **When** its detail view opens, **Then** every reason is shown as a rendered message (for example `Required field "Contract date" not found.`), never as a bare code.
+4. **Given** any document, **When** its page images are shown, **Then** they are rendered previews of capped width, loaded lazily, and the original file is never offered for download or display (C15).
+5. **Given** the documents table, **When** it refreshes (every 2 seconds), **Then** it shows status, type and reason codes, and never carries page texts or raw model requests and responses (C15).
 
 ---
 
@@ -233,7 +233,7 @@ Thresholds and named simplifications
 Browser view
 
 - **FR-053**: The browser page MUST offer three views: the inbox folder contents with a "Read folder" action and an upload control; the documents table with status, type and reason codes, refreshed every 2 seconds; and a document detail view with fields, fragments, pages, model identity and step durations (C15).
-- **FR-053a**: The detail view MUST offer the raw model request and response of each extraction in a block that is collapsed by default and rendered as plain text; they are fetched by a separate request that serves one document at a time and never by the documents table endpoint.
+- **FR-053a**: The detail view MUST offer the raw model request and response of each extraction in a block that is collapsed by default and rendered as plain text; they are fetched by a separate request that serves one document at a time (the documents table endpoint never carries them, FR-054).
 - **FR-054**: The documents table endpoint MUST never return page texts or raw model requests and responses; page images MUST be served as images with a no-sniff marker, previews capped at about 1,240 pixels wide and loaded lazily; originals MUST never be served (C15).
 - **FR-055**: The page MUST render document text, fragments and reason messages as plain text only; no HTML or markdown rendering of document content (C15).
 - **FR-056**: The user interface MUST listen only on the loopback address. The server MUST reject requests with a foreign Host, and state-changing requests without a same-origin marker and the custom header, with 403 or 421 and no side effect; the content security policy MUST allow only the page's own origin (C15, check 13).

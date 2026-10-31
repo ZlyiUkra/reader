@@ -108,7 +108,8 @@ compose.yaml                 # five services + model-pull + fixtures (contracts/
 config/
 ├── reasons.json             # 15 codes, templates uk/en (contracts/reasons.schema.json)
 ├── classes.json             # synthetic, unverified, may_leave
-└── thresholds.json          # every tunable value, provisional (contracts/thresholds.schema.json)
+├── thresholds.json          # every tunable value, provisional (contracts/thresholds.schema.json)
+└── model.json               # model tag and pinned digest (T067)
 schemas/
 ├── invoice.v1.json
 ├── act.v1.json
@@ -133,6 +134,7 @@ app/                         # Node package: API, worker, front build
 │   ├── parser-client/       # Unix socket client, safe reading of job outputs
 │   ├── llm/                 # port types, dispatcher, ollama adapter, replay adapter
 │   ├── pipeline/            # steps parse/classify/extract/check, normalisation, fragment search, checks
+│   ├── shared/              # checksums, pinned normalisation, value parsing (R12, R13); copied into the fixtures image
 │   ├── db/                  # pool, parameterised queries, claim/lease, transactions
 │   └── api/                 # route handlers (contracts/api.md)
 ├── test/
@@ -144,12 +146,17 @@ app/                         # Node package: API, worker, front build
 │   ├── pipeline-replay.test.ts      # fixtures end to end on the replay adapter; INTERNAL_ERROR x3 -> FAILED
 │   ├── checks.test.ts               # VAT, dates, EDRPOU, IBAN, normalisation
 │   ├── i18n.test.ts                 # dictionaries, labels and templates complete in uk and en
-│   └── fixtures/                    # replay recordings, golden manifests, snapshots
+│   ├── eval.test.ts                 # the eval on a replayed run passes; one changed expected value fails it
+│   ├── requeue.test.ts              # boot requeue of a row left in flight by a dead instance
+│   ├── registry.test.ts             # an extra type schema changes the classify enum, labels and registryHash
+│   ├── todo.test.ts                 # every deferred simplification in todo.ts, the WARN output and /api/health
+│   └── fixtures/                    # replay recordings, golden manifests, snapshots, the receipt example schema
 └── web/                     # Vite + React, built into app/dist/web and served by @fastify/static
     ├── index.html
     ├── vite.config.ts       # base: ''
     └── src/
         ├── main.tsx, App.tsx
+        ├── components/      # Header.tsx: health, TODO list, language switch
         ├── views/           # Inbox.tsx, Documents.tsx, Document.tsx
         ├── api.ts           # fetch wrapper with X-Reader-Request, polling
         └── i18n/            # uk.json, en.json, t()
@@ -162,10 +169,11 @@ parser/                      # Node package, built-ins only; image with the docu
 │   └── tools/               # detect (file), soffice, pdfinfo/pdftotext/pdftoppm/pdftocairo, tesseract, rsvg
 └── fixtures/
     ├── generate.ts          # deterministic generator: templates -> formats, manifest, expected
+    ├── data.ts              # the fixed data object of the eleven documents
     ├── templates/           # invoice.html, act.html, contract.html
     ├── companies.ts         # fictional companies with valid EDRPOU and IBAN
     └── hostile.ts           # 5000-page PDF, 30000x30000 PNG
-inbox/                       # bind mount; contents ignored by git (.gitkeep only)
+inbox/                       # bind mount; the generator's fixtures, manifest.json and expected/; ignored by git (.gitkeep)
 results/                     # eval reports; ignored by git
 ```
 

@@ -87,7 +87,7 @@ Expected: `"class":"unverified"`; every fixture row shows `synthetic`. Remove th
 
 ```sh
 docker compose run --rm app node --test test/safe-read.test.ts     # symlink, hard link, 1 GB manifest
-docker compose run --rm fixtures node src/hostile.ts               # the hostile set of T035 into the inbox: two oversized files plus one file per parser reason code
+docker compose run --rm fixtures node fixtures/hostile.ts               # the hostile set of T035 into the inbox: two oversized files plus one file per parser reason code
 ```
 
 Then "Read folder". Expected: the safe-read tests fail the job before anything is read or served; the two oversized

@@ -25,7 +25,8 @@ relative to `/api`. All responses are `application/json; charset=utf-8` except p
 ```
 
 `todo` is the list of named simplifications (FR-052); it is never empty in the prototype. `model: "ready"` means the
-pinned digest is present in the model server's tag list and a warm-up call passed (FR-037).
+pinned digest is present in the model server's tag list and a warm-up call passed (FR-037). `sandbox` is the value of
+`READER_SANDBOX_RUNTIME`, set on the app service in compose.yaml to the parser's runtime (`runc` until gVisor).
 
 ## GET /inbox
 
