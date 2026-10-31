@@ -34,6 +34,12 @@ export const constants = {
    */
   maxModelReplyBytes: 4_194_304,
 
+  /**
+   * How long the worker sleeps when no document waits, in milliseconds. A guard on the polling rate of the status table,
+   * not a pipeline threshold; the table is read by one worker, so a short pause costs nothing.
+   */
+  workerPollMs: 500,
+
   /** Tokens the readiness warm-up may generate: the trivial schema it sends needs a handful. */
   warmupNumPredict: 16,
 };

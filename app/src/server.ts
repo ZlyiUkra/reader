@@ -4,8 +4,12 @@ import Fastify from 'fastify';
 import type { FastifyError, FastifyInstance } from 'fastify';
 import { registerHealth } from './api/health.ts';
 import type { HealthDeps } from './api/health.ts';
+import { registerInbox } from './api/inbox.ts';
 import { registerMeta } from './api/meta.ts';
 import type { MetaDeps } from './api/meta.ts';
+import { registerUpload } from './api/upload.ts';
+import { HttpError } from './http-error.ts';
+import type { IntakeDeps } from './intake/take.ts';
 
 /**
  * The one Fastify instance: the JSON API under `/api` and the built front, with the rules that keep the page on the
@@ -13,22 +17,13 @@ import type { MetaDeps } from './api/meta.ts';
  * tests build it without a database or a model and `main.ts` is the only place that wires the real ones.
  */
 
-/** An error that carries the HTTP status and the code of the API's error shape (contracts/api.md). */
-export class HttpError extends Error {
-  statusCode: number;
-  code: string;
-
-  constructor(statusCode: number, code: string, message: string) {
-    super(message);
-    this.name = 'HttpError';
-    this.statusCode = statusCode;
-    this.code = code;
-  }
-}
+export { HttpError };
 
 /** What `buildServer` needs. */
 export type ServerDeps = HealthDeps &
   MetaDeps & {
+    /** The inbox and upload routes; absent in tests that need neither a folder nor a database. */
+    intake?: IntakeDeps;
     /** The port the browser uses, which is the one the `Host` and `Origin` of every request must carry. */
     publicPort: number;
     /** Folder of the built front, or `null` to serve the API only (tests). */
@@ -92,6 +87,10 @@ export async function buildServer(deps: ServerDeps): Promise<FastifyInstance> {
     async (api) => {
       registerHealth(api, deps);
       registerMeta(api, deps);
+      if (deps.intake !== undefined) {
+        registerInbox(api, deps.intake);
+        await registerUpload(api, deps.intake);
+      }
     },
     { prefix: '/api' },
   );

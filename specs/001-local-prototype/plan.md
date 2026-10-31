@@ -117,7 +117,8 @@ schemas/
 db/
 └── init/
     ├── 001-role.sql         # app role without superuser
-    └── 002-schema.sql       # tables of data-model.md + schema_version row
+    ├── 002-schema.sql       # tables of data-model.md + schema_version row
+    └── 003-test-database.sql # reader_test: a second database, same schema, for the database tests
 app/                         # Node package: API, worker, front build
 ├── Dockerfile               # multi-stage: web build, then node slim runtime
 ├── package.json             # exact versions (research R1)

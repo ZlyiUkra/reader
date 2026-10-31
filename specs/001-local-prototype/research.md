@@ -291,8 +291,8 @@ of fragments (rejected: a near match is not evidence, constitution VI).
 | eval.ceiling_seconds_per_page_warm | 60 | s | owner decision 2026-10-31 |
 
 `LOW_OCR_QUALITY` fires when more than half of the OCR pages of a document are low quality (round 1 example: 3 of
-5 pages); the lease of a step is the sum of its timeouts (parse: convert + pages x (render + OCR); classify and
-extract: client timeout; check: 30 s).
+5 pages); the lease of a step is the sum of its timeouts (parse: the parser's job deadline, convert + pages x
+(2 x render + OCR) + 30 s, plus 30 s for the database work; classify and extract: client timeout; check: 30 s).
 
 ## Open items carried into tasks
 

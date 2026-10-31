@@ -1,15 +1,23 @@
 import { access } from 'node:fs/promises';
+import { hostname } from 'node:os';
 import path from 'node:path/posix';
+import { createContractValidators } from './config/ajv.ts';
 import { ConfigError, loadConfigOrExit } from './config/load.ts';
+import { thresholdNumber } from './config/thresholds.ts';
 import { logTodoWarnings } from './config/todo.ts';
 import { constants } from './constants.ts';
 import { createPool } from './db/pool.ts';
 import { assertSchemaVersion, SchemaVersionError } from './db/startup.ts';
+import { assertIntakeClasses } from './intake/take.ts';
+import type { IntakeDeps } from './intake/take.ts';
 import { createOllamaAdapter } from './llm/ollama.ts';
 import { modelSettings } from './llm/settings.ts';
+import { leaseSeconds } from './pipeline/lease.ts';
+import { createParseStep } from './pipeline/parse.ts';
 import { createReasons, ReasonsError } from './reasons/reasons.ts';
 import { createRegistry, RegistryError } from './registry/registry.ts';
 import { buildServer } from './server.ts';
+import { startWorker } from './worker.ts';
 
 /**
  * The entry point of the application. The start order is the one the specification fixes: the configuration (which
@@ -91,6 +99,38 @@ const modelAdapter = createOllamaAdapter({
 const listenPort = Number(env['READER_PORT'] ?? '3000');
 const publicPort = Number(env['READER_PUBLIC_PORT'] ?? listenPort);
 
+/** The folders compose.yaml mounts: the inbox, the blob store and the jobs volume shared with the parser. */
+function requiredFolder(name: string): string {
+  const value = env[name];
+  if (value === undefined || value === '') {
+    refuse(`${name} is not set; compose.yaml sets it to a mounted folder.`);
+  }
+  return value;
+}
+const inboxDir = requiredFolder('READER_INBOX_DIR');
+const blobRoot = requiredFolder('READER_BLOB_DIR');
+const jobsDir = requiredFolder('READER_JOBS_DIR');
+
+const logger = {
+  info: (fields: object, message: string) => app.log.info(fields, message),
+  warn: (fields: object, message: string) => app.log.warn(fields, message),
+  error: (fields: object, message: string) => app.log.error(fields, message),
+};
+
+try {
+  assertIntakeClasses(config.classes);
+} catch (error) {
+  refuse(error instanceof Error ? error.message : String(error));
+}
+const intake: IntakeDeps = {
+  pool,
+  inboxDir,
+  blobRoot,
+  maxBytes: thresholdNumber(config.thresholds, 'intake.upload_max_bytes'),
+  classes: config.classes,
+  logger,
+};
+
 const app = await buildServer({
   logger: true,
   publicPort,
@@ -98,6 +138,7 @@ const app = await buildServer({
   registry,
   reasons,
   sandbox,
+  intake,
   checkDb: async () => {
     try {
       await pool.query('SELECT 1');
@@ -113,3 +154,18 @@ const app = await buildServer({
 
 logTodoWarnings(app.log);
 await app.listen({ host: env['READER_LISTEN_HOST'] ?? '127.0.0.1', port: listenPort });
+
+// The worker starts after the server and takes its own dependencies, never the server (AGENTS.md). Only the parse step has a
+// handler in this build; the model steps join it in a later slice, and until then documents wait at CLASSIFY.
+const validators = await createContractValidators();
+startWorker({
+  pool,
+  handlers: {
+    parse: createParseStep({ pool, thresholds: config.thresholds, validateManifest: validators.parserManifest, jobsDir, blobRoot, logger }),
+  },
+  modelReady: async () => (await modelAdapter.readiness()).state === 'ready',
+  leaseSeconds: (step) => leaseSeconds(step, config.thresholds),
+  instanceId: env['READER_INSTANCE_ID'] ?? hostname(),
+  pollIntervalMs: constants.workerPollMs,
+  logger,
+});

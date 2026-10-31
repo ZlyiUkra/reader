@@ -52,7 +52,7 @@ Hashes every listed file and takes each one in (FR-001, FR-003). Body: none.
 Multipart upload of one file (field `file`), streamed to disk under its sha256 with the limits of the thresholds
 file (FR-004). Over the size limit: `413` with code `too_large`.
 
-- New document: `201` with `{ "number": number, "sha256": string, "class": "unverified", "status": "RECEIVED" }`.
+- New document: `201` with `{ "number": number, "sha256": string, "class": "synthetic" | "unverified", "status": "RECEIVED" }`.
 - Known hash: `200` with `{ "code": "DUPLICATE", "originalNumber": number, "sha256": string }` and no new row.
 
 ## GET /documents
