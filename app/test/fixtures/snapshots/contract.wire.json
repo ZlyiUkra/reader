@@ -1,0 +1,307 @@
+{
+  "type": "object",
+  "required": [
+    "number",
+    "date",
+    "firstPartyName",
+    "firstPartyEdrpou",
+    "secondPartyName",
+    "secondPartyEdrpou",
+    "subject",
+    "currency",
+    "validFrom",
+    "validUntil",
+    "totalAmount",
+    "paymentTerms",
+    "placeOfSigning"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "number": {
+      "type": "object",
+      "required": [
+        "verbatim",
+        "page"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "verbatim": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "page": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        }
+      }
+    },
+    "date": {
+      "type": "object",
+      "required": [
+        "verbatim",
+        "page"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "verbatim": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "page": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        }
+      }
+    },
+    "firstPartyName": {
+      "type": "object",
+      "required": [
+        "verbatim",
+        "page"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "verbatim": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "page": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        }
+      }
+    },
+    "firstPartyEdrpou": {
+      "type": "object",
+      "required": [
+        "verbatim",
+        "page"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "verbatim": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "page": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        }
+      }
+    },
+    "secondPartyName": {
+      "type": "object",
+      "required": [
+        "verbatim",
+        "page"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "verbatim": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "page": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        }
+      }
+    },
+    "secondPartyEdrpou": {
+      "type": "object",
+      "required": [
+        "verbatim",
+        "page"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "verbatim": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "page": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        }
+      }
+    },
+    "subject": {
+      "type": "object",
+      "required": [
+        "verbatim",
+        "page"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "verbatim": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "page": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        }
+      }
+    },
+    "currency": {
+      "type": "object",
+      "required": [
+        "verbatim",
+        "page"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "verbatim": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "page": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        }
+      }
+    },
+    "validFrom": {
+      "type": "object",
+      "required": [
+        "verbatim",
+        "page"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "verbatim": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "page": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        }
+      }
+    },
+    "validUntil": {
+      "type": "object",
+      "required": [
+        "verbatim",
+        "page"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "verbatim": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "page": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        }
+      }
+    },
+    "totalAmount": {
+      "type": "object",
+      "required": [
+        "verbatim",
+        "page"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "verbatim": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "page": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        }
+      }
+    },
+    "paymentTerms": {
+      "type": "object",
+      "required": [
+        "verbatim",
+        "page"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "verbatim": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "page": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        }
+      }
+    },
+    "placeOfSigning": {
+      "type": "object",
+      "required": [
+        "verbatim",
+        "page"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "verbatim": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "page": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        }
+      }
+    }
+  }
+}

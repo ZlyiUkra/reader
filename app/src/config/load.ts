@@ -21,10 +21,14 @@ export type ConfigDirs = {
   schemasDir: string;
 };
 
-/** One file of the schema registry as read from disk. The registry module derives everything else from it (T019). */
+/**
+ * One file of the schema registry as read from disk. The registry module derives everything else from it (T019); the text
+ * is kept as read because the registry hash is taken over the files themselves (contracts/type-schema.md).
+ */
 export type TypeSchemaFile = {
   file: string;
   schema: AnySchemaObject;
+  text: string;
 };
 
 /** Everything the application reads from files at start, validated. */
@@ -56,20 +60,28 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
-/** Reads and parses a JSON file; the result is `unknown` until a validator has accepted it. */
-async function readJson(file: string): Promise<unknown> {
-  let text: string;
+/** Reads a text file; a failure is a ConfigError that names the file. */
+async function readText(file: string): Promise<string> {
   try {
-    text = await readFile(file, 'utf8');
+    return await readFile(file, 'utf8');
   } catch (error) {
     throw new ConfigError(`Cannot read ${file}: ${error instanceof Error ? error.message : String(error)}`);
   }
+}
+
+/** Parses JSON text; the result is `unknown` until a validator has accepted it. */
+function parseJson(text: string, file: string): unknown {
   try {
     const parsed: unknown = JSON.parse(text);
     return parsed;
   } catch (error) {
     throw new ConfigError(`${file} is not valid JSON: ${error instanceof Error ? error.message : String(error)}`);
   }
+}
+
+/** Reads and parses a JSON file; the result is `unknown` until a validator has accepted it. */
+async function readJson(file: string): Promise<unknown> {
+  return parseJson(await readText(file), file);
 }
 
 /**
@@ -137,11 +149,12 @@ async function loadTypeSchemas(schemasDir: string, ajv: Ajv2020): Promise<TypeSc
     if (!typeSchemaFileName.test(name)) {
       throw new ConfigError(`${path.join(schemasDir, name)} is not named <type>.v<n>.json.`);
     }
-    const schema = await readJson(path.join(schemasDir, name));
+    const text = await readText(path.join(schemasDir, name));
+    const schema = parseJson(text, path.join(schemasDir, name));
     if (!isRecord(schema) || ajv.validateSchema(schema) !== true) {
       throw new ConfigError(`${path.join(schemasDir, name)} is not a valid JSON Schema (draft 2020-12).`);
     }
-    files.push({ file: name, schema });
+    files.push({ file: name, schema, text });
   }
   return files;
 }

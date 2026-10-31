@@ -118,7 +118,9 @@
     "currency": {
       "type": "string",
       "enum": [
-        "UAH"
+        "UAH",
+        "EUR",
+        "USD"
       ],
       "x-reader": {
         "kind": "enum",

@@ -20,7 +20,7 @@ schema, the checks, the field labels and order, and the fixtures' expected value
     "date":        { "type": "string", "format": "date", "x-reader": { "kind": "date", "labels": { "uk": "Дата", "en": "Date" } } },
     "sellerEdrpou":{ "type": "string", "pattern": "^[0-9]{8}$", "x-reader": { "kind": "edrpou", "labels": { "uk": "ЄДРПОУ продавця", "en": "Seller EDRPOU" } } },
     "sellerIban":  { "type": "string", "pattern": "^UA[0-9]{27}$", "x-reader": { "kind": "iban", "labels": { "uk": "IBAN продавця", "en": "Seller IBAN" } } },
-    "currency":    { "type": "string", "enum": ["UAH"], "x-reader": { "kind": "enum", "labels": { "uk": "Валюта", "en": "Currency" } } },
+    "currency":    { "type": "string", "enum": ["UAH", "EUR", "USD"], "x-reader": { "kind": "enum", "labels": { "uk": "Валюта", "en": "Currency" } } },
     "totalNet":    { "type": "integer", "x-reader": { "kind": "money", "labels": { "uk": "Сума без ПДВ", "en": "Total without VAT" } } }
   },
   "x-reader": {
@@ -87,4 +87,7 @@ Applied to both the page text and the fragment before the search: Unicode NFC; a
 `‘`, ``) to `'`; non-breaking and thin spaces to a space; runs of whitespace to one space; soft hyphen removed; a
 hyphen followed by a line break joins the word. Offsets are mapped back to the stored text. Date parsing accepts
 `DD.MM.YYYY`, `DD/MM/YYYY`, `YYYY-MM-DD` and the Ukrainian month names in the genitive; money accepts thousands
-separated by spaces or non-breaking spaces and a comma or dot decimal mark; `грн`, `UAH` and `₴` mean UAH.
+separated by spaces or non-breaking spaces and a comma or dot decimal mark. A currency is written as its code, its sign
+or its name: `UAH`, `грн`, `₴` for the hryvnia; `EUR`, `€`, `євро` for the euro; `USD`, `$`, `дол.` for the US dollar. The
+`currency` field is matched through that table, not letter for letter, and a money fragment that carries a currency is
+compared with it. Money is stored in the minor unit of the currency (kopiyky, cents), 100 to the unit in all three.

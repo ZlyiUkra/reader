@@ -1,0 +1,353 @@
+{
+  "type": "object",
+  "required": [
+    "number",
+    "date",
+    "sellerName",
+    "sellerEdrpou",
+    "sellerIban",
+    "buyerName",
+    "buyerEdrpou",
+    "currency",
+    "totalNet",
+    "vat",
+    "totalGross",
+    "vatRate",
+    "dueDate",
+    "contractRef",
+    "paymentPurpose"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "number": {
+      "type": "object",
+      "required": [
+        "verbatim",
+        "page"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "verbatim": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "page": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        }
+      }
+    },
+    "date": {
+      "type": "object",
+      "required": [
+        "verbatim",
+        "page"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "verbatim": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "page": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        }
+      }
+    },
+    "sellerName": {
+      "type": "object",
+      "required": [
+        "verbatim",
+        "page"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "verbatim": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "page": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        }
+      }
+    },
+    "sellerEdrpou": {
+      "type": "object",
+      "required": [
+        "verbatim",
+        "page"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "verbatim": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "page": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        }
+      }
+    },
+    "sellerIban": {
+      "type": "object",
+      "required": [
+        "verbatim",
+        "page"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "verbatim": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "page": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        }
+      }
+    },
+    "buyerName": {
+      "type": "object",
+      "required": [
+        "verbatim",
+        "page"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "verbatim": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "page": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        }
+      }
+    },
+    "buyerEdrpou": {
+      "type": "object",
+      "required": [
+        "verbatim",
+        "page"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "verbatim": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "page": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        }
+      }
+    },
+    "currency": {
+      "type": "object",
+      "required": [
+        "verbatim",
+        "page"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "verbatim": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "page": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        }
+      }
+    },
+    "totalNet": {
+      "type": "object",
+      "required": [
+        "verbatim",
+        "page"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "verbatim": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "page": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        }
+      }
+    },
+    "vat": {
+      "type": "object",
+      "required": [
+        "verbatim",
+        "page"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "verbatim": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "page": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        }
+      }
+    },
+    "totalGross": {
+      "type": "object",
+      "required": [
+        "verbatim",
+        "page"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "verbatim": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "page": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        }
+      }
+    },
+    "vatRate": {
+      "type": "object",
+      "required": [
+        "verbatim",
+        "page"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "verbatim": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "page": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        }
+      }
+    },
+    "dueDate": {
+      "type": "object",
+      "required": [
+        "verbatim",
+        "page"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "verbatim": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "page": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        }
+      }
+    },
+    "contractRef": {
+      "type": "object",
+      "required": [
+        "verbatim",
+        "page"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "verbatim": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "page": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        }
+      }
+    },
+    "paymentPurpose": {
+      "type": "object",
+      "required": [
+        "verbatim",
+        "page"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "verbatim": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "page": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        }
+      }
+    }
+  }
+}

@@ -37,6 +37,8 @@ RUN mkdir -p /data/blobs /jobs/in \
 COPY --from=runtime-deps /app/node_modules ./node_modules
 COPY app/package.json ./
 COPY app/src ./src
+# The tests run in this image (`docker compose run --rm app node --test`, quickstart.md), so they travel with the code.
+COPY app/test ./test
 COPY --from=web /build/dist/web ./dist/web
 USER node
 CMD ["node", "src/main.ts"]

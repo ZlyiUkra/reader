@@ -246,8 +246,9 @@ Decision: as written in [contracts/type-schema.md](contracts/type-schema.md), se
 apostrophe variants to `'`; non-breaking and thin spaces to a space; whitespace runs to one space; soft hyphens
 removed; hyphen plus line break joins the word. Offsets are mapped back to the stored text through an index map.
 Dates: `DD.MM.YYYY`, `DD/MM/YYYY`, `YYYY-MM-DD`, Ukrainian month names in the genitive (`01 березня 2026 р.`).
-Money: thousands separated by spaces or non-breaking spaces, comma or dot decimal mark, `грн`, `UAH`, `₴` all
-mean UAH; stored as integer kopiyky. Enumerations: exact match after normalisation. Alternatives: fuzzy matching
+Money: thousands separated by spaces or non-breaking spaces, comma or dot decimal mark; `грн`, `UAH`, `₴` mean UAH,
+`EUR`, `€`, `євро` the euro and `USD`, `$`, `дол.` the US dollar (owner decision of 2026-10-31); stored as integer minor units
+(kopiyky, cents). Enumerations: exact match after normalisation. Alternatives: fuzzy matching
 of fragments (rejected: a near match is not evidence, constitution VI).
 
 ## R14. Thresholds, starting values (C13; every value provisional, source "handoff 2026-10-17" or "estimate")

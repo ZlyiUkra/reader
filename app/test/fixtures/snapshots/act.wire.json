@@ -1,0 +1,330 @@
+{
+  "type": "object",
+  "required": [
+    "number",
+    "date",
+    "contractorName",
+    "contractorEdrpou",
+    "customerName",
+    "customerEdrpou",
+    "contractRef",
+    "periodStart",
+    "periodEnd",
+    "currency",
+    "totalNet",
+    "vat",
+    "totalGross",
+    "placeOfSigning"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "number": {
+      "type": "object",
+      "required": [
+        "verbatim",
+        "page"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "verbatim": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "page": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        }
+      }
+    },
+    "date": {
+      "type": "object",
+      "required": [
+        "verbatim",
+        "page"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "verbatim": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "page": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        }
+      }
+    },
+    "contractorName": {
+      "type": "object",
+      "required": [
+        "verbatim",
+        "page"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "verbatim": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "page": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        }
+      }
+    },
+    "contractorEdrpou": {
+      "type": "object",
+      "required": [
+        "verbatim",
+        "page"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "verbatim": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "page": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        }
+      }
+    },
+    "customerName": {
+      "type": "object",
+      "required": [
+        "verbatim",
+        "page"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "verbatim": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "page": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        }
+      }
+    },
+    "customerEdrpou": {
+      "type": "object",
+      "required": [
+        "verbatim",
+        "page"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "verbatim": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "page": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        }
+      }
+    },
+    "contractRef": {
+      "type": "object",
+      "required": [
+        "verbatim",
+        "page"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "verbatim": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "page": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        }
+      }
+    },
+    "periodStart": {
+      "type": "object",
+      "required": [
+        "verbatim",
+        "page"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "verbatim": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "page": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        }
+      }
+    },
+    "periodEnd": {
+      "type": "object",
+      "required": [
+        "verbatim",
+        "page"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "verbatim": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "page": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        }
+      }
+    },
+    "currency": {
+      "type": "object",
+      "required": [
+        "verbatim",
+        "page"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "verbatim": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "page": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        }
+      }
+    },
+    "totalNet": {
+      "type": "object",
+      "required": [
+        "verbatim",
+        "page"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "verbatim": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "page": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        }
+      }
+    },
+    "vat": {
+      "type": "object",
+      "required": [
+        "verbatim",
+        "page"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "verbatim": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "page": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        }
+      }
+    },
+    "totalGross": {
+      "type": "object",
+      "required": [
+        "verbatim",
+        "page"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "verbatim": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "page": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        }
+      }
+    },
+    "placeOfSigning": {
+      "type": "object",
+      "required": [
+        "verbatim",
+        "page"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "verbatim": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "page": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        }
+      }
+    }
+  }
+}

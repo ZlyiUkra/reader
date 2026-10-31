@@ -14,4 +14,10 @@ export const constants = {
    * forever on a database that is not there, not a pipeline threshold.
    */
   dbConnectTimeoutMs: 10_000,
+
+  /**
+   * Attempts after which a step that keeps ending in INTERNAL_ERROR makes the document FAILED (FR-026, FR-027). A rule
+   * of the status function, not a tunable of the pipeline, so it lives here and not in config/thresholds.json.
+   */
+  maxAttempts: 3,
 };

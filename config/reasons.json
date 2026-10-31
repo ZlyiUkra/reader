@@ -142,8 +142,8 @@
         }
       ],
       "templates": {
-        "uk": "Якість розпізнавання тексту занизька: на {lowPages} із {ocrPages} сканованих сторінок понад {share} слів мають впевненість нижче {minConfidence}.",
-        "en": "Text recognition quality is too low: on {lowPages} of {ocrPages} scanned pages more than {share} of the words have confidence below {minConfidence}."
+        "uk": "Якість розпізнавання тексту занизька. Сканованих сторінок: {ocrPages}, із низькою якістю: {lowPages}; на такій сторінці частка слів із впевненістю нижче {minConfidence} перевищує {share}.",
+        "en": "Text recognition quality is too low. Scanned pages: {ocrPages}, of low quality: {lowPages}; on such a page the share of words with confidence below {minConfidence} exceeds {share}."
       }
     },
     {
@@ -342,8 +342,8 @@
         }
       ],
       "templates": {
-        "uk": "Документ порожній: на {blankPages} із {pages} сторінок менше ніж {minChars} символів.",
-        "en": "The document is empty: {blankPages} of {pages} pages have fewer than {minChars} characters."
+        "uk": "Документ порожній. Сторінок: {pages}, майже без тексту: {blankPages}; на такій сторінці символів менше за {minChars}.",
+        "en": "The document is empty. Pages: {pages}, nearly without text: {blankPages}; such a page has fewer than {minChars} characters."
       }
     },
     {

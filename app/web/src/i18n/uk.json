@@ -1,0 +1,9 @@
+{
+  "app.title": "Reader",
+  "nav.folder": "Тека",
+  "nav.documents": "Документи",
+  "nav.detail": "Документ",
+  "view.folder.placeholder": "Тут будуть файли теки та завантаження файлів.",
+  "view.documents.placeholder": "Тут буде таблиця документів.",
+  "view.detail.placeholder": "Тут буде картка документа."
+}

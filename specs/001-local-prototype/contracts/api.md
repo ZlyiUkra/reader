@@ -117,7 +117,9 @@ Everything the page derives from the registry and the reasons file (FR-041, FR-0
                "fields": [ { "name": string, "kind": string, "required": boolean,
                              "labels": { "uk": string, "en": string } } ] } ],
   "reasons": [ { "code": string, "outcome": string, "emitted": boolean,
-                 "templates": { "uk": string, "en": string }, "params": [ string ] } ],
+                 "templates": { "uk": string, "en": string }, "params": [ string ],
+                 "variants": [ { "when": object, "params": [ string ],
+                                 "templates": { "uk": string, "en": string } } ] } ],
   "statuses": [ string ] }
 ```
 

@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://reader.local/schemas/receipt.v1.json",
+  "title": "receipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["number", "date", "total"],
+  "properties": {
+    "number": {
+      "type": "string",
+      "x-reader": { "kind": "string", "labels": { "uk": "Номер", "en": "Number" } }
+    },
+    "date": {
+      "type": "string",
+      "format": "date",
+      "x-reader": { "kind": "date", "labels": { "uk": "Дата", "en": "Date" } }
+    },
+    "total": {
+      "type": "integer",
+      "x-reader": { "kind": "money", "labels": { "uk": "Сума", "en": "Total" } }
+    }
+  },
+  "x-reader": {
+    "labels": { "uk": "Чек", "en": "Receipt" },
+    "order": ["number", "date", "total"],
+    "checks": []
+  }
+}

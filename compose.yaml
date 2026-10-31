@@ -146,6 +146,8 @@ services:
       MODEL_TAG: ${MODEL_TAG:-qwen3.5:4b}
       READER_LISTEN_HOST: 0.0.0.0
       READER_PORT: "3000"
+      # The port the browser reaches the page on: the Host and Origin checks of the server accept this one (research R11).
+      READER_PUBLIC_PORT: ${READER_PORT:-3000}
       READER_CONFIG_DIR: /app/config
       READER_SCHEMAS_DIR: /app/schemas
       READER_INBOX_DIR: /inbox

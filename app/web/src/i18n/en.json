@@ -1,0 +1,9 @@
+{
+  "app.title": "Reader",
+  "nav.folder": "Folder",
+  "nav.documents": "Documents",
+  "nav.detail": "Document",
+  "view.folder.placeholder": "The files of the folder and the upload control will appear here.",
+  "view.documents.placeholder": "The documents table will appear here.",
+  "view.detail.placeholder": "The document detail will appear here."
+}

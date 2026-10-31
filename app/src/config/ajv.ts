@@ -6,9 +6,11 @@ import addFormatsModule from 'ajv-formats';
 import type { ClassesFile, ModelConfig, ParserManifest, ReasonsFile, ThresholdsFile } from './types.ts';
 
 /**
- * The one Ajv instance of the application and the validators compiled from the contract schemas (research R1, R6).
+ * The Ajv factory of the application and the validators compiled from the contract schemas (research R1, R6).
  * Draft 2020-12, strict mode, `format: date` from ajv-formats. Union types such as ["string", "null"] are allowed
- * because the parser manifest and the reasons file use them on purpose; every other strict check stays on.
+ * because the parser manifest and the reasons file use them on purpose; every other strict check stays on. The
+ * vendor keyword `x-reader` of the type schemas is registered as an annotation, because strict mode rejects a keyword it
+ * does not know, and it validates nothing: the registry checks its content (contracts/type-schema.md).
  */
 export type ContractValidators = {
   ajv: Ajv2020;
@@ -35,6 +37,7 @@ const schemasDir = path.join(import.meta.dirname, 'schemas');
 export function createAjv(): Ajv2020 {
   const ajv = new Ajv2020({ strict: true, allErrors: false, allowUnionTypes: true });
   addFormats(ajv);
+  ajv.addKeyword({ keyword: 'x-reader', schemaType: 'object' });
   return ajv;
 }
 
