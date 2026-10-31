@@ -92,6 +92,8 @@ services:
 
   # The parser sandbox (C9, constitution VII): no network, read-only root, non-root, no capabilities, numeric limits.
   # It serves POST /parse over the Unix socket /jobs/parser.sock. /jobs/in is the app's input, read-only here.
+  # config/ is a read-only bind mount, as for the app: the parser reads thresholds.json once at start, so a changed
+  # threshold needs `docker compose restart parser app`.
   parser:
     build:
       context: .
@@ -120,6 +122,7 @@ services:
         source: jobs_in
         target: /jobs/in
         read_only: true
+      - ./config:/config:ro
 
   # API, worker and the built front in one process (plan.md). The only published port, on loopback.
   # config/ and schemas/ are read-only bind mounts: a change needs a restart, not a rebuild (acceptance check 10).

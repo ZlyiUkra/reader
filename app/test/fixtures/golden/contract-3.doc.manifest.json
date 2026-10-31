@@ -1,0 +1,32 @@
+{
+  "version": 1,
+  "jobId": "1bc001dc87f63a3cc4f8e08e4c88fca3",
+  "detectedMime": "application/msword",
+  "converter": "soffice 7.4.7",
+  "pageCount": 1,
+  "pages": [
+    {
+      "n": 1,
+      "source": "text_layer",
+      "engine": "pdftotext",
+      "engineVersion": "22.12.0",
+      "dpi": null,
+      "widthPx": 1240,
+      "heightPx": 1754,
+      "ocrWordsTotal": null,
+      "ocrWordsLow": null,
+      "timingsMs": {
+        "render": 144,
+        "text": 8,
+        "ocr": 0
+      }
+    }
+  ],
+  "timingsMs": {
+    "detect": 5,
+    "convert": 841,
+    "pdfinfo": 15,
+    "total": 1103
+  },
+  "limitsHit": []
+}

@@ -1,0 +1,32 @@
+{
+  "version": 1,
+  "jobId": "51efc56e658c4335f7763dd744c2be3c",
+  "detectedMime": "image/svg+xml",
+  "converter": "rsvg-convert 2.54.7",
+  "pageCount": 1,
+  "pages": [
+    {
+      "n": 1,
+      "source": "ocr",
+      "engine": "tesseract",
+      "engineVersion": "5.3.0",
+      "dpi": null,
+      "widthPx": 1240,
+      "heightPx": 1754,
+      "ocrWordsTotal": 86,
+      "ocrWordsLow": 0,
+      "timingsMs": {
+        "render": 127,
+        "text": 0,
+        "ocr": 493
+      }
+    }
+  ],
+  "timingsMs": {
+    "detect": 8,
+    "convert": 127,
+    "pdfinfo": 0,
+    "total": 653
+  },
+  "limitsHit": []
+}

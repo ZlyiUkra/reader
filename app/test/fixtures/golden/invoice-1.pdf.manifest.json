@@ -1,0 +1,32 @@
+{
+  "version": 1,
+  "jobId": "7736c8b490f12233a935fbfed72d78af",
+  "detectedMime": "application/pdf",
+  "converter": null,
+  "pageCount": 1,
+  "pages": [
+    {
+      "n": 1,
+      "source": "text_layer",
+      "engine": "pdftotext",
+      "engineVersion": "22.12.0",
+      "dpi": null,
+      "widthPx": 1240,
+      "heightPx": 1754,
+      "ocrWordsTotal": null,
+      "ocrWordsLow": null,
+      "timingsMs": {
+        "render": 136,
+        "text": 7,
+        "ocr": 0
+      }
+    }
+  ],
+  "timingsMs": {
+    "detect": 5,
+    "convert": 0,
+    "pdfinfo": 15,
+    "total": 174
+  },
+  "limitsHit": []
+}

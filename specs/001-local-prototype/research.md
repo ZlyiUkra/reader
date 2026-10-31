@@ -168,14 +168,18 @@ Decision (C8, C9, C17), one command per step, each under its own timeout and mem
 - Office to PDF: `soffice --headless --norestore --nologo -env:UserInstallation=file:///tmp/<job>/lo --convert-to
   pdf --outdir /tmp/<job> <input>`; one at a time; `convert_timeout_s` 120.
 - PDF: `pdfinfo` first (page count against `page_cap` 50, page size, `Encrypted: yes` -> `ENCRYPTED`, parse
-  failure -> `CORRUPT`); per page `pdftotext -layout -f n -l n`; a page with fewer than
-  `scanned_page_max_chars` characters is a scanned page and goes to OCR; preview `pdftoppm -png -scale-to 1240 -f n
-  -l n`; OCR input `pdftoppm -png -r 300 -f n -l n`.
+  failure -> `CORRUPT`; a PDF with a user password prints no `Encrypted` line and ends with exit code 1 and "Incorrect
+  password", measured 2026-10-31, which is also `ENCRYPTED`); per page `pdftotext -layout -f n -l n`; a page with
+  fewer than `scanned_page_max_chars` characters other than whitespace is a scanned page and goes to OCR; preview
+  `pdftoppm -png -scale-to-x 1240 -scale-to-y -1 -f n -l n -singlefile`; OCR input `pdftoppm -png -r <dpi> -f n -l n
+  -singlefile`, `<dpi>` the lower of 300 and the resolution of the page's largest image from `pdfimages -list`
+  (measured 2026-10-31: a 200 ppi scan took 10 s to render at 300 dpi and 1.5 s at 200, and read with a lower mean
+  confidence).
 - OCR: `tesseract <png> <base> -l ukr+eng --psm 3 txt tsv` in one pass; the `tsv` word table gives `conf` per word
   for the `LOW_OCR_QUALITY` rule.
 - Images: dimensions read from the header before any decode (PNG IHDR, JPEG SOF) against `png_max_side_px` 4000;
-  ImageMagick `convert -resize` for the preview; OCR on the original raster; SVG rendered by `rsvg-convert -f png -w
-  1240` with the same caps.
+  ImageMagick `convert -resize` for the preview; OCR on the original raster; SVG rendered by `rsvg-convert --format
+  png --width 1240 --keep-aspect-ratio` with the same caps.
 - Fixtures generator: one HTML template per type (plus one for the untyped letter) filled from `companies.ts`
   (fictional names, valid EDRPOU and IBAN, R12) and a fixed data object; Writer opens the HTML through the input
   filter `HTML (StarWriter)` and `soffice --convert-to` writes `pdf`, `docx`, `doc` and `rtf`; the sheet is `xlsx`

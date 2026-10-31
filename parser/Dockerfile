@@ -56,5 +56,7 @@ RUN mkdir -p /jobs/in && chown -R 10001:10001 /jobs && chmod 2775 /jobs /jobs/in
 WORKDIR /srv/parser
 COPY parser/package.json ./
 COPY parser/src ./src
+# Tells the server it owns its uid: after each job every other process of that uid is a leftover and is killed.
+ENV PARSER_SANDBOX=1
 USER 10001:10001
 CMD ["node", "src/server.ts"]

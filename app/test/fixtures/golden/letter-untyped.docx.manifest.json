@@ -1,0 +1,32 @@
+{
+  "version": 1,
+  "jobId": "5dd73ac9896adc89030ed456eeca5b99",
+  "detectedMime": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  "converter": "soffice 7.4.7",
+  "pageCount": 1,
+  "pages": [
+    {
+      "n": 1,
+      "source": "text_layer",
+      "engine": "pdftotext",
+      "engineVersion": "22.12.0",
+      "dpi": null,
+      "widthPx": 1240,
+      "heightPx": 1754,
+      "ocrWordsTotal": null,
+      "ocrWordsLow": null,
+      "timingsMs": {
+        "render": 109,
+        "text": 7,
+        "ocr": 0
+      }
+    }
+  ],
+  "timingsMs": {
+    "detect": 6,
+    "convert": 870,
+    "pdfinfo": 13,
+    "total": 1093
+  },
+  "limitsHit": []
+}

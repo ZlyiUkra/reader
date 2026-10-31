@@ -1,0 +1,32 @@
+{
+  "version": 1,
+  "jobId": "8a0538f4ad39c9e0aafe87aebe3efd33",
+  "detectedMime": "image/jpeg",
+  "converter": null,
+  "pageCount": 1,
+  "pages": [
+    {
+      "n": 1,
+      "source": "ocr",
+      "engine": "tesseract",
+      "engineVersion": "5.3.0",
+      "dpi": null,
+      "widthPx": 1240,
+      "heightPx": 1754,
+      "ocrWordsTotal": 79,
+      "ocrWordsLow": 1,
+      "timingsMs": {
+        "render": 544,
+        "text": 0,
+        "ocr": 554
+      }
+    }
+  ],
+  "timingsMs": {
+    "detect": 5,
+    "convert": 0,
+    "pdfinfo": 0,
+    "total": 1123
+  },
+  "limitsHit": []
+}
