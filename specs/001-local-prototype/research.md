@@ -50,10 +50,11 @@ Rationale: the parser is based on the same Node image as the app rather than `de
 Debian's own `nodejs` package is 18 and cannot run the parser's TypeScript; bookworm's apt repositories are
 available in the Node image. Alternative considered: `debian:12.15-slim` plus a Node tarball (more moving parts).
 
-Model: tag `qwen3.5:4b` (3.3-4.0 GB download, Q4_K_M weights plus the vision projector). The full sha256 digest is
-not shown on the library page (only short ids `7f3251fa6878` for the manifest, `d8b0f5e9760c` for the weights), so
-the pin is taken from `GET /api/tags` after the first pull and written into `config/model.json` as
-`{ "tag": "qwen3.5:4b", "digest": "<sha256>" }`; readiness then compares against it (FR-037). Task for phase 1.
+Model: tag `qwen3.5:4b` (Q4_K_M weights plus the vision projector). The full sha256 digest is not shown on the library
+page, so the pin is taken from `GET /api/tags` after the first pull and written into `config/model.json` as
+`{ "tag": "qwen3.5:4b", "digest": "<sha256>" }`; readiness then compares against it (FR-037). Measured on
+2026-10-31 (T067): the download is 3,324,173,934 bytes, and `ollama list` and `/api/tags` report the id
+`d8b0f5e9760c` (digest `d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04`), which is the pin.
 
 Sources: hub.docker.com/v2/repositories/... tag endpoints (2026-10-31); ollama.com/library/qwen3.5.
 
@@ -287,7 +288,8 @@ extract: client timeout; check: 30 s).
 
 ## Open items carried into tasks
 
-- Read the full sha256 of `qwen3.5:4b` from `/api/tags` after the first pull and pin it (R2).
+- ~~Read the full sha256 of `qwen3.5:4b` from `/api/tags` after the first pull and pin it (R2)~~ done by T067:
+  `d8b0f5e9760c…`, pinned in `config/model.json`.
 - ~~Read qpdf's bookworm version~~ done by T007: 11.3.0-1+deb12u1, pinned in `parser/Dockerfile` and recorded in R4.
 - Verify byte-stable PDF output of LibreOffice under `SOURCE_DATE_EPOCH` plus qpdf on the first fixture (R8).
 - Confirm the EDRPOU weight boundaries against an official source if one is found; the fixtures only need
