@@ -1,5 +1,10 @@
 {
   "app.title": "Reader",
+  "header.langToUk": "Перейти на українську",
+  "header.langToEn": "Перейти на англійську",
+  "header.themeToLight": "Увімкнути світлу тему",
+  "header.themeToDark": "Увімкнути темну тему",
+  "nav.label": "Розділи",
   "nav.folder": "Тека",
   "nav.documents": "Документи",
   "nav.detail": "Документ",

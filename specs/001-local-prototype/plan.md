@@ -155,8 +155,8 @@ app/                         # Node package: API, worker, front build
     ├── index.html
     ├── vite.config.ts       # base: ''
     └── src/
-        ├── main.tsx, App.tsx
-        ├── components/      # Header.tsx: health, TODO list, language switch
+        ├── main.tsx, App.tsx, styles.css, theme.ts
+        ├── components/      # Header.tsx: health, TODO list, one-button language and theme switches
         ├── views/           # Inbox.tsx, Documents.tsx, Document.tsx
         ├── api.ts           # fetch wrapper with X-Reader-Request, polling
         └── i18n/            # uk.json, en.json, t()

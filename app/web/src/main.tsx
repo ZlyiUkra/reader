@@ -1,6 +1,7 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { App } from './App.tsx';
+import './styles.css';
 
 /**
  * Entry point of the page: mounts the application into the one element of `index.html`. A missing element is a defect

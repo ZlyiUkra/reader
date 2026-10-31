@@ -21,6 +21,11 @@ const storageKey = 'reader.lang';
 /** The language used when nothing valid is stored: Ukrainian is the default and English stays one switch away. */
 const defaultLang: Lang = 'uk';
 
+/** The language the one-button switch changes to: the next of the closed list, which with two languages is the other one. */
+export function nextLang(lang: Lang): Lang {
+  return languages[(languages.indexOf(lang) + 1) % languages.length];
+}
+
 /** Narrows an arbitrary stored string to a language of the closed list. */
 function isLang(value: unknown): value is Lang {
   return languages.some((lang) => lang === value);

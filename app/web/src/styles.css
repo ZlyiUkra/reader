@@ -1,0 +1,150 @@
+/*
+ * Look of the page (T077). Palette variables hold the raw colours; the `--color-*` variables carry the meaning and are
+ * the only ones components use, so a theme is a different mapping and nothing else. Dark is the default and the base;
+ * the light theme is applied by `data-theme="light"` on the root element, which the theme switch sets (`theme.ts`).
+ * The system setting is not consulted. Ukrainian tones: flag blue and yellow, with dark navy and pale straw text in the
+ * dark theme. No gradients, animations or transitions; the radius stays small. The page sets no inline styles because
+ * the Content-Security-Policy of the server does not allow them.
+ */
+
+:root {
+  --flag-blue: #0057b8;
+  --flag-yellow: #ffd700;
+  --navy-950: #0a1a33;
+  --navy-800: #102a4f;
+  --navy-600: #5683c4;
+  --straw-100: #f6ecc0;
+  --straw-300: #cdbf83;
+  --ink-900: #0b2447;
+  --ink-600: #4a5f82;
+  --mist-50: #f3f6fb;
+  --mist-500: #7389b3;
+  --white: #ffffff;
+
+  --color-page: var(--navy-950);
+  --color-panel: var(--navy-800);
+  --color-border: var(--navy-600);
+  --color-text: var(--straw-100);
+  --color-text-muted: var(--straw-300);
+  --color-title: var(--flag-yellow);
+  --color-selected: var(--flag-yellow);
+  --color-on-selected: var(--navy-950);
+  --color-stripe-top: var(--flag-blue);
+  --color-stripe-bottom: var(--flag-yellow);
+  --color-focus: var(--flag-yellow);
+
+  --font-sans: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --radius: 3px;
+  --space: 0.75rem;
+
+  color-scheme: dark;
+}
+
+:root[data-theme='light'] {
+  --color-page: var(--mist-50);
+  --color-panel: var(--white);
+  --color-border: var(--mist-500);
+  --color-text: var(--ink-900);
+  --color-text-muted: var(--ink-600);
+  --color-title: var(--flag-blue);
+  --color-selected: var(--flag-blue);
+  --color-on-selected: var(--white);
+  --color-focus: var(--flag-blue);
+
+  color-scheme: light;
+}
+
+body {
+  margin: 0;
+  background: var(--color-page);
+  color: var(--color-text);
+  font: 14px/1.5 var(--font-sans);
+}
+
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space);
+  min-height: 100vh;
+  box-sizing: border-box;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem 1.5rem;
+}
+
+.header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space);
+  padding: var(--space) 0;
+  border-top: 4px solid var(--color-stripe-top);
+  border-bottom: 4px solid var(--color-stripe-bottom);
+}
+
+.header h1 {
+  margin: 0;
+  color: var(--color-title);
+  font-size: 1.6rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space);
+}
+
+.tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+}
+
+button {
+  padding: 0.375rem 0.875rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-panel);
+  color: var(--color-text);
+  font: inherit;
+  cursor: pointer;
+}
+
+button[aria-pressed='true'] {
+  border-color: var(--color-selected);
+  background: var(--color-selected);
+  color: var(--color-on-selected);
+  font-weight: 600;
+}
+
+button:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+.controls button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.5rem;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.857rem;
+  letter-spacing: 0.04em;
+}
+
+.panel {
+  flex: 1;
+  padding: 1rem 1.25rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-panel);
+}
+
+.panel p {
+  margin: 0;
+  color: var(--color-text-muted);
+}

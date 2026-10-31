@@ -2,7 +2,7 @@
 
 **Feature**: `001-local-prototype` | **Date**: 2026-10-31 | **Tasks**: [tasks.md](tasks.md)
 
-The 76 tasks run in slices. A slice is one phase of the project dashboard (the artifact), run with
+The 77 tasks run in slices. A slice is one phase of the project dashboard (the artifact), run with
 `/speckit-implement` and a task filter. Each slice section below is self-contained: the documentation servers it needs
 (with the commands to start and stop them), the tasks it runs and what each one writes, the text to paste after
 `/speckit-implement`, and the condition that closes it. The server lists are the ones the dashboard itself holds for
@@ -120,6 +120,8 @@ cd ~/Projects/docfactory && for n in docker linux owasp postgres-image postgresq
     `app/src/main.ts` (start order: config, classes, `schema_version`, server)
   - T070 registry test with the `receipt.v1.json` example
   - T010, T011 (written in slice 0): re-checked as described above, not rewritten
+  - T077 page shell of the front (`styles.css`, `theme.ts`, `components/Header.tsx` with the one-button language and theme switches): added after this
+    slice closed, run on its own at the owner's word; it is not in the Run text below
 - **Closes when**:
   1. `docker compose build app` succeeds and `docker compose run --rm app node --test` is green with no GPU: the
      status table over all 15 codes, the wire-schema snapshots, the checks and normalisation tests, the registry test.
@@ -409,7 +411,7 @@ in tasks.md. Then run the after_implement hook (agile-tasks).
   - T057 Document view: fields with fragments, lazy pages, steps, reasons as text, collapsed raw block
   - T058 verify in the browser that no document text is rendered as HTML; fix findings
   - T060 upload control in the Inbox view
-  - T066 Header: model state, sandbox runtime, TODO list, language switch
+  - T066 Header: model state, sandbox runtime, TODO list (the language switch is already there, from T077)
   - T069 run quickstart checks 2, 3, 8, 13 and the two refusals of SC-009; fix findings
 - **Closes when**: a foreign `Host` or `Origin` gets 403 or 421 and changes nothing (check 13); the header shows the
   TODO list; every field in the detail view shows its fragment and page; checks 2, 3 and 8 pass in the browser and

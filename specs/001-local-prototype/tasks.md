@@ -78,6 +78,7 @@ fixtures, server and worker skeleton. No user story work starts before this phas
 - [ ] T038 Write `app/src/worker.ts` (claim loop with the poll interval, step dispatch table, lease expiry handling, no LLM claim while the model is missing, boot requeue; takes pool, ports, thresholds and logger as parameters, never the Fastify instance) and its wiring into `app/src/main.ts`, which T036 wrote: the worker starts after the server
 - [X] T039 Write the front skeleton: `app/web/index.html`, `app/web/vite.config.ts` (`base: ''`, outDir `../dist/web`), `app/web/src/main.tsx`, `app/web/src/App.tsx` (three views as component state, no router), `app/web/src/api.ts` (`fetch` wrapper adding `X-Reader-Request: 1`, `poll(url, 2000)`), `app/web/src/i18n/uk.json`, `en.json`, `t.ts` with the language in `localStorage["reader.lang"]`, default `uk`
 - [ ] T040 [P] Write `app/test/i18n.test.ts`: the two dictionaries have equal key sets; every registry label and every reasons template exists in uk and en (FR-058)
+- [X] T077 Write the page shell of the front: `app/web/src/styles.css` (semantic CSS variables, a dark theme as the default and a light theme, both in Ukrainian tones; system sans stack; flat panels; no gradients, animations or inline styles), `app/web/src/theme.ts` (the light | dark choice, kept in `localStorage["reader.theme"]`, dark when nothing is stored), `app/web/src/components/Header.tsx` (the title and two one-button switches: the language, which shows the other language, FR-057, and the theme, which shows a sun or a moon) and the dictionary keys they need, wired into `App.tsx` and `main.tsx`; the language choice is kept in `localStorage["reader.lang"]`
 
 **Checkpoint**: `docker compose up -d` starts every service, `/api/health` answers (`model: ready` once T067 has
 pinned the digest), `node --test` passes the foundational tests with the model stopped, the fixtures generator
@@ -167,7 +168,7 @@ simplifications; restarts lose and duplicate nothing; misconfiguration refuses t
 
 **Independent Test**: acceptance checks 2, 3 and 13 of quickstart.md plus the refusals of SC-009.
 
-- [ ] T066 [US5] Write `app/web/src/components/Header.tsx`: model state, sandbox runtime, the TODO list from `/health` in the active language, the language switch (FR-052, FR-057)
+- [ ] T066 [US5] Extend `app/web/src/components/Header.tsx` (created by T077 with the title and the language switch): model state, sandbox runtime, the TODO list from `/health` in the active language (FR-052)
 - [ ] T068 [US5] Write `app/test/requeue.test.ts`: a document claimed by a dead instance id is requeued at start and completes without a duplicate row; run the manual check (`docker compose kill app` mid-step, `up -d`, the document reaches a terminal status once)
 - [ ] T069 [US5] Run quickstart.md checks 2 (cold start, no FAILED, second start downloads nothing), 3 (sandbox, networks, unpublished ports), 8 (the hostile set of T035: each file ends with its expected code after one attempt, every container still up) and 13 (Host and Origin), and the two refusals of SC-009 (missing egress rule, schema version mismatch); fix findings
 
@@ -267,7 +268,7 @@ The project dashboard groups work by nine phases. Each task belongs to one of th
 | --- | --- |
 | 0 Skeleton and networks | T001, T002, T003, T004, T005, T006, T008, T009, T012, T013, T014, T037 |
 | 1 Model and contract | T023, T024, T025, T026, T067 |
-| 2 Schema registry and reasons | T039, T010, T011, T017, T018, T019, T020, T021, T022, T036, T070 |
+| 2 Schema registry and reasons | T039, T010, T011, T017, T018, T019, T020, T021, T022, T036, T070, T077 |
 | 3 Synthetic documents | T007, T032, T033, T034, T035 |
 | 4 Sandbox and parsing | T027, T028, T029, T030, T031 |
 | 5 Intake and queue | T015, T016, T038, T041, T042, T043, T048, T059, T061, T068 |
@@ -280,7 +281,7 @@ Slices follow these phases; `slices.md` gives, per slice, the documentation serv
 that closes it. Its execution order differs from the numbering in one place: phase 2 runs before phase 1, because the
 contract test T026 sends the invoice wire schema that T019 derives. T039 (the front skeleton) opens phase 2: the `web` stage
 of `app/Dockerfile` runs `vite build`, so the `app` image, which every later slice needs, does not build without it.
-T036 and T070 close phase 2, T043 sits with the queue in phase 5, T071 needs the whole stack and closes the work.
+T036 and T070 close phase 2, T077 (the page shell) was added after phase 2 had closed and sits with it, T043 sits with the queue in phase 5, T071 needs the whole stack and closes the work.
 Task numbers do not change.
 
 ---
