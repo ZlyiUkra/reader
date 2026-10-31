@@ -105,7 +105,7 @@ test('errors leave in one shape, and a server error does not name its cause', as
   await app.close();
 });
 
-test('health reports the database, the model, the sandbox and all twelve named simplifications', async () => {
+test('health reports the database, the model, the sandbox and all thirteen named simplifications', async () => {
   const up = await server(true);
   const health = (await up.inject({ url: '/api/health', headers: host })).json();
   assert.equal(health.db, 'ok');
@@ -113,7 +113,7 @@ test('health reports the database, the model, the sandbox and all twelve named s
   assert.equal(health.modelDigest, null);
   assert.equal(health.sandbox, 'runc');
   assert.equal(health.schemaVersion, 1);
-  assert.equal(health.todo.length, 12);
+  assert.equal(health.todo.length, 13);
   assert.deepEqual(health.todo.map((item: { id: string }) => item.id), todoList.map((item) => item.id));
   assert.ok(health.todo.every((item: { uk: string; en: string; trigger: { uk: string; en: string } }) => item.uk && item.en && item.trigger.uk && item.trigger.en));
   await up.close();

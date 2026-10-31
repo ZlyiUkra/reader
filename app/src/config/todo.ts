@@ -11,7 +11,7 @@ export type Simplification = {
   trigger: { uk: string; en: string };
 };
 
-/** The twelve named simplifications, in the order of the spec table. */
+/** The thirteen named simplifications, in the order of the spec table. */
 export const todoList: Simplification[] = [
   {
     id: 'runtime-runc',
@@ -99,6 +99,12 @@ export const todoList: Simplification[] = [
       uk: 'Перше розгортання поза машиною розробки або другий користувач цієї машини.',
       en: 'The first deployment off the dev machine, or a second user of this machine.',
     },
+  },
+  {
+    id: 'step-runs-completed-by-update',
+    uk: 'Рядок step_runs дописується один раз оновленням finished_at, outcome і details; таблиця не лише для вставки.',
+    en: 'A step_runs row is completed once by an update of finished_at, outcome and details; the table is not insert-only.',
+    trigger: { uk: 'Перший несинтетичний документ.', en: 'The first non-synthetic document.' },
   },
 ];
 

@@ -70,7 +70,7 @@ codes; 3 browser views; 14 acceptance checks.
 | IX. Features wait for a consumer or a measurement | No ORM, no router, no state or i18n library, no second worker, no embeddings; each has no consumer yet (R3, R9) | PASS |
 | X. Personal data stays out of version control | Fixtures synthetic with fictional companies; `inbox/`, `results/`, `.env` ignored; no real document anywhere | PASS |
 | XI. Exact pins and contract tests | Every image by tag and digest, every package by exact version (research R1, R2, R4); Ollama contract test before trust | PASS |
-| XII. Named simplifications | Twelve deferred items as startup WARN and `/api/health` `todo`; listed in Complexity Tracking with triggers | PASS |
+| XII. Named simplifications | Thirteen deferred items as startup WARN and `/api/health` `todo`; listed in Complexity Tracking with triggers | PASS |
 
 Security and Data Constraints of the constitution: internal ports unpublished; sha256 identity; model by tag and
 digest from the official source; LibreOffice without Java; application role not a superuser; gVisor deferred as a
@@ -221,6 +221,7 @@ Named simplifications: each is a startup WARN and a `/api/health` `todo` entry s
 | `LOW_CONFIDENCE`, `EXTRACTORS_DISAGREE` not emitted | One extractor, one call | No lawful trigger exists | a second extraction or extractor |
 | No review form; NEEDS_REVIEW is terminal | Out of scope by the owner | A form without a reviewer has no consumer (IX) | the owner asks for review |
 | Database passwords in container environment variables, not file-backed secrets (OWASP Docker rule 12) | One machine, one user; `.env` is git-ignored and only the owner can run `docker inspect` | File-backed secrets need a secrets directory and a changed init script for a host with no second reader | first deployment off the dev machine, or a second user of the machine |
+| `step_runs` row completed once by a column-limited update, not insert-only (III) | The claim writes the row when the step starts, so an attempt in flight and a dead worker leave a trace; the worker only fills `finished_at`, `outcome` and `details` | One insert at the end of the attempt keeps the table insert-only but leaves no row while the step runs or after a worker died; the owner chose the update (2026-10-31) | first non-synthetic document |
 
 ## Phase 0: Research
 

@@ -25,8 +25,9 @@ application (FR-034). A schema change means `docker compose down -v`.
 
 ### documents
 
-The status table. One row per distinct content hash. The only table whose rows change after insert, and only in the
-columns marked mutable.
+The status table. One row per distinct content hash. Its rows change after insert, and only in the columns marked
+mutable; the only other table with updatable columns is `step_runs`. A column marked "mutable, once" goes from null to
+its value in one step and never changes after.
 
 | Column | Type | Notes |
 | --- | --- | --- |
@@ -35,10 +36,10 @@ columns marked mutable.
 | original_name | text | description only, from the upload or the inbox listing |
 | original_path | text | description only; relative to the inbox for folder documents, null for uploads |
 | size_bytes | bigint not null | |
-| detected_mime | text | set by the parser from content, null until parsed |
+| detected_mime | text | mutable, once; set by the parser from content, null until parsed |
 | class | text not null | `synthetic` or `unverified`; the closed list lives in the classes file, the app validates |
-| doc_type | text | registry type name after classification; null before and for "none" |
-| schema_id | text | `$id` of the type schema version used; null until classified |
+| doc_type | text | mutable, once; registry type name after classification; null before and for "none" |
+| schema_id | text | mutable, once; `$id` of the type schema version used; null until classified |
 | status | text not null | mutable; see State machine |
 | attempts | integer not null default 0 | mutable; incremented on each claim of a step |
 | checks_done | boolean not null default false | mutable; true once the checks step ran |
@@ -54,8 +55,13 @@ Indexes: unique on `sha256`; `(status, locked_until)` for the claim query.
 
 ### step_runs
 
-One row per attempt of one step on one document; append-only. Source of the per-step durations in the detail view
-and of the parse and model time split in the evaluation (C14).
+One row per attempt of one step on one document. The claim inserts it with `started_at`; the worker completes it once,
+when the attempt ends, by setting `finished_at`, `outcome` and `details` on the row where `finished_at` is null. Those
+three columns are the only ones the application role may update, and nothing else in the row ever changes. This is a
+named simplification (spec.md, Deferred Simplifications) that departs from append-only (constitution III): a timing
+row cannot be written complete before the step has run. What undoes it: at the first non-synthetic document, one insert
+at the end of the attempt, in the step's own transaction, and the update grant dropped.
+Source of the per-step durations in the detail view and of the parse and model time split in the evaluation (C14).
 
 | Column | Type | Notes |
 | --- | --- | --- |
@@ -64,7 +70,7 @@ and of the parse and model time split in the evaluation (C14).
 | step | text not null | `parse`, `classify`, `extract`, `check` |
 | attempt | integer not null | the value of `documents.attempts` at claim time |
 | started_at | timestamptz not null | |
-| finished_at | timestamptz | null while in flight or when the worker died |
+| finished_at | timestamptz | null while in flight, and for an attempt cut short by a restart (the boot requeue does not complete it) |
 | outcome | text | `ok`, `reason`, `internal_error`, `lease_expired` |
 | details | jsonb | tool timings, model warm or cold flag, byte counts |
 
@@ -193,11 +199,13 @@ any step --INTERNAL_ERROR, attempts >= 3--> FAILED
 ```
 
 - A claim sets `locked_until = now() + lease(step)` where `lease(step)` is the sum of that step's timeouts from the
-  thresholds file, and `attempts = attempts + 1`, inside `SELECT ... FOR UPDATE SKIP LOCKED` (FR-031).
-- A step's outputs (pages, page_texts, extractions, fields, reasons, step_runs) and the new status commit in one
-  transaction; the model call runs between two transactions, never inside one (FR-023, FR-030).
-- An expired lease found by the worker is recorded as a `step_runs` row with outcome `lease_expired` and a reason
-  `INTERNAL_ERROR {cause: "lease_expired"}`; the next claim counts as a new attempt (FR-031).
+  thresholds file, and `attempts = attempts + 1`, inside `SELECT ... FOR UPDATE SKIP LOCKED` (FR-031), and inserts the
+  attempt's `step_runs` row with `started_at` in the same transaction.
+- A step's outputs (pages, page_texts, extractions, fields, reasons), the completion of its `step_runs` row and the new
+  status commit in one transaction; the model call runs between two transactions, never inside one (FR-023, FR-030).
+- An expired lease found by the worker completes the dead attempt's `step_runs` row (`finished_at` is the moment of
+  recovery, `outcome` is `lease_expired`) and records a reason `INTERNAL_ERROR {cause: "lease_expired"}`; the next claim
+  counts as a new attempt (FR-031).
 - On start the single worker requeues rows it left in flight: `locked_until` is cleared for rows locked by its own
   instance id (named simplification).
 - `status(reasons, attempts, checksDone)` is the one function of FR-026. `INTERNAL_ERROR` reasons count only when

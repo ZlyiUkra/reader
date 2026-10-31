@@ -139,9 +139,11 @@ CREATE INDEX reasons_document_idx ON reasons (document_id);
 
 -- Privileges of the application role (constitution III, append-only data enforced by the database itself):
 -- every table is insert-only for the application except `documents`, where only the columns the pipeline moves
--- are updatable. detected_mime, doc_type and schema_id are set once, after intake, by the parse and classify steps.
+-- are updatable, and `step_runs`, where the worker completes a row once when the attempt ends (a named departure,
+-- data-model.md). detected_mime, doc_type and schema_id are set once, after intake, by the parse and classify steps.
 GRANT SELECT ON schema_version, documents, step_runs, pages, page_texts, extractions, fields, reasons TO app;
 GRANT INSERT ON documents, step_runs, pages, page_texts, extractions, fields, reasons TO app;
 GRANT UPDATE (detected_mime, doc_type, schema_id, status, attempts, checks_done, locked_until, locked_by,
               accepted_extraction_id, updated_at) ON documents TO app;
+GRANT UPDATE (finished_at, outcome, details) ON step_runs TO app;
 GRANT USAGE ON ALL SEQUENCES IN SCHEMA public TO app;
