@@ -64,7 +64,9 @@ from the manifest.
   `detached` child in its own process group; on timeout the whole group is killed; leftover processes of the
   parser's uid are killed after the job and the parser exits if any survive.
 - Per-tool timeouts and memory limits from the thresholds file (convert, render per page, OCR per page), each below
-  the container's limits. A tool over its limit ends the job with `TOO_LARGE` and the limit in `params`.
+  the container's limits. The parser reads the file once at start from `/config/thresholds.json`, a read-only mount of
+  the repository's `config/`; a changed threshold needs a restart of the parser and the app. A tool over its limit ends
+  the job with `TOO_LARGE` and the limit in `params`.
 - Checks before rendering: `pdfinfo` page count under `thresholds.parser.page_cap`, page size under the cap; image
   dimensions under the cap before any decode.
 - Format detection by content (`file --mime-type`), never by name (FR-010).

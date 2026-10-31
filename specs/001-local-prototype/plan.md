@@ -166,7 +166,7 @@ parser/                      # Node package, built-ins only; image with the docu
 ├── src/
 │   ├── server.ts            # HTTP over /jobs/parser.sock, one job at a time
 │   ├── parse.ts             # one-shot parse(in, out) run as a child process per job
-│   └── tools/               # detect (file), soffice, pdfinfo/pdftotext/pdftoppm/pdftocairo, tesseract, rsvg
+│   └── tools/               # detect (file), soffice, pdfinfo/pdftotext/pdftoppm/pdfimages, tesseract, rsvg
 └── fixtures/
     ├── generate.ts          # deterministic generator: templates -> formats, manifest, expected
     ├── data.ts              # the fixed data object of the eleven documents
