@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<title>Договір</title>
+<style>
+@page { size: 210mm 297mm; margin: 20mm; }
+body { font-family: "Liberation Serif", "DejaVu Serif", serif; font-size: 12pt; }
+td { font-family: "Liberation Serif", "DejaVu Serif", serif; font-size: 12pt; }
+</style>
+</head>
+<body>
+<p align="center"><b><font size="5">Договір № {{number}}</font></b></p>
+<p align="center">{{#placeOfSigning}}{{placeOfSigning}}, {{/placeOfSigning}}{{date}}</p>
+<p>{{firstPartyName}} (код ЄДРПОУ {{firstPartyEdrpou}}), далі Перша сторона, та {{secondPartyName}} (код ЄДРПОУ {{secondPartyEdrpou}}), далі Друга сторона, уклали цей договір про наведене нижче.</p>
+<p><b>1. Предмет договору.</b> {{subject}}.</p>
+<p><b>2. Строк дії.</b> Договір діє з {{validFrom}}{{#validUntil}} до {{validUntil}}{{/validUntil}}.</p>
+<p><b>3. Вартість.</b> Валюта договору: {{currency}}.{{#totalAmount}} Загальна сума договору становить {{totalAmount}}.{{/totalAmount}}</p>
+{{#paymentTerms}}<p><b>4. Умови оплати.</b> {{paymentTerms}}.</p>{{/paymentTerms}}
+<p>&nbsp;</p>
+<table width="100%" border="0" cellpadding="5" cellspacing="0">
+<tr><td width="50%">Перша сторона: ____________</td><td>Друга сторона: ____________</td></tr>
+</table>
+</body>
+</html>

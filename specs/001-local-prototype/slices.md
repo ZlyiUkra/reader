@@ -226,7 +226,7 @@ after_implement hook (agile-tasks).
      approves.
 - **Tasks**:
   - T032 three fictional companies with valid EDRPOU and IBAN, and the fixed data object of the 11 documents
-  - T033 Ukrainian HTML templates of the three types
+  - T033 Ukrainian HTML templates of the three types, plus the letter of the untyped document
   - T034 the generator: PDF, DOCX, DOC, RTF, XLSX, scans, PNG, JPG, SVG, byte-stable, with the manifest and the
     expected values
   - T035 the hostile set (5000-page PDF, 30000 x 30000 PNG, encrypted, truncated, zip, blank, noise), written on

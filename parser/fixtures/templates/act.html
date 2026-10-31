@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<title>Акт виконаних робіт</title>
+<style>
+@page { size: 210mm 297mm; margin: 20mm; }
+body { font-family: "Liberation Serif", "DejaVu Serif", serif; font-size: 12pt; }
+td { font-family: "Liberation Serif", "DejaVu Serif", serif; font-size: 12pt; }
+</style>
+</head>
+<body>
+<p align="center"><b><font size="5">Акт здачі-приймання виконаних робіт № {{number}}</font></b></p>
+<p align="center">{{#placeOfSigning}}{{placeOfSigning}}, {{/placeOfSigning}}{{date}}</p>
+<table width="100%" border="0" cellpadding="5" cellspacing="0">
+<tr><td width="34%">Виконавець</td><td><b>{{contractorName}}</b></td></tr>
+<tr><td>Код ЄДРПОУ виконавця</td><td>{{contractorEdrpou}}</td></tr>
+<tr><td>Замовник</td><td><b>{{customerName}}</b></td></tr>
+<tr><td>Код ЄДРПОУ замовника</td><td>{{customerEdrpou}}</td></tr>
+{{#contractRef}}<tr><td>Договір №</td><td>{{contractRef}}</td></tr>{{/contractRef}}
+</table>
+<p>Виконавець надав, а Замовник прийняв послуги за період з {{periodStart}} по {{periodEnd}}. Претензій щодо якості та строків надання послуг Замовник не має.</p>
+<table width="100%" border="1" cellpadding="6" cellspacing="0">
+<tr><td width="60%">Валюта</td><td align="right">{{currency}}</td></tr>
+<tr><td>Вартість робіт без ПДВ</td><td align="right">{{totalNet}}</td></tr>
+<tr><td>ПДВ</td><td align="right">{{vat}}</td></tr>
+<tr><td><b>Разом з ПДВ</b></td><td align="right"><b>{{totalGross}}</b></td></tr>
+</table>
+<p>&nbsp;</p>
+<table width="100%" border="0" cellpadding="5" cellspacing="0">
+<tr><td width="50%">Від Виконавця: ____________</td><td>Від Замовника: ____________</td></tr>
+</table>
+</body>
+</html>

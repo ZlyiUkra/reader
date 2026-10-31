@@ -246,9 +246,15 @@ reads them from the registry and the reasons file (FR-058). A test asserts both 
 
 The generator writes the manifest (`[{file, sha256, type, format, expected}]`) at the top level of the inbox and one
 expected file per fixture (the schema instance, expected status and codes), keyed by sha256, into the `expected/`
-subfolder of the inbox (FR-044, FR-047). Both live in the inbox because the `fixtures` container is one-off and the
-`app` container mounts the inbox read-only: the evaluation reads `inbox/expected/*.json` there. "Read folder" skips
-the manifest and every subfolder (clarification 1, FR-005).
+subfolder of the inbox (FR-044, FR-047). In a manifest row `type` is `invoice`, `act`, `contract` or `none` (the
+document of no registered type), `format` is one of `pdf`, `pdf-scan`, `docx`, `doc`, `rtf`, `xlsx`, `png`, `jpg`,
+`svg`, and `expected` is the relative path `expected/<sha256>.json`. An expected file holds `file`, `sha256`, `type`,
+`format`, `instance`, `status` and `codes`: `instance` is the schema instance as printed on the document (dates in
+ISO form, money as integer kopiyky, a required field the document lacks is absent) and `null` for `none`; `status` is
+`ACCEPTED` or `NEEDS_REVIEW`; `codes` are the reason codes expected. Both live in the inbox because the `fixtures`
+container is one-off and the `app` container mounts the inbox read-only: the evaluation reads `inbox/expected/*.json`
+there. "Read folder" skips the manifest and every subfolder (clarification 1, FR-005). The hostile set (the
+`hostile-*` files of T035) is written on demand next to the fixtures and is never listed in the manifest.
 
 ### Evaluation reports: `results/eval-<YYYYMMDD-HHMMSS>-<model digest prefix>.json`
 

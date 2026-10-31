@@ -88,8 +88,9 @@ Decision: `apt-get install --no-install-recommends` with these exact versions pi
 | file | 1:5.44-3 | content-based format detection |
 | fonts-dejavu-core, fonts-liberation | 2.37-6, 1:1.07.4-11 | Cyrillic fonts for rendering |
 
-`--no-install-recommends` keeps Java out: the `-nogui` LibreOffice packages only recommend a JRE (constitution,
-Security and Data Constraints). The parser's uid is 10001; HOME is on tmpfs because LibreOffice writes a profile.
+Java stays out because `libreoffice-writer-nogui` only suggests a JRE and apt never installs suggestions
+(constitution, Security and Data Constraints); `--no-install-recommends` also drops the recommended extras. The
+parser's uid is 10001; HOME is on tmpfs because LibreOffice writes a profile.
 
 Sources: packages.debian.org/bookworm/<pkg> (2026-10-31); qpdf's version to be read at build time (task).
 
@@ -175,17 +176,20 @@ Decision (C8, C9, C17), one command per step, each under its own timeout and mem
 - Images: dimensions read from the header before any decode (PNG IHDR, JPEG SOF) against `png_max_side_px` 4000;
   ImageMagick `convert -resize` for the preview; OCR on the original raster; SVG rendered by `rsvg-convert -f png -w
   1240` with the same caps.
-- Fixtures generator: one HTML template per type filled from `companies.ts` (fictional names, valid EDRPOU and
-  IBAN, R12) and a fixed data object; `soffice --convert-to pdf|docx|doc|rtf` (writer) and `xlsx` (calc from the
-  HTML table); scanned variants: `pdftoppm -r 150` -> `convert -rotate 1.4 -blur 0x0.7 +noise Gaussian -seed 7
-  -strip` -> `img2pdf --nodate` (scanned PDF) or saved as PNG / JPEG; SVG by `pdftocairo -svg`. Expected values are
-  written from the same data object (FR-047).
-- Determinism (C3): `SOURCE_DATE_EPOCH` fixed, ImageMagick `-seed`, metadata stripped; generated PDFs are passed
-  through `qpdf --deterministic-id --remove-page-labels` with `/CreationDate` and `/ModDate` removed by the
-  generator before hashing. Risk: LibreOffice PDF export may still differ between runs; the phase 3 build order
-  (text PDF first, then one format per step) exists to find this early. If byte stability cannot be reached for a
-  format, the manifest records the sha256 of the first run and the generator verifies instead of regenerating that
-  file (task to decide in phase 3, recorded as a named simplification if taken).
+- Fixtures generator: one HTML template per type (plus one for the untyped letter) filled from `companies.ts`
+  (fictional names, valid EDRPOU and IBAN, R12) and a fixed data object; Writer opens the HTML through the input
+  filter `HTML (StarWriter)` and `soffice --convert-to` writes `pdf`, `docx`, `doc` and `rtf`; the sheet is `xlsx`
+  through `calc_HTML_WebQuery`; scanned variants: `pdftoppm -r 200` -> `convert -limit thread 1 -rotate 1.0
+  (-0.8 for the JPEG) -blur 0x0.4 -seed 7 -attenuate 0.2 +noise Gaussian -strip` -> `img2pdf --nodate --pagesize A4`
+  (scanned PDF) or saved as PNG / JPEG (quality 80); SVG by `pdftocairo -svg`. Measured on 2026-10-31: the first
+  values (150 dpi, 1.4 degrees, 0x0.7, full-strength noise) made the amounts table unreadable to Tesseract; with
+  these values it reads back 52 of 54 field values. Expected values are written from the same data object (FR-047).
+- Determinism (C3), measured on 2026-10-31: two runs and a run into an empty folder give identical bytes for all
+  eleven files. LibreOffice 7.4 does not read `SOURCE_DATE_EPOCH` for PDF export: the creation and modification
+  dates, the document id and the `/DocChecksum` of the trailer are replaced by fixed values of the same length
+  between two `qpdf` passes, the second with `--deterministic-id`. DOCX and XLSX differ only in the times of the
+  zip entries, which the generator sets to the fixed clock; DOC and RTF are stable as written. ImageMagick runs with
+  one thread because its noise is seeded per thread. The fallback of recording the first run's hash was not needed.
 
 Alternatives: Docling or Tika for parsing (rejected: round 1, Python or Java in the sandbox); PaddleOCR (rejected:
 Ampere-only on vLLM, round 2); a single `convert` pipeline for everything (rejected: no per-step limits).

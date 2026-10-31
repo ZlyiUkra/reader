@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<title>Рахунок на оплату</title>
+<style>
+@page { size: 210mm 297mm; margin: 20mm; }
+body { font-family: "Liberation Serif", "DejaVu Serif", serif; font-size: 12pt; }
+td { font-family: "Liberation Serif", "DejaVu Serif", serif; font-size: 12pt; }
+</style>
+</head>
+<body>
+<p align="center"><b><font size="5">Рахунок на оплату № {{number}}</font></b></p>
+<p align="center">від {{date}}</p>
+<table width="100%" border="0" cellpadding="5" cellspacing="0">
+<tr><td width="34%">Постачальник</td><td><b>{{sellerName}}</b></td></tr>
+<tr><td>Код ЄДРПОУ постачальника</td><td>{{sellerEdrpou}}</td></tr>
+<tr><td>Рахунок постачальника (IBAN)</td><td>{{sellerIban}}</td></tr>
+<tr><td>Покупець</td><td><b>{{buyerName}}</b></td></tr>
+{{#buyerEdrpou}}<tr><td>Код ЄДРПОУ покупця</td><td>{{buyerEdrpou}}</td></tr>{{/buyerEdrpou}}
+{{#contractRef}}<tr><td>Підстава (договір №)</td><td>{{contractRef}}</td></tr>{{/contractRef}}
+{{#paymentPurpose}}<tr><td>Призначення платежу</td><td>{{paymentPurpose}}</td></tr>{{/paymentPurpose}}
+</table>
+<p>&nbsp;</p>
+<table width="100%" border="1" cellpadding="6" cellspacing="0">
+<tr><td width="60%">Валюта</td><td align="right">{{currency}}</td></tr>
+<tr><td>Сума без ПДВ</td><td align="right">{{totalNet}}</td></tr>
+{{#vatRate}}<tr><td>Ставка ПДВ</td><td align="right">{{vatRate}}</td></tr>{{/vatRate}}
+<tr><td>ПДВ</td><td align="right">{{vat}}</td></tr>
+<tr><td><b>Всього до сплати (з ПДВ)</b></td><td align="right"><b>{{totalGross}}</b></td></tr>
+</table>
+{{#dueDate}}<p>Рахунок дійсний для оплати до {{dueDate}}.</p>{{/dueDate}}
+</body>
+</html>

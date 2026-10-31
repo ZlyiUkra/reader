@@ -4,8 +4,9 @@
 # The Node base is the same digest as the app image: Debian's own nodejs package is too old for type stripping.
 ARG NODE_IMAGE=node:24.22.2-bookworm-slim@sha256:c86ecead9e55a5210ac1727de38a4ca840bf03dcaf34dc9749addbf383b1920c
 
-# Document tools, exact bookworm versions of research R4. --no-install-recommends keeps Java out: the -nogui
-# LibreOffice packages only recommend a JRE, and the constitution forbids optional runtimes the converter does not need.
+# Document tools, exact bookworm versions of research R4. Java stays out: libreoffice-writer-nogui only suggests a JRE
+# and apt never installs suggestions; --no-install-recommends also drops the recommended extras the converter does not
+# need, and the constitution forbids optional runtimes.
 FROM ${NODE_IMAGE} AS tools
 RUN apt-get update \
  && apt-get install -y --no-install-recommends \
@@ -32,6 +33,8 @@ WORKDIR /build/parser
 COPY parser/package.json parser/yarn.lock ./
 RUN yarn install --frozen-lockfile --ignore-scripts --non-interactive
 COPY parser/ ./
+# app/package.json sits above shared/ as in the repository, so tsc reads those files as modules, not as CommonJS.
+COPY app/package.json /build/app/package.json
 COPY app/src/shared /build/app/src/shared
 RUN yarn typecheck
 
@@ -41,6 +44,7 @@ FROM tools AS fixtures
 WORKDIR /srv/parser
 COPY parser/package.json ./
 COPY parser/fixtures ./fixtures
+COPY app/package.json /srv/app/package.json
 COPY app/src/shared /srv/app/src/shared
 USER 10001:10001
 CMD ["node", "fixtures/generate.ts"]
