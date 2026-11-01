@@ -30,11 +30,12 @@ const listSchema = {
       type: 'array',
       items: {
         type: 'object',
-        required: ['number', 'sha256', 'originalName', 'class', 'type', 'status', 'attempts', 'createdAt', 'updatedAt', 'reasons'],
+        required: ['number', 'sha256', 'originalName', 'origin', 'class', 'type', 'status', 'attempts', 'createdAt', 'updatedAt', 'reasons'],
         properties: {
           number: { type: 'integer' },
           sha256: { type: 'string' },
           originalName: { type: ['string', 'null'] },
+          origin: { enum: ['folder', 'upload'] },
           class: { type: 'string' },
           type: { type: ['string', 'null'] },
           status: { type: 'string' },
@@ -90,6 +91,7 @@ export function registerDocuments(api: FastifyInstance, deps: DocumentsDeps): vo
           number: row.id,
           sha256: row.sha256,
           originalName: row.original_name,
+          origin: row.original_path === null ? 'upload' : 'folder',
           class: row.class,
           type: row.doc_type,
           status: row.status,

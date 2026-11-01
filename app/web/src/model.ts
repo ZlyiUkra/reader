@@ -185,6 +185,8 @@ function storedReason(item: unknown, at: string): StoredReason {
 export type ListedDocument = {
   number: number;
   originalName: string | null;
+  /** Where the document came from: a read of the inbox folder, or an upload from the page. */
+  origin: string;
   documentClass: string;
   type: string | null;
   status: string;
@@ -206,6 +208,7 @@ export function parseDocumentList(value: unknown): DocumentList {
       return {
         number: asNumber(member(row, 'number'), `${at}.number`),
         originalName: asNullableString(member(row, 'originalName'), `${at}.originalName`),
+        origin: asString(member(row, 'origin'), `${at}.origin`),
         documentClass: asString(member(row, 'class'), `${at}.class`),
         type: asNullableString(member(row, 'type'), `${at}.type`),
         status: asString(member(row, 'status'), `${at}.status`),

@@ -317,6 +317,10 @@ tbody tr:nth-child(even) {
   white-space: nowrap;
 }
 
+.words {
+  overflow-wrap: normal;
+}
+
 .mono,
 pre {
   font-family: ui-monospace, 'Cascadia Mono', Consolas, 'Liberation Mono', monospace;

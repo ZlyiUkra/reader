@@ -22,7 +22,7 @@ type DocumentsProps = {
 };
 
 /**
- * The documents table (FR-053): number, name, class, type, status and the reasons as messages in the active language,
+ * The documents table (FR-053): number, name, where it came from (the folder or an upload), class, type, status and the reasons as messages in the active language,
  * newest first, refreshed every two seconds. The list the server sends carries codes and parameters and no text of the
  * documents; every cell is set as text, so a file name or a quoted fragment is never read as markup (FR-054, FR-055). A
  * poll that fails keeps the last table on screen and says so, because the next poll may well succeed. Only the rows of the
@@ -76,6 +76,7 @@ export function Documents({ lang, meta, onOpen, pager }: DocumentsProps): React.
                 <tr>
                   <th className="num">{translate(lang, 'documents.col.number')}</th>
                   <th>{translate(lang, 'documents.col.name')}</th>
+                  <th>{translate(lang, 'documents.col.origin')}</th>
                   <th>{translate(lang, 'documents.col.class')}</th>
                   <th>{translate(lang, 'documents.col.type')}</th>
                   <th>{translate(lang, 'documents.col.status')}</th>
@@ -91,8 +92,9 @@ export function Documents({ lang, meta, onOpen, pager }: DocumentsProps): React.
                       </button>
                     </td>
                     <td>{row.originalName ?? ''}</td>
+                    <td className="nowrap">{translateName(lang, 'origin', row.origin)}</td>
                     <td className="nowrap">{translateName(lang, 'class', row.documentClass)}</td>
-                    <td>{row.type === null ? translate(lang, 'common.none') : typeLabel(meta, row.type, lang)}</td>
+                    <td className="words">{row.type === null ? translate(lang, 'common.none') : typeLabel(meta, row.type, lang)}</td>
                     <td>
                       <StatusBadge status={row.status} lang={lang} />
                     </td>

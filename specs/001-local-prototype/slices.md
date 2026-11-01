@@ -439,7 +439,7 @@ fragment and page; checks 2, 3 and 8; the FR-057 language check; the two refusal
 [X] in tasks.md. Then run the after_implement hook (agile-tasks).
 ```
 
-## Slice 7a - Pages of the lists (added after slice 7; dashboard phase 7)
+## Slice 7a - Pages of the lists (added after slice 7; dashboard phase 7; done, committed in 6c66864)
 
 - **Why**: owner decision of 2026-11-01. The folder list and the documents table grow without a bound, and the API serves at
   most 1000 rows; both are shown in pages, with a page size chosen in the page (default 20).
@@ -472,6 +472,28 @@ the API pages (limit, offset, count, an offset past the end), the previous and n
 the folder list and in the documents table, the page numbers, the page size choice with the default 20, both interface
 languages and both themes, a narrow width, the human names in the reasons, the result of a read hidden and shown again
 and shown in pages, the file chooser with the texts of the page, the notice of a newer build. Mark each
+finished task [X] in tasks.md. Then run the after_implement hook (agile-tasks).
+```
+
+## Slice 7b - What the folder and the documents are (added after slice 7a; dashboard phase 7)
+
+- **Why**: owner decision of 2026-11-01. The folder list and the documents table showed different numbers and nothing
+  on the page said why: the folder is what lies on the disk, the documents are what the system has taken in, and a
+  document may also come from an upload.
+- **Servers** (dashboard): the slice 7 set. **Start set** (12): the same twelve.
+- **Tasks**:
+  - T087 `origin` on each row of `GET /documents` and the column "Source" in the documents table
+  - T088 the first two tabs named for what they list
+- **Closes when**: the list says for every document whether it came from the folder or from an upload and never sends the
+  folder path; the tabs read "Inbox folder (files on disk)" and "Documents (taken into the system)"; both interface languages
+  and both themes show it, and the page does not grow wider on a narrow screen.
+
+**Run** (type `/speckit-implement`, then paste):
+
+```text
+Slice 7b only: T087, T088. Do not start any other task. Finish with the slice 7b closing checks and show their output:
+the list rows carry `origin` (folder for a folder read, upload for an upload) and no path, the column and the two tab
+names in both interface languages and both themes, a narrow width. Mark each
 finished task [X] in tasks.md. Then run the after_implement hook (agile-tasks).
 ```
 

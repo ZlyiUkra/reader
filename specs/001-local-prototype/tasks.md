@@ -116,6 +116,8 @@ terminal statuses, with duplicates reported and the model outage handled.
 - [X] T084 [US1] Show a long result of a read in pages in `app/web/src/views/Inbox.tsx`, the page size shared with the other lists and the page of the result kept by the result itself, and put the pager of every list (the folder list, the documents table, the result of a read) below the list and not above it, in `Inbox.tsx` and `app/web/src/views/Documents.tsx` (FR-053); verify in both languages and both themes
 - [X] T085 [US1] Draw the file chooser in `app/web/src/views/Inbox.tsx`: a button of the page opens the hidden file input, the line beside it shows the name of the file last chosen or "no file chosen", and both texts come from the dictionaries (`upload.choose`, `upload.none`), so they follow the language; drop the styles of the native chooser from `app/web/src/styles.css` (FR-004, FR-057); verify in both languages and both themes
 - [X] T086 [US1] Make the page notice a newer build: `app/src/shared/build.ts` (`assetsOf`, `isNewBuild`: the built files the served HTML names against the ones the running page came from) with `app/test/build.test.ts`, `app/web/src/components/NewVersion.tsx` (asks for `index.html` every 30 s without the cache, shows the notice with a reload button, stops after the first new build, ignores a failed check), its place in `app/web/src/App.tsx`, the texts `update.*` in both dictionaries and the style `.update` (FR-059, FR-057); verify in the browser in both languages and both themes
+- [X] T087 [US1] Show where a document came from: `origin` (`folder` or `upload`, from whether the document has a folder path; the path itself is never sent) on each row of `GET /documents` in `app/src/api/documents.ts` and `contracts/api.md`, the column "Source" in `app/web/src/views/Documents.tsx` with the texts `documents.col.origin` and `origin.*`, and the test in `app/test/documents-api.test.ts` (FR-053)
+- [X] T088 [US1] Name the first two tabs for what they list: "Inbox folder (files on disk)" and "Documents (taken into the system)" in both dictionaries (`nav.folder`, `nav.documents`), and let the type column break only at spaces (FR-053); verify in both languages and both themes
 
 **Checkpoint**: User Story 1 passes its three checks; the documents table shows 6 ACCEPTED, 3 + 1 + 1 NEEDS_REVIEW
 with rendered reasons.
@@ -283,7 +285,7 @@ The project dashboard groups work by nine phases. Each task belongs to one of th
 | 4 Sandbox and parsing | T027, T028, T029, T030, T031 |
 | 5 Intake and queue | T015, T016, T038, T041, T042, T043, T048, T059, T061, T068 |
 | 6 Recognition and checks | T044, T045, T046, T047, T052, T053 |
-| 7 Interface | T040, T049, T050, T051, T054, T055, T056, T057, T058, T060, T066, T069, T078, T079, T080, T081, T082, T083, T084, T085, T086 |
+| 7 Interface | T040, T049, T050, T051, T054, T055, T056, T057, T058, T060, T066, T069, T078, T079, T080, T081, T082, T083, T084, T085, T086, T087, T088 |
 | 8 Measurement | T062, T063, T064, T065 |
 | Cross-cutting | T071, T072, T073, T074, T075, T076 |
 

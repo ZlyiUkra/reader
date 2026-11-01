@@ -11,7 +11,7 @@ import { modelSettings } from '../src/llm/settings.ts';
 import { createReasons } from '../src/reasons/reasons.ts';
 import { createRegistry } from '../src/registry/registry.ts';
 import { buildServer } from '../src/server.ts';
-import { endOpenDocuments, stateOf, testDatabase } from './support/db.ts';
+import { addDocument, endOpenDocuments, stateOf, testDatabase } from './support/db.ts';
 import { addParsedFixture, fixtureReplay, goldenOf, startPipeline, waitForTerminal } from './support/pipeline-harness.ts';
 
 /**
@@ -77,7 +77,7 @@ test('the list is newest first, carries reasons as codes and params, and never a
   assert.deepEqual(numbers, [...numbers].sort((a: number, b: number) => b - a));
   assert.equal(body.count, await countDocuments(pool), 'count is the number of documents, not of rows');
   const row = body.documents.find((candidate: { number: number }) => candidate.number === missing);
-  assert.deepEqual(Object.keys(row).sort(), ['attempts', 'class', 'createdAt', 'number', 'originalName', 'reasons', 'sha256', 'status', 'type', 'updatedAt']);
+  assert.deepEqual(Object.keys(row).sort(), ['attempts', 'class', 'createdAt', 'number', 'origin', 'originalName', 'reasons', 'sha256', 'status', 'type', 'updatedAt']);
   assert.equal(row.status, 'NEEDS_REVIEW');
   assert.equal(row.type, 'act');
   assert.deepEqual(
@@ -88,6 +88,15 @@ test('the list is newest first, carries reasons as codes and params, and never a
   const text = response.body;
   assert.ok(!text.includes(pageTextSample), 'no page text in the list');
   assert.ok(!/rawRequest|rawResponse|raw_request|verbatim/.test(text), 'no model data in the list');
+});
+
+test('each row says where the document came from: the folder when it has a folder path, an upload when it has none, and never the path', async () => {
+  const { id: fromFolder } = await addDocument(pool, { originalName: 'in-the-folder.pdf', originalPath: 'in-the-folder.pdf' });
+  const response = await app.inject({ url: '/api/documents', headers });
+  const originOf = (number: number): unknown => response.json().documents.find((row: { number: number }) => row.number === number)?.origin;
+  assert.equal(originOf(fromFolder), 'folder');
+  assert.equal(originOf(accepted), 'upload');
+  assert.ok(!/originalPath|original_path/.test(response.body), 'the folder path is not in the list');
 });
 
 test('the list takes a limit between 1 and 1000 and refuses others', async () => {

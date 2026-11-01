@@ -63,11 +63,14 @@ at a time, `limit` being its page size and `offset` its first row. An offset pas
 
 ```json
 { "documents": [ {
-    "number": number, "sha256": string, "originalName": string | null, "class": string,
-    "type": string | null, "status": string, "attempts": number, "createdAt": string, "updatedAt": string,
-    "reasons": [ { "code": string, "params": object } ] } ],
+    "number": number, "sha256": string, "originalName": string | null, "origin": "folder" | "upload",
+    "class": string, "type": string | null, "status": string, "attempts": number, "createdAt": string,
+    "updatedAt": string, "reasons": [ { "code": string, "params": object } ] } ],
   "count": number, "limit": number, "offset": number }
 ```
+
+`origin` says how the document came in: `folder` for a read of the inbox folder, `upload` for a file sent from the page.
+The folder path of a document is not part of the answer.
 
 `count` is the number of documents there are, not of the rows returned (a re-read of the same files leaves it unchanged,
 FR-003). Reason messages are not in the list: the page renders them from the templates it fetched once from `/meta`.
