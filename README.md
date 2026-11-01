@@ -66,26 +66,48 @@ The browser page lives in `app/web/src`. Its modules by role:
 
 ## Running it
 
-Everything runs in containers from the repository root, in WSL with the NVIDIA Container Toolkit (the model needs the
-GPU).
+Everything runs in containers, from the repository root. Nothing is installed on the host except Docker.
 
-1. Copy `.env.example` to `.env` and replace the placeholders. `.env` is never committed and never printed.
-2. `docker compose up -d` starts the database, the model, the parser sandbox and the app. The first start pulls the
-   model into a volume (`docker compose logs -f model-pull` is the progress view); later starts download nothing.
-3. `docker compose run --rm fixtures` writes the synthetic documents, their manifest and the expected values into
-   `inbox/`. The files are byte-identical on every run.
-4. Open `http://127.0.0.1:3000` and press "Read folder". The page polls every two seconds; it is Ukrainian by default
+What you need:
+
+- Linux, or Windows with WSL2, with Docker Engine and the Docker Compose v2 plugin (`docker compose`). The prototype
+  was built and checked on WSL2 with Docker Engine only; other setups were not tried.
+- An NVIDIA GPU and the NVIDIA Container Toolkit: the `model` service reserves one GPU. The prototype was measured on
+  an RTX 2070 Super with 8 GB; other cards were not tried. Without a GPU the model does not start; the tests (step 8)
+  need no GPU.
+- A network and free disk for the first start: the images are built and pulled, and the model weights are downloaded
+  once into a volume (one layer of about 2.6 GB, as recorded in check 2 of the quickstart). The total size and the
+  build time were not measured.
+
+Steps:
+
+1. Clone the repository and enter it: `git clone <repository address> reader && cd reader`.
+2. `cp .env.example .env`. Put two long random values in `POSTGRES_PASSWORD` and `APP_DB_PASSWORD` (for example the
+   output of `openssl rand -hex 24`) and the output of `id -u` and `id -g` in `READER_UID` and `READER_GID`. The other
+   values can stay. `.env` is never committed and never printed.
+3. `docker compose up -d` builds the parser and the app images, pulls the database and model images and starts the
+   database, the model, the parser sandbox and the app. The first start also downloads the model
+   (`docker compose logs -f model-pull` is the progress view); later starts download nothing. The app starts at once
+   and takes no model work until the model is ready.
+4. Wait until `curl -s http://127.0.0.1:3000/api/health` reports `"db":"ok"`, `"model":"ready"` and `"parser":"ok"`.
+   The page header shows the same as the DB, LLM and PRS indicators.
+5. `docker compose run --rm fixtures` writes the synthetic documents, their manifest and the expected values into
+   `inbox/`, which is empty after a clone. The files are byte-identical on every run.
+6. Open `http://127.0.0.1:3000` and press "Read folder". The page polls every two seconds; it is Ukrainian by default
    and switches to English in the header. A file can also be uploaded from the page.
-5. `docker compose run --rm app node src/eval.ts` evaluates the stored run against the expected values. It prints
+7. `docker compose run --rm app node src/eval.ts` evaluates the stored run against the expected values. It prints
    every figure, says "not a tier decision", exits non-zero below the thresholds and writes one JSON report into
    `results/`, named by the run date, time and model digest. Each report is a source for a row of the measurement
    journal below.
-6. `docker compose run --rm app node --test` runs the tests; stop the model first (`docker compose stop model`) to
-   prove they need no GPU.
+8. `docker compose run --rm app node --test` runs the tests and needs the database service up; stop the model first
+   (`docker compose stop model`) to prove they need no GPU.
+9. `docker compose down` stops everything and keeps the data. `docker compose down -v` also deletes the database and
+   the model volume: it is the one agreed reset, for a change of the database schema.
 
-The named simplifications of the prototype, each with what ends it, are the `todo` list of `GET /api/health`, the
-TODO count in the page header, the list at `#/simplifications` and one WARN line each at start. The acceptance checks are in
-`specs/001-local-prototype/quickstart.md`, with the outcome of their last full run at its end.
+The page is published on 127.0.0.1 only (`READER_PORT` changes the port); the database and the model are not published
+at all. The named simplifications of the prototype, each with what ends it, are the `todo` list of `GET /api/health`,
+the TODO count in the page header, the list at `#/simplifications` and one WARN line each at start. The acceptance
+checks are in `specs/001-local-prototype/quickstart.md`, with the outcome of their last full run at its end.
 
 ## Measurement journal
 

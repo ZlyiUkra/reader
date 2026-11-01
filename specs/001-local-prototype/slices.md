@@ -574,7 +574,7 @@ simplifications tab at its address, the six addresses, both themes, a narrow wid
 whole suite, check 13. Mark each finished task [X] in tasks.md. Then run the after_implement hook (agile-tasks).
 ```
 
-## Slice 7e - A page for an unknown address (added after slice 7d; dashboard phase 7)
+## Slice 7e - A page for an unknown address (added after slice 7d; dashboard phase 7; done, committed in 83b2004)
 
 - **Why**: owner decisions of 2026-11-01. An unknown hash shows the folder and leaves the typed text in the address bar,
   and an unknown path answers raw JSON. The owner wants a not-found page for both, and the empty address sent to the
