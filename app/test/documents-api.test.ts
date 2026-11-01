@@ -34,6 +34,8 @@ const app: FastifyInstance = await buildServer({
   webRoot: null,
   registry,
   reasons: createReasons(config.reasons),
+  pageSize: 20,
+  pageSizes: [10, 20, 50, 100],
   sandbox: 'runc',
   checkDb: async () => true,
   readiness: async () => ({ state: 'missing', digest: null }),
@@ -95,6 +97,22 @@ test('the list takes a limit between 1 and 1000 and refuses others', async () =>
   for (const bad of ['0', '1001', 'many']) {
     assert.equal((await app.inject({ url: `/api/documents?limit=${bad}`, headers })).statusCode, 400, bad);
   }
+});
+
+test('a page of the list is cut by limit and offset, and the answer echoes both with the total', async () => {
+  const all = (await app.inject({ url: '/api/documents?limit=1000', headers })).json();
+  assert.ok(all.count >= 3);
+  assert.deepEqual({ limit: all.limit, offset: all.offset }, { limit: 1000, offset: 0 });
+  const numbers: number[] = all.documents.map((row: { number: number }) => row.number);
+  const second = (await app.inject({ url: '/api/documents?limit=2&offset=1', headers })).json();
+  assert.deepEqual({ limit: second.limit, offset: second.offset, count: second.count }, { limit: 2, offset: 1, count: all.count });
+  assert.deepEqual(second.documents.map((row: { number: number }) => row.number), numbers.slice(1, 3), 'the same rows as the full list, from the second');
+  const reasonsOfPage = second.documents.flatMap((row: { reasons: unknown[] }) => row.reasons);
+  assert.ok(Array.isArray(reasonsOfPage), 'a page carries the reasons of its own rows');
+  const past = (await app.inject({ url: `/api/documents?limit=5&offset=${all.count + 10}`, headers })).json();
+  assert.deepEqual({ documents: past.documents, count: past.count, offset: past.offset }, { documents: [], count: all.count, offset: all.count + 10 });
+  assert.equal((await app.inject({ url: '/api/documents?offset=-1', headers })).statusCode, 400);
+  assert.equal((await app.inject({ url: '/api/documents?offset=x', headers })).statusCode, 400);
 });
 
 test('the detail of an accepted document holds every field with its fragment, page and offsets, and the steps and the model', async () => {

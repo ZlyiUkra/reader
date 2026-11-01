@@ -34,6 +34,8 @@ const app = await buildServer({
   webRoot: null,
   registry: createRegistry(config.typeSchemas),
   reasons: createReasons(config.reasons),
+  pageSize: 20,
+  pageSizes: [10, 20, 50, 100],
   sandbox: 'runc',
   checkDb: async () => true,
   readiness: async () => ({ state: 'missing', digest: null }),

@@ -13,6 +13,9 @@ import type { Registry } from '../registry/registry.ts';
 export type MetaDeps = {
   registry: Registry;
   reasons: Reasons;
+  /** The page size the lists start with and the sizes the page offers (`ui.page_size`, `ui.page_size_options`). */
+  pageSize: number;
+  pageSizes: number[];
 };
 
 const labelsSchema = { type: 'object', required: ['uk', 'en'], properties: { uk: { type: 'string' }, en: { type: 'string' } } } as const;
@@ -41,6 +44,8 @@ export function registerMeta(api: FastifyInstance, deps: MetaDeps): void {
       })),
     })),
     statuses: documentStatuses,
+    pageSize: deps.pageSize,
+    pageSizes: deps.pageSizes,
   };
 
   api.get(
@@ -50,7 +55,7 @@ export function registerMeta(api: FastifyInstance, deps: MetaDeps): void {
         response: {
           200: {
             type: 'object',
-            required: ['languages', 'defaultLanguage', 'types', 'reasons', 'statuses'],
+            required: ['languages', 'defaultLanguage', 'types', 'reasons', 'statuses', 'pageSize', 'pageSizes'],
             properties: {
               languages: { type: 'array', items: { type: 'string' } },
               defaultLanguage: { type: 'string' },
@@ -101,6 +106,8 @@ export function registerMeta(api: FastifyInstance, deps: MetaDeps): void {
                 },
               },
               statuses: { type: 'array', items: { type: 'string' } },
+              pageSize: { type: 'integer' },
+              pageSizes: { type: 'array', items: { type: 'integer' } },
             },
           },
         },

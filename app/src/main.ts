@@ -3,6 +3,7 @@ import { hostname } from 'node:os';
 import path from 'node:path/posix';
 import { createContractValidators } from './config/ajv.ts';
 import { ConfigError, loadConfigOrExit } from './config/load.ts';
+import { pageSettings } from './config/page-settings.ts';
 import { thresholdNumber } from './config/thresholds.ts';
 import { logTodoWarnings } from './config/todo.ts';
 import { constants } from './constants.ts';
@@ -51,8 +52,10 @@ if (modelUrl === undefined || modelUrl === '') {
 }
 
 let settings;
+let pages;
 try {
   settings = modelSettings(config.thresholds);
+  pages = pageSettings(config.thresholds);
 } catch (error) {
   if (error instanceof ConfigError) {
     refuse(error.message);
@@ -141,6 +144,8 @@ const app = await buildServer({
   webRoot,
   registry,
   reasons,
+  pageSize: pages.pageSize,
+  pageSizes: pages.pageSizes,
   sandbox,
   intake,
   checkDb: async () => {

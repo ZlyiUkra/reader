@@ -24,6 +24,8 @@ async function server(dbUp = true): Promise<FastifyInstance> {
     webRoot: null,
     registry,
     reasons,
+    pageSize: 20,
+    pageSizes: [10, 20, 50, 100],
     sandbox: 'runc',
     checkDb: async () => dbUp,
     readiness: async () => ({ state: 'missing', digest: null }),
@@ -128,6 +130,7 @@ test('meta lists the registered types, the reasons with their variants and the s
   const meta = (await app.inject({ url: '/api/meta', headers: host })).json();
   assert.deepEqual(meta.languages, ['uk', 'en']);
   assert.equal(meta.defaultLanguage, 'uk');
+  assert.deepEqual({ pageSize: meta.pageSize, pageSizes: meta.pageSizes }, { pageSize: 20, pageSizes: [10, 20, 50, 100] });
   assert.deepEqual(meta.types.map((type: { name: string }) => type.name), ['act', 'contract', 'invoice']);
   const invoice = meta.types.find((type: { name: string }) => type.name === 'invoice');
   assert.equal(invoice.schemaId, 'https://reader.local/schemas/invoice.v1.json');

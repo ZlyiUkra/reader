@@ -2,6 +2,7 @@ import type { FormatParams } from '../../src/shared/format.ts';
 import { renderReason } from '../../src/shared/reason-text.ts';
 import { formatKopiyky } from '../../src/shared/values.ts';
 import type { Meta, MetaType, StoredReason } from './model.ts';
+import { translateName } from './t.ts';
 import type { Lang } from './t.ts';
 
 /**
@@ -30,9 +31,18 @@ export function fieldLabel(meta: Meta, typeName: string | null, fieldName: strin
 const fieldNameParams = ['field', 'earlier', 'later'];
 
 /**
+ * The parameters of a reason that hold a technical name the code stores: the program that could not read the file, the limit
+ * that was breached and the cause of an internal error. Each is shown under the name the page's dictionary gives it, in the
+ * group called like the parameter (`tool.soffice`, `limit.page_cap`, `cause.model_timeout`), and as stored when the
+ * dictionary has no name for it, so a value added to the code later still shows something readable to a developer.
+ */
+const technicalNameParams = ['tool', 'limit', 'cause'];
+
+/**
  * The message of a stored reason in the active language, made of the template and the stored parameters. A parameter that
  * names a field of the document's type is replaced by that field's label in the same language, so the owner reads the label
- * and not the name the schema uses; a reason code the page does not know is shown as its code.
+ * and not the name the schema uses, and a technical name (program, limit, cause) by its name from the dictionary; a reason
+ * code the page does not know is shown as its code.
  */
 export function reasonText(meta: Meta, reason: StoredReason, typeName: string | null, lang: Lang): string {
   const entry = meta.reasons.find((candidate) => candidate.code === reason.code);
@@ -44,6 +54,12 @@ export function reasonText(meta: Meta, reason: StoredReason, typeName: string | 
     const value = params[name];
     if (typeof value === 'string') {
       params[name] = fieldLabel(meta, typeName, value, lang);
+    }
+  }
+  for (const name of technicalNameParams) {
+    const value = params[name];
+    if (typeof value === 'string') {
+      params[name] = translateName(lang, name, value);
     }
   }
   return renderReason(entry, params, lang);

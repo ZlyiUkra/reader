@@ -81,3 +81,68 @@ test('every to-do item of the header exists in both languages, with its trigger'
     }
   }
 });
+
+/**
+ * The technical names the code stores in the parameters of a reason: the program that could not read the file (`tool`), the
+ * limit that was breached (`limit`) and the cause of an internal error (`cause`). The page shows each under a name of the
+ * dictionary, so the owner reads "LibreOffice" and not `soffice`. These are the values the code emits today
+ * (`parser/src/parse.ts`, `parser/src/server.ts`, `app/src/pipeline/failures.ts`, `model-call.ts`, `db/claim.ts`); the
+ * parser's sources are not in this image, so the values are listed here and a new one is added here and to both dictionaries.
+ */
+const technicalValues: Record<string, string[]> = {
+  tool: ['soffice', 'pdfinfo', 'pdftotext', 'pdftoppm', 'pdfimages', 'tesseract', 'rsvg-convert', 'convert', 'file', 'render', 'image'],
+  limit: [
+    'prompt_tokens',
+    'num_predict',
+    'tool_memory_mb',
+    'tool_output_bytes',
+    'convert_timeout_s',
+    'ocr_timeout_s_per_page',
+    'render_timeout_s_per_page',
+    'png_max_side_px',
+    'png_max_bytes',
+    'text_max_bytes',
+    'page_size_pt',
+    'page_cap',
+  ],
+  cause: [
+    'lease_expired',
+    'child_exit',
+    'child_output',
+    'child_start',
+    'job_deadline',
+    'job_folders_missing',
+    'local_only',
+    'model_reply',
+    'model_transport',
+    'model_timeout',
+    'model_http',
+    'model_invalid_reply',
+    'model_recording',
+    'parser_connect',
+    'parser_busy',
+    'parser_timeout',
+    'parser_protocol',
+    'unsafe_output',
+    'unexpected',
+    'parser',
+  ],
+};
+
+test('every technical name a reason can carry has a human name in both languages, and no name is left without a value', () => {
+  const listed = new Set<string>();
+  for (const [group, values] of Object.entries(technicalValues)) {
+    for (const value of values) {
+      const key = `${group}.${value}`;
+      listed.add(key);
+      for (const [lang, dictionaryOf] of [['uk', uk], ['en', en]] as const) {
+        const name = dictionaryOf[key] ?? '';
+        assert.ok(name.trim().length > 0, `${lang} ${key} has a name`);
+        assert.notEqual(name, value, `${lang} ${key} is not the technical name itself`);
+      }
+    }
+  }
+  for (const key of Object.keys(uk).filter((candidate) => /^(tool|limit|cause)\./.test(candidate))) {
+    assert.ok(listed.has(key), `${key} names a value the code emits`);
+  }
+});

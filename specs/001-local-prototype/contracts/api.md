@@ -58,14 +58,15 @@ file (FR-004). Over the size limit: `413` with code `too_large`.
 ## GET /documents
 
 The documents table (FR-053, FR-054). Never contains page texts, fragments or raw model data. Sorted by `number`
-descending. Query `?limit=` (default 200, max 1000).
+descending. Query `?limit=` (default 200, max 1000) and `?offset=` (default 0, not negative); the page asks for one page
+at a time, `limit` being its page size and `offset` its first row. An offset past the end answers an empty list.
 
 ```json
 { "documents": [ {
     "number": number, "sha256": string, "originalName": string | null, "class": string,
     "type": string | null, "status": string, "attempts": number, "createdAt": string, "updatedAt": string,
     "reasons": [ { "code": string, "params": object } ] } ],
-  "count": number }
+  "count": number, "limit": number, "offset": number }
 ```
 
 `count` is the number of documents there are, not of the rows returned (a re-read of the same files leaves it unchanged,
@@ -121,8 +122,12 @@ Everything the page derives from the registry and the reasons file (FR-041, FR-0
                  "templates": { "uk": string, "en": string }, "params": [ string ],
                  "variants": [ { "when": object, "params": [ string ],
                                  "templates": { "uk": string, "en": string } } ] } ],
-  "statuses": [ string ] }
+  "statuses": [ string ],
+  "pageSize": number, "pageSizes": [ number ] }
 ```
+
+`pageSize` is the default page size of the lists (`ui.page_size`) and `pageSizes` the sizes the page offers
+(`ui.page_size_options`); both come from the thresholds file, so the page keeps no number of its own.
 
 Templates use `{param}` placeholders; the page substitutes `params` and renders the result as text.
 

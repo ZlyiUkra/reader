@@ -59,6 +59,7 @@
   --color-title: var(--flag-blue);
   --color-selected: var(--flag-blue);
   --color-on-selected: var(--white);
+  --color-stripe-bottom: var(--flag-blue);
   --color-focus: var(--flag-blue);
   --color-ok: var(--green-700);
   --color-warn: var(--amber-700);
@@ -118,7 +119,13 @@ body {
   gap: 0.375rem;
 }
 
-button {
+/*
+ * One look for every control the owner presses or chooses with: buttons and the page-size select have the same padding,
+ * border, radius, colours and font, so they sit at the same height in a row and read as one family in both themes. The file
+ * chooser is a button of the page (the native input is hidden), so its texts come from the dictionary and follow the language.
+ */
+button,
+select {
   padding: 0.375rem 0.875rem;
   border: 1px solid var(--color-border);
   border-radius: var(--radius);
@@ -128,14 +135,16 @@ button {
   cursor: pointer;
 }
 
-button[aria-pressed='true'] {
+button[aria-pressed='true'],
+button[aria-current='page'] {
   border-color: var(--color-selected);
   background: var(--color-selected);
   color: var(--color-on-selected);
   font-weight: 600;
 }
 
-button:focus-visible {
+button:focus-visible,
+select:focus-visible {
   outline: 2px solid var(--color-focus);
   outline-offset: 2px;
 }
@@ -152,6 +161,7 @@ button:focus-visible {
 
 .panel {
   flex: 1;
+  min-width: 0;
   padding: 1rem 1.25rem;
   border: 1px solid var(--color-border);
   border-radius: var(--radius);
@@ -215,12 +225,36 @@ p {
   border-radius: var(--radius);
 }
 
+.update {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space);
+  padding: 0.375rem 0.75rem;
+  border: 1px solid var(--color-selected);
+  border-radius: var(--radius);
+  background: var(--color-panel);
+}
+
+.result-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space);
+}
+
+.result .pager {
+  margin-top: 0.375rem;
+}
+
 .result ul {
   margin: 0;
   padding-left: 1.25rem;
 }
 
-button:disabled {
+button:disabled,
+select:disabled {
   opacity: 0.6;
   cursor: default;
 }
@@ -241,12 +275,18 @@ button.link {
 }
 
 .table-wrap {
+  max-width: 100%;
   overflow-x: auto;
 }
 
 table {
   width: 100%;
+  min-width: 48rem;
   border-collapse: collapse;
+}
+
+.stack > * {
+  min-width: 0;
 }
 
 th,
@@ -413,4 +453,42 @@ pre {
 
 .todo li {
   margin-bottom: 0.25rem;
+}
+
+.pager {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1rem;
+}
+
+.pager-pages {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.pager-pages button.pager-number {
+  min-width: 2.25rem;
+  padding-right: 0.5rem;
+  padding-left: 0.5rem;
+}
+
+.pager-gap {
+  min-width: 1.5rem;
+  text-align: center;
+  color: var(--color-text-muted);
+}
+
+.pager-size {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-left: auto;
+}
+
+.pager select {
+  padding-right: 0.5rem;
+  padding-left: 0.5rem;
 }

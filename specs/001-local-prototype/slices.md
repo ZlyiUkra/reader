@@ -393,7 +393,7 @@ spent); the live kill-the-app-mid-step check; node --test green with the model s
 in tasks.md. Then run the after_implement hook (agile-tasks).
 ```
 
-## Slice 7 - Interface
+## Slice 7 - Interface (done, committed in f2a6000)
 
 - **Servers** (dashboard): react, vite, fastify, mdn, frontend-architecture, owasp, helmet. **+** typescript; nodejs
   (`node:test` for T040); node-postgres (the detail routes read the database); docker and ollama (T069 runs checks 2,
@@ -437,6 +437,42 @@ start any other task. Finish with the slice 7 closing checks and show their outp
 403 or 421 and changes nothing (check 13); the header shows the TODO list; every field in the detail view shows its
 fragment and page; checks 2, 3 and 8; the FR-057 language check; the two refusals of SC-009. Mark each finished task
 [X] in tasks.md. Then run the after_implement hook (agile-tasks).
+```
+
+## Slice 7a - Pages of the lists (added after slice 7; dashboard phase 7)
+
+- **Why**: owner decision of 2026-11-01. The folder list and the documents table grow without a bound, and the API serves at
+  most 1000 rows; both are shown in pages, with a page size chosen in the page (default 20).
+- **Servers** (dashboard): the slice 7 set. **Start set** (12): the same twelve; the start command of slice 7 skips the ones
+  that are already listening.
+- **Tasks**:
+  - T078 `offset` and the echoed `limit` and `offset` on `GET /documents`, the rows `ui.page_size` and `ui.page_size_options`,
+    `pageSize` and `pageSizes` in `GET /meta`, the pure `shared/pager.ts` (windows, page numbers) with its tests
+  - T079 `Pager.tsx` used by the folder list and the documents table, the page size kept in `App.tsx`
+  - T080 verify in the browser, in both languages and both themes, and at a narrow width
+  - T081 human names for the program, the limit and the cause shown in reasons (dictionaries `tool.*`, `limit.*`,
+    `cause.*`, `labels.ts`, a test of completeness)
+  - T082 one look for buttons, the page-size select and the file chooser; the bottom stripe of the header blue in the
+    light theme
+  - T083 hide and show the result of "Read folder"
+  - T084 the result of a read in pages; the pager of every list below the list, not above it
+  - T085 the file chooser drawn by the page: its button and its "no file chosen" line come from the dictionaries
+  - T086 the page notices a newer build and offers a reload (`shared/build.ts`, `NewVersion.tsx`)
+- **Closes when**: the API answers a page, the echoed `limit` and `offset` and the total `count`, and an offset past the end
+  answers an empty list; in both lists the previous and next buttons are always shown and disabled where they cannot act, the
+  numbers of the pages come between them with the first and the last always among them, and the page size is chosen from a
+  list in the same line (default 20); a change of the size keeps the first visible row; both interface languages and both
+  themes show it, and the tables scroll inside their frame on a narrow screen.
+
+**Run** (type `/speckit-implement`, then paste):
+
+```text
+Slice 7a only: T078, T079, T080, T081, T082, T083, T084, T085, T086. Do not start any other task. Finish with the slice 7a closing checks and show their output:
+the API pages (limit, offset, count, an offset past the end), the previous and next buttons disabled at the first and the last page in
+the folder list and in the documents table, the page numbers, the page size choice with the default 20, both interface
+languages and both themes, a narrow width, the human names in the reasons, the result of a read hidden and shown again
+and shown in pages, the file chooser with the texts of the page, the notice of a newer build. Mark each
+finished task [X] in tasks.md. Then run the after_implement hook (agile-tasks).
 ```
 
 ## Slice 8 - Measurement

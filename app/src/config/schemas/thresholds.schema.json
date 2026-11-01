@@ -31,7 +31,7 @@
                    "parser.render_width_px", "parser.manifest_max_bytes", "parser.png_max_bytes", "parser.png_max_side_px",
                    "parser.text_max_bytes", "parser.tool_memory_mb", "intake.upload_max_bytes", "quality.ocr_low_confidence",
                    "quality.ocr_low_share", "quality.empty_min_chars", "quality.scanned_page_max_chars", "run.bound_minutes",
-                   "ui.preview_width_px", "ui.poll_interval_ms", "eval.pass_required_match", "eval.max_false_accepts",
+                   "ui.preview_width_px", "ui.poll_interval_ms", "ui.page_size", "ui.page_size_options", "eval.pass_required_match", "eval.max_false_accepts",
                    "eval.ceiling_tokens_per_document", "eval.ceiling_seconds_per_page_warm"],
       "properties": {
         "model.num_ctx": { "$ref": "#/$defs/entry" },
@@ -62,6 +62,8 @@
         "run.bound_minutes": { "$ref": "#/$defs/entry" },
         "ui.preview_width_px": { "$ref": "#/$defs/entry" },
         "ui.poll_interval_ms": { "$ref": "#/$defs/entry" },
+        "ui.page_size": { "$ref": "#/$defs/entry" },
+        "ui.page_size_options": { "$ref": "#/$defs/entry" },
         "eval.pass_required_match": { "$ref": "#/$defs/entry" },
         "eval.max_false_accepts": { "$ref": "#/$defs/entry" },
         "eval.ceiling_tokens_per_document": { "$ref": "#/$defs/entry" },

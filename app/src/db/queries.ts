@@ -64,9 +64,9 @@ export async function documentByNumber(db: Queryable, number: number): Promise<D
   return result.rows[0] ?? null;
 }
 
-/** The newest documents first, at most `limit` of them (`GET /documents`). */
-export async function listDocuments(db: Queryable, limit: number): Promise<DocumentRow[]> {
-  const result = await db.query<DocumentRow>('SELECT * FROM documents ORDER BY id DESC LIMIT $1', [limit]);
+/** The newest documents first, at most `limit` of them after skipping `offset` (`GET /documents`: one page of the table). */
+export async function listDocuments(db: Queryable, limit: number, offset: number): Promise<DocumentRow[]> {
+  const result = await db.query<DocumentRow>('SELECT * FROM documents ORDER BY id DESC LIMIT $1 OFFSET $2', [limit, offset]);
   return result.rows;
 }
 

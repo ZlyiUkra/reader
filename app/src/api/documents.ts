@@ -9,6 +9,7 @@ import type { IntakeDeps } from '../intake/take.ts';
  * message of a reason is not in it either: the page renders messages from the templates of `/api/meta` in the language
  * the owner chose. Reasons of all listed documents are read in one statement, so a poll every two seconds costs three
  * small queries. `count` is the number of documents there are, not of the rows returned: the re-read check watches it (FR-003).
+ * The table asks for one page at a time with `limit` (the page size) and `offset` (its first row), and the answer echoes both.
  */
 
 /** What the document routes read from outside the module: the pool and the blob root the page previews live under. */
@@ -23,7 +24,7 @@ export const reasonShape = {
 
 const listSchema = {
   type: 'object',
-  required: ['documents', 'count'],
+  required: ['documents', 'count', 'limit', 'offset'],
   properties: {
     documents: {
       type: 'array',
@@ -45,6 +46,8 @@ const listSchema = {
       },
     },
     count: { type: 'integer' },
+    limit: { type: 'integer' },
+    offset: { type: 'integer' },
   },
 } as const;
 
@@ -65,16 +68,22 @@ function groupByDocument(rows: ReasonRow[]): Map<number, Array<{ code: string; p
 
 /** Registers the list route on the `/api` instance. */
 export function registerDocuments(api: FastifyInstance, deps: DocumentsDeps): void {
-  api.get<{ Querystring: { limit: number } }>(
+  api.get<{ Querystring: { limit: number; offset: number } }>(
     '/documents',
     {
       schema: {
-        querystring: { type: 'object', properties: { limit: { type: 'integer', minimum: 1, maximum: maxLimit, default: defaultLimit } } },
+        querystring: {
+          type: 'object',
+          properties: {
+            limit: { type: 'integer', minimum: 1, maximum: maxLimit, default: defaultLimit },
+            offset: { type: 'integer', minimum: 0, default: 0 },
+          },
+        },
         response: { 200: listSchema },
       },
     },
     async (request) => {
-      const [rows, count] = await Promise.all([listDocuments(deps.pool, request.query.limit), countDocuments(deps.pool)]);
+      const [rows, count] = await Promise.all([listDocuments(deps.pool, request.query.limit, request.query.offset), countDocuments(deps.pool)]);
       const reasons = groupByDocument(rows.length === 0 ? [] : await reasonsOfDocuments(deps.pool, rows.map((row) => row.id)));
       return {
         documents: rows.map((row) => ({
@@ -90,6 +99,8 @@ export function registerDocuments(api: FastifyInstance, deps: DocumentsDeps): vo
           reasons: reasons.get(row.id) ?? [],
         })),
         count,
+        limit: request.query.limit,
+        offset: request.query.offset,
       };
     },
   );

@@ -41,7 +41,7 @@ export type MetaReason = {
 };
 
 /** What the page derives from the registry and the reasons file, fetched once at load (FR-041, FR-058). */
-export type Meta = { types: MetaType[]; reasons: MetaReason[]; statuses: string[] };
+export type Meta = { types: MetaType[]; reasons: MetaReason[]; statuses: string[]; pageSize: number; pageSizes: number[] };
 
 /** Parses `GET /meta`. */
 export function parseMeta(value: unknown): Meta {
@@ -78,6 +78,8 @@ export function parseMeta(value: unknown): Meta {
       };
     }),
     statuses: mapArray(member(root, 'statuses'), 'meta.statuses', (item, at) => asString(item, at)),
+    pageSize: asNumber(member(root, 'pageSize'), 'meta.pageSize'),
+    pageSizes: mapArray(member(root, 'pageSizes'), 'meta.pageSizes', (item, at) => asNumber(item, at)),
   };
 }
 
@@ -189,14 +191,16 @@ export type ListedDocument = {
   reasons: StoredReason[];
 };
 
-/** `GET /documents`. */
-export type DocumentList = { documents: ListedDocument[]; count: number };
+/** `GET /documents`: one page of rows, with the page's own `limit` and `offset` and the total `count` of documents. */
+export type DocumentList = { documents: ListedDocument[]; count: number; limit: number; offset: number };
 
 /** Parses `GET /documents`. */
 export function parseDocumentList(value: unknown): DocumentList {
   const root = asObject(value, 'documents');
   return {
     count: asNumber(member(root, 'count'), 'documents.count'),
+    limit: asNumber(member(root, 'limit'), 'documents.limit'),
+    offset: asNumber(member(root, 'offset'), 'documents.offset'),
     documents: mapArray(member(root, 'documents'), 'documents.documents', (item, at) => {
       const row = asObject(item, at);
       return {

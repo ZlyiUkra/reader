@@ -169,6 +169,18 @@
       "status": "provisional",
       "source": "handoff 2026-10-17, C15"
     },
+    "ui.page_size": {
+      "value": 20,
+      "unit": "rows",
+      "status": "provisional",
+      "source": "owner decision 2026-11-01"
+    },
+    "ui.page_size_options": {
+      "value": "10,20,50,100",
+      "unit": "list of rows",
+      "status": "provisional",
+      "source": "owner decision 2026-11-01"
+    },
     "eval.pass_required_match": {
       "value": 1.0,
       "unit": "share",

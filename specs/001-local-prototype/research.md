@@ -286,6 +286,7 @@ of fragments (rejected: a near match is not evidence, constitution VI).
 | quality.empty_min_chars | 20 | chars | page under it is blank; EMPTY when more than half the pages are blank |
 | run.bound_minutes | 15 | min | warm run of the 11 fixtures |
 | ui.preview_width_px / ui.poll_interval_ms | 1240 / 2000 | | |
+| ui.page_size / ui.page_size_options | 20 / "10,20,50,100" | rows, list | owner decision 2026-11-01: default and choices of the page size of the lists |
 | eval.pass_required_match | 1.0 | share | owner decision 2026-10-31 |
 | eval.max_false_accepts | 0 | count | owner decision 2026-10-31 |
 | eval.ceiling_tokens_per_document | 6000 | tokens | owner decision 2026-10-31 |
