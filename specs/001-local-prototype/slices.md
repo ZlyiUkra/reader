@@ -497,7 +497,7 @@ names in both interface languages and both themes, a narrow width. Mark each
 finished task [X] in tasks.md. Then run the after_implement hook (agile-tasks).
 ```
 
-## Slice 8 - Measurement
+## Slice 8 - Measurement (done, committed in c8cc2b0)
 
 - **Servers** (dashboard): patterns, docker, nodejs. **+** typescript; ollama (check 12 reads `ollama ps`); jsonschema
   (the report shape is the contract `eval-report.schema.json`); node-postgres and postgresql (the eval reads the

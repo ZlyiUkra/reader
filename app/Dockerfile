@@ -39,6 +39,8 @@ COPY app/package.json ./
 COPY app/src ./src
 # The tests run in this image (`docker compose run --rm app node --test`, quickstart.md), so they travel with the code.
 COPY app/test ./test
+# The spec, which `test/todo.test.ts` reads for its Deferred Simplifications table (the single source of config/todo.ts).
+COPY specs/001-local-prototype/spec.md ./specs/spec.md
 # The page's sources, which `test/i18n.test.ts` (its dictionaries) and `test/front-safety.test.ts` (its code) read.
 COPY app/web/src ./web/src
 COPY --from=web /build/dist/web ./dist/web

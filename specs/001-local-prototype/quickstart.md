@@ -157,3 +157,50 @@ otherwise.
 
 Open the page: Ukrainian by default. Switch to English, reload: English stays. Clear site data: Ukrainian again.
 A reason message in the table and in the detail view follows the chosen language.
+
+## Outcome of the last full run (T076, 2026-11-01, 03:55-04:05 UTC)
+
+All fourteen checks and the language check ran against the stack built from the committed code plus the slice
+"Polish" changes. Every check passed as a command; check 14 exits 1 because the measured figures are below the
+thresholds, which is its specified behaviour (the first row of the journal in `README.md`).
+
+- Check 1, contract test: 5 of 5 calls valid, empty `thinking`, `done_reason` `stop`, no fallback (8.3 to 9.3 s each).
+- Check 2, first start: every service up, `model-pull` exited 0, health `db ok`, `model ready`, `sandbox runc`, 13
+  simplifications; `docker compose down` and `up -d` again: `model-pull` ran 1.8 s and downloaded nothing (its layer of
+  2.6 GB cannot arrive in that time). In a real browser the header lists all 13 simplifications and their triggers in the
+  page language, none in the other. No document is FAILED.
+- Check 3, sandbox: only `lo`, uid 10001, `touch` fails on a read-only file system, `none true [ALL]
+  [no-new-privileges:true]`, memory 2 GiB, pids 256, `reader_backend` internal, `curl` to 11434 exits 7.
+- Fixtures: the generator reports every file `unchanged` and the hashes of the whole inbox are identical on a second
+  run; 11 documents in the manifest and 11 expected files. The top level then held 19 files, not 12: the 7 files of the
+  hostile set (check 8) were already in the folder.
+- Check 4, folder run: 6 ACCEPTED fixtures, 3 NEEDS_REVIEW with `MISSING_REQUIRED_FIELD` (`invoice-3-scan.pdf` also
+  carries `VALIDATION_FAILED`), the wrong-VAT invoice `VALIDATION_FAILED`, the untyped letter `UNKNOWN_DOC_TYPE`; the
+  reasons are rendered in both languages. The evidence is the run of 03:28 UTC on an empty database (18 documents in
+  109 s); it was not repeated on a second empty database, since a reset needs the owner's word.
+- Check 5, re-read: a second read took in 0 files and found 18 duplicates; a renamed copy of `act-1.png` was a duplicate of
+  document 1 and the count stayed 19 (the copy was removed from the inbox afterwards).
+- Check 6, sensitivity class: the upload of `README.md` is `unverified`; the 11 fixtures are `synthetic`. With a class
+  without `may_leave` the live app refused to start and named the class on every restart, and a one-off run on a copy
+  of the config exited 1; the config was restored and the app is up.
+- Check 7, safe reading: 7 of 7 tests pass (symlink, hard link, sparse 1 GB manifest and the others).
+- Check 8, hostile sizes: the generator rewrote nothing; the two oversized files are REJECTED `TOO_LARGE`, the
+  password-protected PDF `ENCRYPTED`, the truncated DOCX `CORRUPT`, the `.zip` `UNSUPPORTED_FORMAT`, the blank PDF
+  NEEDS_REVIEW `EMPTY`, the noise PNG NEEDS_REVIEW `LOW_OCR_QUALITY`; every one after 1 attempt; all containers up.
+- Check 9, GPU-free suite: with the model stopped, 325 tests, 320 pass, 5 skipped (the GPU contract test), 0 fail.
+- Check 10, registry: run live under T071; the classify request of a new upload listed `receipt` once the example was
+  in `schemas/`; the example was removed and the app restarted, after which the registry has three types again.
+- Check 11, model outage: with the model stopped, health says `model missing` and the new upload (document 21) waited
+  at CLASSIFY with 0 attempts; 9 s after the model started its first classify attempt began and the document ended
+  ACCEPTED 18 s after the start, with attempt 1 on every step.
+- Check 12: `ollama ps` shows 100% GPU and the context 16384 of the compose file; all 25 stored calls ended with
+  `done_reason` `stop`, 0 other.
+- Check 13: foreign Host 421, foreign Origin 403, the documents count unchanged at 21.
+- Check 14, evaluation: all figures of the Measurement Contract printed, `not a tier decision`, one new report
+  `results/eval-20261101-040255-d8b0f5e9760c.json`, exit 1 (required fields 92.6%, 7 false accepts; the figures equal
+  row 1 of the journal, since the documents added by the checks have no expected files).
+- Language check (FR-057): Ukrainian on a fresh profile; English after the switch and after a reload; Ukrainian again
+  after clearing site data; the VAT reason of document 17 reads in the chosen language in the table and in the detail.
+
+Left in the live database by the run: document 19 (the probe of check 10), 20 (`README.md` upload) and 21 (the probe
+of check 11), all from the browser upload path; stored data is only added to.

@@ -104,7 +104,10 @@ export const todoList: Simplification[] = [
     id: 'step-runs-completed-by-update',
     uk: 'Рядок step_runs дописується один раз оновленням finished_at, outcome і details; таблиця не лише для вставки.',
     en: 'A step_runs row is completed once by an update of finished_at, outcome and details; the table is not insert-only.',
-    trigger: { uk: 'Перший несинтетичний документ.', en: 'The first non-synthetic document.' },
+    trigger: {
+      uk: 'Перший несинтетичний документ: одна вставка наприкінці спроби, у власній транзакції кроку, а право на оновлення знімається.',
+      en: 'The first non-synthetic document: one insert at the end of the attempt, in the step\'s own transaction, and the update grant dropped.',
+    },
   },
 ];
 

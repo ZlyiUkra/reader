@@ -45,6 +45,29 @@ one Docker Compose file. A later port of the same prototype to Go is planned and
    visible at runtime.
 4. Numbers that were not measured on this product are estimates and are labelled as such.
 
+## Running it
+
+Everything runs in containers from the repository root, in WSL with the NVIDIA Container Toolkit (the model needs the
+GPU).
+
+1. Copy `.env.example` to `.env` and replace the placeholders. `.env` is never committed and never printed.
+2. `docker compose up -d` starts the database, the model, the parser sandbox and the app. The first start pulls the
+   model into a volume (`docker compose logs -f model-pull` is the progress view); later starts download nothing.
+3. `docker compose run --rm fixtures` writes the synthetic documents, their manifest and the expected values into
+   `inbox/`. The files are byte-identical on every run.
+4. Open `http://127.0.0.1:3000` and press "Read folder". The page polls every two seconds; it is Ukrainian by default
+   and switches to English in the header. A file can also be uploaded from the page.
+5. `docker compose run --rm app node src/eval.ts` evaluates the stored run against the expected values. It prints
+   every figure, says "not a tier decision", exits non-zero below the thresholds and writes one JSON report into
+   `results/`, named by the run date, time and model digest. Each report is a source for a row of the measurement
+   journal below.
+6. `docker compose run --rm app node --test` runs the tests; stop the model first (`docker compose stop model`) to
+   prove they need no GPU.
+
+The named simplifications of the prototype, each with what ends it, are the `todo` list of `GET /api/health`, the
+list in the page header and one WARN line each at start. The acceptance checks are in
+`specs/001-local-prototype/quickstart.md`, with the outcome of their last full run at its end.
+
 ## Measurement journal
 
 Every run of the evaluation (`docker compose run --rm app node src/eval.ts`) prints its figures, writes one JSON
@@ -68,5 +91,5 @@ is not a tier decision.
 
 ## Repository
 
-Git since 2026-10-31, branch `main`. Tracked: `README.md`, `docs/`, `specs/`, `.gitignore`. Ignored: `.claude/`,
-`.specify/`, `AGENTS.md`.
+Git since 2026-10-31, branch `main`. Everything is tracked except `.claude/`, `.specify/`, `AGENTS.md`, `.env`, and the
+contents of `inbox/` and `results/`; the first three exist only on the owner's machine.

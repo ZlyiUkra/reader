@@ -108,7 +108,7 @@ export async function readInbox(deps: IntakeDeps): Promise<InboxReadResult> {
       if (error instanceof BlobTooLargeError) {
         result.skipped.push({ name, reason: 'too_large' });
       } else if (isFileSystemError(error)) {
-        deps.logger.warn({ file: name, code: (error as NodeJS.ErrnoException).code }, 'A file of the inbox could not be read.');
+        deps.logger.warn({ code: (error as NodeJS.ErrnoException).code }, 'A file of the inbox could not be read; its name is in the result of the read.');
         result.skipped.push({ name, reason: 'unreadable' });
       } else {
         throw error;

@@ -5,6 +5,7 @@ AGENTS.md
 README.md
 docs/
 specs/
+!specs/001-local-prototype/spec.md
 inbox/
 results/
 .env

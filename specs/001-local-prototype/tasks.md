@@ -195,7 +195,7 @@ simplifications; restarts lose and duplicate nothing; misconfiguration refuses t
 **Independent Test**: acceptance check 10 of quickstart.md.
 
 - [X] T070 [US6] Write `app/test/fixtures/registry/receipt.v1.json` (a minimal fourth type with labels in both languages; inside the app package so the test runs in the container) and `app/test/registry.test.ts`: loading a registry with the extra file changes the classify enum, the `registryHash` and the labels; a schema without `uk` or `en` labels is refused at start
-- [ ] T071 [US6] Run quickstart.md check 10 (copy the example into `schemas/`, restart, upload a file whose hash is not yet known, since a fixture copy is a `DUPLICATE` and runs no classification, inspect its classify `rawRequest`); remove the example from `schemas/` afterwards; fix findings
+- [X] T071 [US6] Run quickstart.md check 10 (copy the example into `schemas/`, restart, upload a file whose hash is not yet known, since a fixture copy is a `DUPLICATE` and runs no classification, inspect its classify `rawRequest`); remove the example from `schemas/` afterwards; fix findings
 
 **Checkpoint**: all six user stories pass their checks.
 
@@ -205,11 +205,11 @@ simplifications; restarts lose and duplicate nothing; misconfiguration refuses t
 
 **Purpose**: Documentation, secrets, logging, completeness of the named simplifications, the full quickstart run.
 
-- [ ] T072 [P] Update `README.md`: how to run (`docker compose up -d`, the fixtures, the eval), where the reports land, a pointer to the measurement journal table of T064, a pointer to the named simplifications in `/api/health`
-- [ ] T073 [P] Secrets review: grep the repository for anything that looks like a password or key; confirm `.env` is ignored, `.env.example` has placeholders only, and no test or log prints an environment value
-- [ ] T074 [P] Logging review of `app/src/`: ids, sha256, codes, timings and model metadata only; no page text, field value, fragment or raw model response at any level (AGENTS.md rule); fix findings
-- [ ] T075 Write `app/test/todo.test.ts`: every row of the Deferred Simplifications table of spec.md appears in `config/todo.ts`, in the startup WARN output and in `/health` `todo` in both languages (constitution XII)
-- [ ] T076 Run quickstart.md end to end, checks 1 to 14 plus the FR-057 language check, and record the date and outcome of each check at the end of `specs/001-local-prototype/quickstart.md`
+- [X] T072 [P] Update `README.md`: how to run (`docker compose up -d`, the fixtures, the eval), where the reports land, a pointer to the measurement journal table of T064, a pointer to the named simplifications in `/api/health`
+- [X] T073 [P] Secrets review: grep the repository for anything that looks like a password or key; confirm `.env` is ignored, `.env.example` has placeholders only, and no test or log prints an environment value
+- [X] T074 [P] Logging review of `app/src/`: ids, sha256, codes, timings and model metadata only; no page text, field value, fragment or raw model response at any level (AGENTS.md rule); fix findings
+- [X] T075 Write `app/test/todo.test.ts`: every row of the Deferred Simplifications table of spec.md appears in `config/todo.ts`, in the startup WARN output and in `/health` `todo` in both languages (constitution XII)
+- [X] T076 Run quickstart.md end to end, checks 1 to 14 plus the FR-057 language check, and record the date and outcome of each check at the end of `specs/001-local-prototype/quickstart.md`
 
 ---
 
