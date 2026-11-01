@@ -9,7 +9,7 @@ import type { ReasonCode } from '../reasons/reasons.ts';
 import type { Registry, RegistryType } from '../registry/registry.ts';
 import { isEdrpou, isUaIban } from '../shared/checksums.ts';
 import type { Logger } from '../shared/logger.ts';
-import { vatSumHolds } from '../shared/values.ts';
+import { formatKopiyky, vatSumHolds } from '../shared/values.ts';
 import type { StepHandler } from '../worker.ts';
 import { gatherEvidence, quotesOf, storedReply } from './evidence.ts';
 import type { FieldEvidence } from './evidence.ts';
@@ -28,11 +28,6 @@ export type FoundReason = {
   code: ReasonCode;
   params: Record<string, string | number>;
 };
-
-/** An amount of kopiyky written as a decimal string with two places, with integer arithmetic only: 1200050 is "12000.50". */
-export function formatKopiyky(minor: number): string {
-  return `${Math.trunc(minor / 100)}.${String(minor % 100).padStart(2, '0')}`;
-}
 
 /** The typed value of a field that has one, or undefined: a field with no evidence takes no part in a rule. */
 function canonicalOf(evidence: Map<string, FieldEvidence>, name: string): string | number | undefined {

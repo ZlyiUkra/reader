@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { loadConfig, resolveConfigDirs } from '../src/config/load.ts';
 import type { ExtractionRow, PageReading } from '../src/db/queries.ts';
-import { reasonsOfEvidence, formatKopiyky } from '../src/pipeline/check.ts';
+import { reasonsOfEvidence } from '../src/pipeline/check.ts';
 import { deriveValue, gatherEvidence, quotesOf, storedReply } from '../src/pipeline/evidence.ts';
 import type { FieldEvidence, Quote } from '../src/pipeline/evidence.ts';
 import { ModelReplyError } from '../src/pipeline/model-call.ts';
@@ -11,6 +11,7 @@ import type { ReasonCode } from '../src/reasons/reasons.ts';
 import { createRegistry } from '../src/registry/registry.ts';
 import type { RegistryType } from '../src/registry/registry.ts';
 import { uaIban } from '../src/shared/checksums.ts';
+import { formatKopiyky } from '../src/shared/values.ts';
 
 /**
  * Evidence and checks without a model or a database (T046, T047, FR-018, FR-019, FR-021, constitution V and VI): the

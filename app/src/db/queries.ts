@@ -384,6 +384,108 @@ export async function insertField(db: Queryable, field: NewField): Promise<void>
   );
 }
 
+/** The reasons of many documents at once, oldest first: the table reads a screenful in one statement, not one per row. */
+export async function reasonsOfDocuments(db: Queryable, documentIds: number[]): Promise<ReasonRow[]> {
+  const result = await db.query<ReasonRow>('SELECT * FROM reasons WHERE document_id = ANY($1::bigint[]) ORDER BY id', [documentIds]);
+  return result.rows;
+}
+
+/** A rendered page as the detail view lists it; `source` is the reading the text came from, null when none was stored. */
+export type PageRow = {
+  page_no: number;
+  width_px: number;
+  height_px: number;
+  source: 'text_layer' | 'ocr' | null;
+};
+
+/** The pages of a document in page order, each with the source of its first reading. */
+export async function pagesOf(db: Queryable, documentId: number): Promise<PageRow[]> {
+  const result = await db.query<PageRow>(
+    `SELECT p.page_no, p.width_px, p.height_px,
+            (SELECT t.source FROM page_texts t WHERE t.page_id = p.id ORDER BY t.id LIMIT 1) AS source
+     FROM pages p WHERE p.document_id = $1 ORDER BY p.page_no`,
+    [documentId],
+  );
+  return result.rows;
+}
+
+/** The key of a page preview under the blob root, or null when the document has no such page. */
+export async function pageBlobKeyOf(db: Queryable, documentId: number, pageNo: number): Promise<string | null> {
+  const result = await db.query<{ png_blob_key: string }>('SELECT png_blob_key FROM pages WHERE document_id = $1 AND page_no = $2', [documentId, pageNo]);
+  return result.rows[0]?.png_blob_key ?? null;
+}
+
+/** A stored field with the number of the page its fragment was found on; `page_no` is null when it was not found. */
+export type FieldWithPage = {
+  name: string;
+  kind: string;
+  value: unknown;
+  verbatim: string | null;
+  page_no: number | null;
+  offset_start: number | null;
+  offset_end: number | null;
+  found: boolean;
+};
+
+/** The fields of one extraction in the order they were written, with the page of each fragment (the detail view). */
+export async function fieldsWithPageOf(db: Queryable, extractionId: number): Promise<FieldWithPage[]> {
+  const result = await db.query<FieldWithPage>(
+    `SELECT f.name, f.kind, f.value, f.verbatim, p.page_no, f.offset_start, f.offset_end, f.found
+     FROM fields f
+     LEFT JOIN page_texts t ON t.id = f.page_text_id
+     LEFT JOIN pages p ON p.id = t.page_id
+     WHERE f.extraction_id = $1 ORDER BY f.id`,
+    [extractionId],
+  );
+  return result.rows;
+}
+
+/** One model call of a document without the raw request and response: its identity and cost, for the detail view. */
+export type ModelCallRow = {
+  id: number;
+  kind: 'classify' | 'extract';
+  model_name: string;
+  model_digest: string;
+  schema_id: string | null;
+  prompt_hash: string;
+  prompt_eval_count: number | null;
+  eval_count: number | null;
+  cold: boolean;
+};
+
+/** The model calls of a document, oldest first, never carrying the raw request or response (FR-054). */
+export async function modelCallsOf(db: Queryable, documentId: number): Promise<ModelCallRow[]> {
+  const result = await db.query<ModelCallRow>(
+    `SELECT id, kind, model_name, model_digest, schema_id, prompt_hash, prompt_eval_count, eval_count, cold
+     FROM extractions WHERE document_id = $1 ORDER BY id`,
+    [documentId],
+  );
+  return result.rows;
+}
+
+/** One model call of a document with exactly what was sent and what came back (`GET /documents/{number}/raw`, FR-053a). */
+export type RawCallRow = {
+  id: number;
+  kind: 'classify' | 'extract';
+  attempt: number;
+  adapter: string;
+  model_digest: string;
+  done_reason: string | null;
+  raw_request: Record<string, unknown>;
+  raw_response: Record<string, unknown>;
+  created_at: Date;
+};
+
+/** The raw model calls of one document, oldest first; served per document only, never in a list. */
+export async function rawCallsOf(db: Queryable, documentId: number): Promise<RawCallRow[]> {
+  const result = await db.query<RawCallRow>(
+    `SELECT id, kind, attempt, adapter, model_digest, done_reason, raw_request, raw_response, created_at
+     FROM extractions WHERE document_id = $1 ORDER BY id`,
+    [documentId],
+  );
+  return result.rows;
+}
+
 /** An insert that returned no row cannot happen on a healthy database, so it stops here with the name of what failed. */
 function failed(what: string): never {
   throw new Error(`The database did not return a row when asked to ${what}`);

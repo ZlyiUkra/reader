@@ -1,6 +1,7 @@
 import type { ReasonEntry, ReasonsFile, ReasonTemplates } from '../config/types.ts';
-import { format, placeholders } from '../shared/format.ts';
+import { placeholders } from '../shared/format.ts';
 import type { FormatParams } from '../shared/format.ts';
+import { renderReason } from '../shared/reason-text.ts';
 
 /**
  * The closed list of reason codes, each with the outcome the status function gives it (FR-024, FR-026, C1), in the
@@ -122,10 +123,7 @@ export function createReasons(file: ReasonsFile): Reasons {
     if (entry === undefined) {
       throw new ReasonsError(`Unknown reason code ${code}`);
     }
-    const variant = (entry.variants ?? []).find((candidate) =>
-      Object.entries(candidate.when).every(([name, value]) => Object.hasOwn(params, name) && params[name] === value),
-    );
-    return format((variant ?? entry).templates[lang], params);
+    return renderReason(entry, params, lang);
   }
 
   return { entries: file.reasons, render };

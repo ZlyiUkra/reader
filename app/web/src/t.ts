@@ -60,3 +60,17 @@ export function storeLang(lang: Lang): void {
 export function translate(lang: Lang, key: TextKey, params?: FormatParams): string {
   return format(dictionaries[lang][key], params);
 }
+
+/** True when `key` is a key of the dictionary; texts whose key is built from data (a status, a step) are looked up with it. */
+function isTextKey(key: string): key is TextKey {
+  return Object.hasOwn(uk, key);
+}
+
+/**
+ * The text under `<group>.<name>` in the active language, or the name itself when the dictionary has none. A status, step or
+ * outcome the page was not written for therefore shows as it is, instead of as an empty cell or a raw key.
+ */
+export function translateName(lang: Lang, group: string, name: string): string {
+  const key = `${group}.${name}`;
+  return isTextKey(key) ? translate(lang, key) : name;
+}

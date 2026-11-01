@@ -2,11 +2,15 @@ import fastifyHelmet from '@fastify/helmet';
 import fastifyStatic from '@fastify/static';
 import Fastify from 'fastify';
 import type { FastifyError, FastifyInstance } from 'fastify';
+import { registerDocument } from './api/document.ts';
+import { registerDocuments } from './api/documents.ts';
 import { registerHealth } from './api/health.ts';
 import type { HealthDeps } from './api/health.ts';
 import { registerInbox } from './api/inbox.ts';
 import { registerMeta } from './api/meta.ts';
 import type { MetaDeps } from './api/meta.ts';
+import { registerPages } from './api/pages.ts';
+import { registerRaw } from './api/raw.ts';
 import { registerUpload } from './api/upload.ts';
 import { HttpError } from './http-error.ts';
 import type { IntakeDeps } from './intake/take.ts';
@@ -22,7 +26,7 @@ export { HttpError };
 /** What `buildServer` needs. */
 export type ServerDeps = HealthDeps &
   MetaDeps & {
-    /** The inbox and upload routes; absent in tests that need neither a folder nor a database. */
+    /** The inbox, upload and document routes; absent in tests that need neither a folder nor a database. */
     intake?: IntakeDeps;
     /** The port the browser uses, which is the one the `Host` and `Origin` of every request must carry. */
     publicPort: number;
@@ -90,6 +94,10 @@ export async function buildServer(deps: ServerDeps): Promise<FastifyInstance> {
       if (deps.intake !== undefined) {
         registerInbox(api, deps.intake);
         await registerUpload(api, deps.intake);
+        registerDocuments(api, deps.intake);
+        registerDocument(api, deps.intake);
+        registerRaw(api, deps.intake);
+        registerPages(api, deps.intake);
       }
     },
     { prefix: '/api' },

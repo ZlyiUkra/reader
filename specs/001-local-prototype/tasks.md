@@ -77,7 +77,7 @@ fixtures, server and worker skeleton. No user story work starts before this phas
 - [X] T037 Write `app/src/config/todo.ts`: the thirteen named simplifications of the spec.md Deferred Simplifications table (the single source; plan.md Complexity Tracking mirrors it) with `uk` and `en` texts and triggers; logged as WARN at start and returned by `/api/health` (FR-052)
 - [X] T038 Write `app/src/worker.ts` (claim loop with the poll interval, step dispatch table, lease expiry handling, no LLM claim while the model is missing, boot requeue; takes pool, ports, thresholds and logger as parameters, never the Fastify instance) and its wiring into `app/src/main.ts`, which T036 wrote: the worker starts after the server
 - [X] T039 Write the front skeleton: `app/web/index.html`, `app/web/vite.config.ts` (`base: ''`, outDir `../dist/web`), `app/web/src/main.tsx`, `app/web/src/App.tsx` (three views as component state, no router), `app/web/src/api.ts` (`fetch` wrapper adding `X-Reader-Request: 1`, `poll(url, 2000)`), `app/web/src/i18n/uk.json`, `en.json`, `t.ts` with the language in `localStorage["reader.lang"]`, default `uk`
-- [ ] T040 [P] Write `app/test/i18n.test.ts`: the two dictionaries have equal key sets; every registry label and every reasons template exists in uk and en (FR-058)
+- [X] T040 [P] Write `app/test/i18n.test.ts`: the two dictionaries have equal key sets; every registry label and every reasons template exists in uk and en (FR-058)
 - [X] T077 Write the page shell of the front: `app/web/src/styles.css` (semantic CSS variables, a dark theme as the default and a light theme, both in Ukrainian tones; system sans stack; flat panels; no gradients, animations or inline styles), `app/web/src/theme.ts` (the light | dark choice, kept in `localStorage["reader.theme"]`, dark when nothing is stored), `app/web/src/components/Header.tsx` (the title and two one-button switches: the language, which shows the other language, FR-057, and the theme, which shows a sun or a moon) and the dictionary keys they need, wired into `App.tsx` and `main.tsx`; the language choice is kept in `localStorage["reader.lang"]`
 
 **Checkpoint**: `docker compose up -d` starts every service, `/api/health` answers (`model: ready` once T067 has
@@ -101,9 +101,9 @@ terminal statuses, with duplicates reported and the model outage handled.
 - [X] T046 [US1] Write `app/src/pipeline/evidence.ts`: locate every verbatim fragment in the page texts with the pinned normalisation, map offsets back, derive the typed value with `shared/values.ts`; the module is pure, and `check.ts` writes the `fields` rows with `page_text_id` and offsets in its transaction from the stored reply, because the page the model named is kept only there (FR-018, FR-019)
 - [X] T047 [US1] Write `app/src/pipeline/check.ts`: run the registry checks (`vat_sum`, `date_order`, `edrpou`, `iban_ua`, business `required`, fragment located) with the templates of C1 and C11, write `reasons`, set `checks_done`, `accepted_extraction_id` when accepted and the final status, all in one transaction (FR-021, FR-026, FR-030)
 - [X] T048 [US1] Write `app/src/pipeline/failures.ts`: the C6 mapping (tool over its limit to `TOO_LARGE` without retry, file-caused tool error to `CORRUPT`, infrastructure, timeout or invalid JSON to `INTERNAL_ERROR`, `FAILED` after three attempts, lease expiry as an attempt) and wire it into the worker's step dispatch (FR-027)
-- [ ] T049 [US1] Write `app/src/api/documents.ts`: `GET /documents` list with reasons as `{code, params}`, never page texts or raw data, sorted by number descending (FR-054)
-- [ ] T050 [US1] Write `app/web/src/views/Inbox.tsx`: the file list, the "Read folder" action and its result (taken, duplicates with the original's number, skipped), texts through `t()`
-- [ ] T051 [US1] Write `app/web/src/views/Documents.tsx`: the table (number, name, class, type, status, reasons rendered from `/meta` templates in the active language) polling every 2 seconds
+- [X] T049 [US1] Write `app/src/api/documents.ts`: `GET /documents` list with reasons as `{code, params}`, never page texts or raw data, sorted by number descending (FR-054)
+- [X] T050 [US1] Write `app/web/src/views/Inbox.tsx`: the file list, the "Read folder" action and its result (taken, duplicates with the original's number, skipped), texts through `t()`
+- [X] T051 [US1] Write `app/web/src/views/Documents.tsx`: the table (number, name, class, type, status, reasons rendered from `/meta` templates in the active language) polling every 2 seconds
 - [X] T052 [US1] Record the fixtures run once with the GPU into `app/test/fixtures/replay/` and the golden parser outputs into `app/test/fixtures/golden/`; write `app/test/pipeline-replay.test.ts`: the eleven fixtures reach the expected statuses against the real `db` service through the replay adapter; three invalid JSON replies end a document `FAILED`; a recording with `done_reason: length` ends one REJECTED `TOO_LARGE` after a single attempt (acceptance check 9)
 - [X] T053 [US1] Run quickstart.md checks 4 (folder run), 5 (re-read) and 11 (model outage) on the real stack and fix what fails until all three pass
 
@@ -120,11 +120,11 @@ and the collapsed raw model request and response.
 **Independent Test**: open an ACCEPTED and a NEEDS_REVIEW fixture in the browser and verify every element of
 spec User Story 2, scenarios 1 to 5.
 
-- [ ] T054 [US2] Write `app/src/api/document.ts`: `GET /documents/{number}` with fields and evidence, pages, step runs with durations, model identity and reasons, `404` for an unknown number (contracts/api.md)
-- [ ] T055 [P] [US2] Write `app/src/api/raw.ts`: `GET /documents/{number}/raw` with the raw request and response of each extraction of this one document (FR-053a)
-- [ ] T056 [P] [US2] Write `app/src/api/pages.ts`: `GET /documents/{number}/pages/{page}.png` from the blob store as `image/png` with `nosniff` and private caching; no endpoint for originals (FR-054)
-- [ ] T057 [US2] Write `app/web/src/views/Document.tsx`: fields with value, fragment, page and found flag; pages lazily loaded and capped in width; steps with durations; model identity; reasons rendered as text; a collapsed "Model request and response" block that fetches `/raw` on expand and renders plain text (FR-053, FR-053a, FR-055)
-- [ ] T058 [US2] Verify in the browser that `app/web/src/views/Document.tsx` and `Documents.tsx` never render document text, fragments or reasons as HTML (FR-055) and that `app/src/api/documents.ts` returns no page text or raw data (FR-054); fix findings
+- [X] T054 [US2] Write `app/src/api/document.ts`: `GET /documents/{number}` with fields and evidence, pages, step runs with durations, model identity and reasons, `404` for an unknown number (contracts/api.md)
+- [X] T055 [P] [US2] Write `app/src/api/raw.ts`: `GET /documents/{number}/raw` with the raw request and response of each extraction of this one document (FR-053a)
+- [X] T056 [P] [US2] Write `app/src/api/pages.ts`: `GET /documents/{number}/pages/{page}.png` from the blob store as `image/png` with `nosniff` and private caching; no endpoint for originals (FR-054)
+- [X] T057 [US2] Write `app/web/src/views/Document.tsx`: fields with value, fragment, page and found flag; pages lazily loaded and capped in width; steps with durations; model identity; reasons rendered as text; a collapsed "Model request and response" block that fetches `/raw` on expand and renders plain text (FR-053, FR-053a, FR-055)
+- [X] T058 [US2] Verify in the browser that `app/web/src/views/Document.tsx` and `Documents.tsx` never render document text, fragments or reasons as HTML (FR-055) and that `app/src/api/documents.ts` returns no page text or raw data (FR-054); fix findings
 
 **Checkpoint**: User Stories 1 and 2 work together: table to detail and back without a router.
 
@@ -138,7 +138,7 @@ document.
 **Independent Test**: acceptance check 6 of quickstart.md plus a duplicate upload of a fixture copy.
 
 - [X] T059 [US3] Write `app/src/api/upload.ts` (the streaming, hashing and duplicate check it shares with the folder read are in `app/src/intake/store.ts` and `take.ts`): `POST /documents` with `@fastify/multipart` (`limits.fileSize` from thresholds, `files: 1`, never `saveRequestFiles`), streamed to the blob store while hashing, `201` for a new document with the class of the one intake rule (`unverified` unless its hash is in the generator manifest), `200 DUPLICATE` with the original's number for a known hash, `413 too_large` over the limit (FR-003, FR-004)
-- [ ] T060 [US3] Add the upload control and its result display to `app/web/src/views/Inbox.tsx` (new number or duplicate with the original's number)
+- [X] T060 [US3] Add the upload control and its result display to `app/web/src/views/Inbox.tsx` (new number or duplicate with the original's number)
 - [X] T061 [US3] Run quickstart.md check 6 (class of an outside file, every fixture `synthetic`) and the duplicate upload; fix findings
 
 **Checkpoint**: both intake channels behave the same for identity, class and duplicates.
@@ -168,9 +168,9 @@ simplifications; restarts lose and duplicate nothing; misconfiguration refuses t
 
 **Independent Test**: acceptance checks 2, 3 and 13 of quickstart.md plus the refusals of SC-009.
 
-- [ ] T066 [US5] Extend `app/web/src/components/Header.tsx` (created by T077 with the title and the language switch): model state, sandbox runtime, the TODO list from `/health` in the active language (FR-052)
+- [X] T066 [US5] Extend `app/web/src/components/Header.tsx` (created by T077 with the title and the language switch): model state, sandbox runtime, the TODO list from `/health` in the active language (FR-052)
 - [X] T068 [US5] Write `app/test/requeue.test.ts`: a document claimed by a dead instance id is requeued at start and completes without a duplicate row; run the manual check (`docker compose kill app` mid-step, `up -d`, the document reaches a terminal status once)
-- [ ] T069 [US5] Run quickstart.md checks 2 (cold start, no FAILED, second start downloads nothing), 3 (sandbox, networks, unpublished ports), 8 (the hostile set of T035: each file ends with its expected code after one attempt, every container still up) and 13 (Host and Origin), and the two refusals of SC-009 (missing egress rule, schema version mismatch); fix findings
+- [X] T069 [US5] Run quickstart.md checks 2 (cold start, no FAILED, second start downloads nothing), 3 (sandbox, networks, unpublished ports), 8 (the hostile set of T035: each file ends with its expected code after one attempt, every container still up) and 13 (Host and Origin), and the two refusals of SC-009 (missing egress rule, schema version mismatch); fix findings
 
 **Checkpoint**: the prototype is repeatable on the owner's machine from `down -v` to a green run.
 

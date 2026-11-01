@@ -147,3 +147,8 @@ export function vatOf(netKopiyky: number, ratePercent: number): number {
 export function vatSumHolds(netKopiyky: number, vatKopiyky: number, grossKopiyky: number, ratePercent: number): boolean {
   return netKopiyky + vatKopiyky === grossKopiyky && vatKopiyky === vatOf(netKopiyky, ratePercent);
 }
+
+/** An amount of kopiyky written as a decimal string with two places, with integer arithmetic only: 1200050 is "12000.50". */
+export function formatKopiyky(minor: number): string {
+  return `${Math.trunc(minor / 100)}.${String(minor % 100).padStart(2, '0')}`;
+}

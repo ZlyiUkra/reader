@@ -68,7 +68,8 @@ descending. Query `?limit=` (default 200, max 1000).
   "count": number }
 ```
 
-Reason messages are not in the list: the page renders them from the templates it fetched once from `/meta`.
+`count` is the number of documents there are, not of the rows returned (a re-read of the same files leaves it unchanged,
+FR-003). Reason messages are not in the list: the page renders them from the templates it fetched once from `/meta`.
 
 ## GET /documents/{number}
 
