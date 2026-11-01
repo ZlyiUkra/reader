@@ -1,0 +1,25 @@
+{
+  "file": "act-3.rtf",
+  "sha256": "186c003854eb48ff1cf4bc9da6e5601bd3b0b0290de3fc2aff96cb311f66ce50",
+  "type": "act",
+  "format": "rtf",
+  "instance": {
+    "number": "АВ-117",
+    "date": "2026-05-31",
+    "contractorName": "ТОВ «Синя Ворона Логістик»",
+    "contractorEdrpou": "99106784",
+    "customerName": "ПП «Золота Бджола»",
+    "customerEdrpou": "99103455",
+    "periodStart": "2026-05-01",
+    "periodEnd": "2026-05-31",
+    "currency": "UAH",
+    "totalNet": 6120000,
+    "vat": 1224000,
+    "totalGross": 7344000,
+    "placeOfSigning": "м. Харків"
+  },
+  "status": "NEEDS_REVIEW",
+  "codes": [
+    "MISSING_REQUIRED_FIELD"
+  ]
+}

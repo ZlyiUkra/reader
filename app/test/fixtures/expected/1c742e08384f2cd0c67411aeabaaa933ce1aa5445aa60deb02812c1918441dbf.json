@@ -1,0 +1,23 @@
+{
+  "file": "act-2.jpg",
+  "sha256": "1c742e08384f2cd0c67411aeabaaa933ce1aa5445aa60deb02812c1918441dbf",
+  "type": "act",
+  "format": "jpg",
+  "instance": {
+    "number": "ДП-0062",
+    "date": "2026-04-30",
+    "contractorName": "ПП «Золота Бджола»",
+    "contractorEdrpou": "99103455",
+    "customerName": "ТОВ «Вишневий Прибій»",
+    "customerEdrpou": "99100215",
+    "contractRef": "Д-2026/27 від 10.03.2026",
+    "periodStart": "2026-04-01",
+    "periodEnd": "2026-04-30",
+    "currency": "UAH",
+    "totalNet": 780040,
+    "vat": 156008,
+    "totalGross": 936048
+  },
+  "status": "ACCEPTED",
+  "codes": []
+}

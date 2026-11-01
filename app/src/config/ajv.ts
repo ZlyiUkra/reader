@@ -51,6 +51,14 @@ async function readContract(fileName: string): Promise<object> {
 }
 
 /**
+ * Compiles the contract of the evaluation report (`eval-report.schema.json`, FR-048a). The evaluation validates every report
+ * before it writes it, so a report that does not match its contract is never saved.
+ */
+export async function createEvalReportValidator(): Promise<ValidateFunction> {
+  return createAjv().compile(await readContract('eval-report.schema.json'));
+}
+
+/**
  * Compiles the validators of the configuration files and of the parser manifest. Called once at start; the result is
  * passed to whoever validates input, so no module compiles its own copy of a contract.
  */

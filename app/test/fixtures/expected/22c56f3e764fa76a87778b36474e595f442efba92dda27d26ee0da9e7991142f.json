@@ -1,0 +1,27 @@
+{
+  "file": "invoice-vat-error.pdf",
+  "sha256": "22c56f3e764fa76a87778b36474e595f442efba92dda27d26ee0da9e7991142f",
+  "type": "invoice",
+  "format": "pdf",
+  "instance": {
+    "number": "РФ-0151",
+    "date": "2026-06-02",
+    "sellerName": "ТОВ «Вишневий Прибій»",
+    "sellerEdrpou": "99100215",
+    "sellerIban": "UA589900010000026001234567890",
+    "buyerName": "ТОВ «Синя Ворона Логістик»",
+    "buyerEdrpou": "99106784",
+    "currency": "UAH",
+    "totalNet": 1000000,
+    "vat": 210000,
+    "totalGross": 1200000,
+    "vatRate": "20%",
+    "dueDate": "2026-06-16",
+    "contractRef": "Д-2026/12 від 01.02.2026",
+    "paymentPurpose": "Оплата консультаційних послуг за травень 2026 року"
+  },
+  "status": "NEEDS_REVIEW",
+  "codes": [
+    "VALIDATION_FAILED"
+  ]
+}

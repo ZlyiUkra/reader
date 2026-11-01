@@ -486,6 +486,42 @@ export async function rawCallsOf(db: Queryable, documentId: number): Promise<Raw
   return result.rows;
 }
 
+/** One model call of a document as the evaluation reads it: identity, token counts, duration and the size of the text sent. */
+export type EvalCallRow = {
+  kind: 'classify' | 'extract';
+  model_name: string;
+  model_digest: string;
+  schema_id: string | null;
+  registry_hash: string;
+  prompt_hash: string;
+  prompt_eval_count: number | null;
+  eval_count: number | null;
+  total_duration_ns: number | null;
+  cold: boolean;
+  /** Characters of the system and user text of the request, counted in the database so the raw request stays there. */
+  prompt_chars: number;
+};
+
+/**
+ * The model calls of a document for the evaluation (FR-048), oldest first. Every call counts, retries included: a retried
+ * call cost time and tokens, and the evaluation measures cost. The characters of the prompt are summed over the messages of
+ * a chat request or the `system` and `prompt` of a generate request, whichever the stored request has.
+ */
+export async function evalCallsOf(db: Queryable, documentId: number): Promise<EvalCallRow[]> {
+  const result = await db.query<EvalCallRow>(
+    `SELECT kind, model_name, model_digest, schema_id, registry_hash, prompt_hash,
+            prompt_eval_count, eval_count, total_duration_ns, cold,
+            COALESCE((SELECT sum(length(m ->> 'content'))
+                        FROM jsonb_array_elements(CASE WHEN jsonb_typeof(raw_request #> '{body,messages}') = 'array'
+                                                       THEN raw_request #> '{body,messages}' ELSE '[]'::jsonb END) AS m), 0)
+            + COALESCE(length(raw_request #>> '{body,system}'), 0)
+            + COALESCE(length(raw_request #>> '{body,prompt}'), 0) AS prompt_chars
+     FROM extractions WHERE document_id = $1 ORDER BY id`,
+    [documentId],
+  );
+  return result.rows;
+}
+
 /** An insert that returned no row cannot happen on a healthy database, so it stops here with the name of what failed. */
 function failed(what: string): never {
   throw new Error(`The database did not return a row when asked to ${what}`);

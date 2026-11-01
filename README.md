@@ -24,7 +24,10 @@ documentation servers each phase needs.
 - `.specify/`, `.claude/` and `AGENTS.md` - the constitution, the board's handoff and briefings, the spec-kit
   templates and the agent rules. They are kept out of version control by owner decision and exist only on the
   owner's machine.
-- Code arrives once the spec-kit chain reaches implementation; the plan fixes the layout.
+- `app/` - the API, the worker, the eval command and the browser page; `parser/` - the sandbox and the fixtures
+  generator; `schemas/` - one JSON Schema per document type; `config/` - classes, model, reasons and thresholds;
+  `db/` - the database schema; `compose.yaml` - the whole stack.
+- `inbox/` and `results/` - the folder documents arrive in and the eval reports; only their `.gitkeep` is tracked.
 
 ## Stack
 
@@ -41,6 +44,27 @@ one Docker Compose file. A later port of the same prototype to Go is planned and
 3. Every phase ends with runnable acceptance checks; every simplification is named, has an undo trigger and is
    visible at runtime.
 4. Numbers that were not measured on this product are estimates and are labelled as such.
+
+## Measurement journal
+
+Every run of the evaluation (`docker compose run --rm app node src/eval.ts`) prints its figures, writes one JSON
+report into `results/` and exits non-zero below the thresholds. The report is the source of the numbers here; the
+`results/` folder is not tracked, so each row names its report file. Seconds per page are parse plus model time;
+the cold figure is the first document after the model was unloaded. A row is added for every run that follows a
+change of the model, the prompt, a schema or the code. The thresholds are provisional until measured, and a verdict
+is not a tier decision.
+
+| Date | What changed | Model digest | Schemas | Field match | False accepts | Seconds per page | Tokens per document |
+|------|--------------|--------------|---------|-------------|---------------|------------------|---------------------|
+| 2026-11-01 | First measurement: 11 fixtures, `qwen3.5:4b`, prompt `925239a4e70c`, registry `951b22f9e1b5`, all thresholds provisional | `d8b0f5e9760c` | `invoice.v1`, `act.v1`, `contract.v1` | 89.6% (120 of 134); required fields of the ACCEPTED fixtures 92.6% (63 of 68) | 7 values in 3 documents; verdict FAIL | warm 1.11 + 7.02 = 8.13 (ceiling 60); cold 1.98 + 10.25 | 1457 (ceiling 6000) |
+
+- Row 1: `results/eval-20261101-033023-d8b0f5e9760c.json`. A first run of the same code on the same fixtures
+  (`results/eval-20261101-032705-d8b0f5e9760c.json`) gave the same field figures; the model was already loaded, so it
+  has no cold figure.
+- Row 1, what the 7 false accepts are: three values with stray OCR letters in front (the act number and its contract
+  reference in `act-1.png`, the contract number in `contract-1.svg`) and four sentence values with a trailing full
+  stop (subject and payment terms of `contract-1.svg` and `contract-2.docx`).
+- Row 1, characters per token measured over 21 calls: 2.843, against the 3 in the thresholds file.
 
 ## Repository
 

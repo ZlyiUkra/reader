@@ -1,0 +1,23 @@
+{
+  "file": "contract-1.svg",
+  "sha256": "e7be75dde88c2d92329488016f4871d73fa1cc53a5cc77f85bf6faf7c2104538",
+  "type": "contract",
+  "format": "svg",
+  "instance": {
+    "number": "Д-2026/12",
+    "date": "2026-02-01",
+    "firstPartyName": "ТОВ «Вишневий Прибій»",
+    "firstPartyEdrpou": "99100215",
+    "secondPartyName": "ПП «Золота Бджола»",
+    "secondPartyEdrpou": "99103455",
+    "subject": "Надання консультаційних послуг з автоматизації документообігу",
+    "currency": "UAH",
+    "validFrom": "2026-02-01",
+    "validUntil": "2026-12-31",
+    "totalAmount": 18000000,
+    "paymentTerms": "Оплата протягом 14 календарних днів після підписання акта виконаних робіт",
+    "placeOfSigning": "м. Дніпро"
+  },
+  "status": "ACCEPTED",
+  "codes": []
+}

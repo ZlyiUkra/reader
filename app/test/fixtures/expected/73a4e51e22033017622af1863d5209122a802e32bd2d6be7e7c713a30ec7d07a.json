@@ -1,0 +1,25 @@
+{
+  "file": "invoice-1.pdf",
+  "sha256": "73a4e51e22033017622af1863d5209122a802e32bd2d6be7e7c713a30ec7d07a",
+  "type": "invoice",
+  "format": "pdf",
+  "instance": {
+    "number": "РФ-0147",
+    "date": "2026-03-12",
+    "sellerName": "ТОВ «Вишневий Прибій»",
+    "sellerEdrpou": "99100215",
+    "sellerIban": "UA589900010000026001234567890",
+    "buyerName": "ПП «Золота Бджола»",
+    "buyerEdrpou": "99103455",
+    "currency": "UAH",
+    "totalNet": 1250000,
+    "vat": 250000,
+    "totalGross": 1500000,
+    "vatRate": "20%",
+    "dueDate": "2026-03-26",
+    "contractRef": "Д-2026/12 від 01.02.2026",
+    "paymentPurpose": "Оплата консультаційних послуг за березень 2026 року"
+  },
+  "status": "ACCEPTED",
+  "codes": []
+}

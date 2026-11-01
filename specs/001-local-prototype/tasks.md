@@ -164,10 +164,10 @@ judges the run against the written threshold; the GPU-free suite is complete.
 
 **Independent Test**: acceptance checks 9, 12 and 14 of quickstart.md.
 
-- [ ] T062 [US4] Write `app/src/eval.ts`: load `inbox/expected/*.json` by sha256, compare with the accepted or latest extraction of each document; compute per-field match, required-field match on the ACCEPTED fixtures, false accepts, reason shares, seconds per page split parse and model, cold and warm, tokens per document, characters per token; print the text report and the line `not a tier decision`; write `results/eval-<YYYYMMDD-HHMMSS>-<digest prefix>.json` per contracts/eval-report.schema.json; exit non-zero below `eval.*` thresholds (FR-048, FR-048a, FR-049)
-- [ ] T063 [P] [US4] Write `app/test/eval.test.ts`: the eval on a replayed run passes with exit 0 and a valid report; a copy of the expected values with one changed amount fails with a non-zero exit
-- [ ] T064 [US4] Run quickstart.md check 14 on the real run; create the measurement journal table in `README.md` (date, what changed, model digest, schema versions, field match, false accepts, seconds per page, tokens per document) and add its first row from the JSON report
-- [ ] T065 [US4] Run quickstart.md checks 9 (`docker compose stop model` then `node --test`) and 12 (`ollama ps`, `done_reason` query); fix findings
+- [X] T062 [US4] Write `app/src/eval.ts`: load `inbox/expected/*.json` by sha256, compare with the accepted or latest extraction of each document; compute per-field match, required-field match on the ACCEPTED fixtures, false accepts, reason shares, seconds per page split parse and model, cold and warm, tokens per document, characters per token; print the text report and the line `not a tier decision`; write `results/eval-<YYYYMMDD-HHMMSS>-<digest prefix>.json` per contracts/eval-report.schema.json; exit non-zero below `eval.*` thresholds (FR-048, FR-048a, FR-049)
+- [X] T063 [P] [US4] Write `app/test/eval.test.ts`: the eval on a replayed run passes with exit 0 and a valid report; a copy of the expected values with one changed amount fails with a non-zero exit
+- [X] T064 [US4] Run quickstart.md check 14 on the real run; create the measurement journal table in `README.md` (date, what changed, model digest, schema versions, field match, false accepts, seconds per page, tokens per document) and add its first row from the JSON report
+- [X] T065 [US4] Run quickstart.md checks 9 (`docker compose stop model` then `node --test`) and 12 (`ollama ps`, `done_reason` query); fix findings
 
 **Checkpoint**: the numbers the project exists to produce are on screen, in `results/` and in the README journal.
 

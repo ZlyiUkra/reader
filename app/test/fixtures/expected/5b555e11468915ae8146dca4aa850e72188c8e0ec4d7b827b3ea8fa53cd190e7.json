@@ -1,0 +1,26 @@
+{
+  "file": "invoice-3-scan.pdf",
+  "sha256": "5b555e11468915ae8146dca4aa850e72188c8e0ec4d7b827b3ea8fa53cd190e7",
+  "type": "invoice",
+  "format": "pdf-scan",
+  "instance": {
+    "number": "ДЛ-2026-071",
+    "date": "2026-05-20",
+    "sellerName": "ТОВ «Синя Ворона Логістик»",
+    "sellerEdrpou": "99106784",
+    "sellerIban": "UA029900030000026005551112223",
+    "buyerName": "ТОВ «Вишневий Прибій»",
+    "currency": "UAH",
+    "totalNet": 4800000,
+    "vat": 960000,
+    "totalGross": 5760000,
+    "vatRate": "20%",
+    "dueDate": "2026-06-03",
+    "contractRef": "Д-2026/41 від 22.04.2026",
+    "paymentPurpose": "Оплата за перевезення вантажів у травні 2026 року"
+  },
+  "status": "NEEDS_REVIEW",
+  "codes": [
+    "MISSING_REQUIRED_FIELD"
+  ]
+}

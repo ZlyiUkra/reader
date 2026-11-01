@@ -280,7 +280,7 @@ Browser view
 
 Written before the first measured run, as the constitution requires (principle I, C14).
 
-- **Metric**: per-field exact match after normalisation, over all fields of the nine typed fixtures, compared with the expected values; false accepts (a field ACCEPTED whose value differs from the expected value) counted separately.
+- **Metric**: per-field exact match after normalisation, over all fields of the ten typed fixtures (the nine typed documents and the wrong-VAT invoice; the untyped letter has no fields), compared with the expected values; false accepts (a field ACCEPTED whose value differs from the expected value) counted separately.
 - **Pass threshold** (owner decision of 2026-10-31): 100% exact match on the required fields of the six fixtures expected ACCEPTED, and zero false accepts over all eleven fixtures. One wrong required field, or one accepted value that differs from the expected value, fails the run.
 - **Ceiling** (owner decision of 2026-10-31, values provisional until the first run): at most 6,000 tokens per document (prompt and generation together) and at most 60 seconds per page in the warm run, parsing and model time together. The cold run is printed but not judged.
 - **Printed by the evaluation**: per-field match; share of each reason code; seconds per page split into parsing and model time, cold and warm separately; tokens per document; false accepts; model identity, schema versions, prompt hash; the line "not a tier decision".

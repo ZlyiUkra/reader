@@ -1,0 +1,24 @@
+{
+  "file": "act-1.png",
+  "sha256": "89441e9510c0379aeee1205d0c98de7ac87809ca288736257551fa2aa98c9eac",
+  "type": "act",
+  "format": "png",
+  "instance": {
+    "number": "ДП-031",
+    "date": "2026-03-31",
+    "contractorName": "ТОВ «Вишневий Прибій»",
+    "contractorEdrpou": "99100215",
+    "customerName": "ТОВ «Синя Ворона Логістик»",
+    "customerEdrpou": "99106784",
+    "contractRef": "Д-2026/12 від 01.02.2026",
+    "periodStart": "2026-03-01",
+    "periodEnd": "2026-03-31",
+    "currency": "UAH",
+    "totalNet": 2500000,
+    "vat": 500000,
+    "totalGross": 3000000,
+    "placeOfSigning": "м. Дніпро"
+  },
+  "status": "ACCEPTED",
+  "codes": []
+}

@@ -61,11 +61,12 @@ export async function goldenOf(file: string): Promise<{ manifest: ParserManifest
 
 /**
  * Adds a document as it is when the parse step has just finished: the pages and their texts are stored and the status is
- * CLASSIFY. Its attempts are zero, because the count starts again for every step.
+ * CLASSIFY. Its attempts are zero, because the count starts again for every step. The hash is a random one unless the fixture's
+ * own is given, which the evaluation needs: it finds a document by the hash the generator wrote in `expected/`.
  */
-export async function addParsedFixture(pool: pg.Pool, file: string): Promise<number> {
+export async function addParsedFixture(pool: pg.Pool, file: string, fixtureSha256?: string): Promise<number> {
   const { manifest, texts } = await goldenOf(file);
-  const { id, sha256 } = await addDocument(pool, { originalName: file, documentClass: 'synthetic' });
+  const { id, sha256 } = await addDocument(pool, { originalName: file, documentClass: 'synthetic', ...(fixtureSha256 === undefined ? {} : { sha256: fixtureSha256 }) });
   await withTransaction(pool, async (client) => {
     await setDetectedMime(client, id, manifest.detectedMime);
     for (const page of manifest.pages) {

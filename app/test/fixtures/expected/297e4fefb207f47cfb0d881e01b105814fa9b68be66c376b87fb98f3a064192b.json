@@ -1,0 +1,24 @@
+{
+  "file": "contract-3.doc",
+  "sha256": "297e4fefb207f47cfb0d881e01b105814fa9b68be66c376b87fb98f3a064192b",
+  "type": "contract",
+  "format": "doc",
+  "instance": {
+    "number": "Д-2026/41",
+    "date": "2026-04-22",
+    "firstPartyName": "ТОВ «Синя Ворона Логістик»",
+    "firstPartyEdrpou": "99106784",
+    "secondPartyName": "ТОВ «Вишневий Прибій»",
+    "secondPartyEdrpou": "99100215",
+    "subject": "Оренда складського приміщення площею 240 кв. м",
+    "currency": "UAH",
+    "validFrom": "2026-05-01",
+    "totalAmount": 9600000,
+    "paymentTerms": "Щомісячна оплата до 5 числа поточного місяця",
+    "placeOfSigning": "м. Харків"
+  },
+  "status": "NEEDS_REVIEW",
+  "codes": [
+    "MISSING_REQUIRED_FIELD"
+  ]
+}

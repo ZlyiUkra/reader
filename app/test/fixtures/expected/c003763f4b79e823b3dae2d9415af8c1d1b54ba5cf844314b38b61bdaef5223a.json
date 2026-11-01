@@ -1,0 +1,23 @@
+{
+  "file": "invoice-2.xlsx",
+  "sha256": "c003763f4b79e823b3dae2d9415af8c1d1b54ba5cf844314b38b61bdaef5223a",
+  "type": "invoice",
+  "format": "xlsx",
+  "instance": {
+    "number": "БД-0032",
+    "date": "2026-04-03",
+    "sellerName": "ПП «Золота Бджола»",
+    "sellerEdrpou": "99103455",
+    "sellerIban": "UA899900020000026009876543210",
+    "buyerName": "ТОВ «Синя Ворона Логістик»",
+    "buyerEdrpou": "99106784",
+    "currency": "UAH",
+    "totalNet": 324050,
+    "vat": 64810,
+    "totalGross": 388860,
+    "vatRate": "20%",
+    "dueDate": "2026-04-17"
+  },
+  "status": "ACCEPTED",
+  "codes": []
+}

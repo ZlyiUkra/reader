@@ -1,0 +1,22 @@
+{
+  "file": "contract-2.docx",
+  "sha256": "ddea61e20fc64b0a178f634fce5abf6fddc1adc703453174c10644fd5e04d088",
+  "type": "contract",
+  "format": "docx",
+  "instance": {
+    "number": "Д-2026/27",
+    "date": "2026-03-10",
+    "firstPartyName": "ПП «Золота Бджола»",
+    "firstPartyEdrpou": "99103455",
+    "secondPartyName": "ТОВ «Синя Ворона Логістик»",
+    "secondPartyEdrpou": "99106784",
+    "subject": "Перевезення вантажів автомобільним транспортом по території України",
+    "currency": "UAH",
+    "validFrom": "2026-03-15",
+    "validUntil": "2027-03-14",
+    "paymentTerms": "Післяплата протягом 5 банківських днів після доставки",
+    "placeOfSigning": "м. Львів"
+  },
+  "status": "ACCEPTED",
+  "codes": []
+}

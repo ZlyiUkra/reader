@@ -1,0 +1,11 @@
+{
+  "file": "letter-untyped.docx",
+  "sha256": "872e02e7c8eb792c04931c95fad3bbd2982fd6b54cedc1b5fa3ce585cd29bc38",
+  "type": "none",
+  "format": "docx",
+  "instance": null,
+  "status": "NEEDS_REVIEW",
+  "codes": [
+    "UNKNOWN_DOC_TYPE"
+  ]
+}
