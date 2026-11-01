@@ -9,7 +9,7 @@ import { finishStep } from '../db/claim.ts';
 import { insertPage, insertPageText, insertReason, setDetectedMime } from '../db/queries.ts';
 import { withTransaction } from '../db/tx.ts';
 import { pageBlobKey, writeBlobIfAbsent } from '../intake/store.ts';
-import { parserTimeouts, requestParse } from '../parser-client/client.ts';
+import { parserSocketPath, parserTimeouts, requestParse } from '../parser-client/client.ts';
 import { prepareOutDir, readParserOutput } from '../parser-client/safe-read.ts';
 import type { SafeReadLimits } from '../parser-client/safe-read.ts';
 import { stepStatuses } from '../reasons/status.ts';
@@ -80,7 +80,7 @@ export function createParseStep(deps: ParseStepDeps): StepHandler {
     await mkdir(inDir);
     await copyFile(path.join(deps.blobRoot, document.blob_key), path.join(inDir, 'input'), constants.COPYFILE_EXCL);
 
-    const answer = await requestParse({ socketPath: path.join(deps.jobsDir, 'parser.sock'), jobId, timeouts });
+    const answer = await requestParse({ socketPath: parserSocketPath(deps.jobsDir), jobId, timeouts });
     const parserMs = Math.round(performance.now() - started);
     if (!answer.ok) {
       await recordFailure(deps.pool, claimed, failureOfParserAnswer(answer), { jobId, parserMs });

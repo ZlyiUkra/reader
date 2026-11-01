@@ -4,7 +4,7 @@ import { defaultRoute, parseRoute, routeHash } from '../src/shared/route.ts';
 import type { Route } from '../src/shared/route.ts';
 
 /**
- * The five addresses of the page and what happens to every other (FR-060): the parse and the build are inverses for the
+ * The six addresses of the page and what happens to every other (FR-060): the parse and the build are inverses for the
  * routes the page makes, and a hash from anywhere else lands on the folder or the list, never on nothing.
  */
 
@@ -14,9 +14,10 @@ const known: Array<{ hash: string; route: Route }> = [
   { hash: '#/documents', route: { view: 'documents', number: null } },
   { hash: '#/documents/17', route: { view: 'documents', number: 17 } },
   { hash: '#/types', route: { view: 'types' } },
+  { hash: '#/simplifications', route: { view: 'simplifications' } },
 ];
 
-test('the five addresses are read into their routes and built back', () => {
+test('the six addresses are read into their routes and built back', () => {
   for (const { hash, route } of known) {
     assert.deepEqual(parseRoute(hash), route, hash);
     assert.equal(routeHash(route), hash);
@@ -26,6 +27,7 @@ test('the five addresses are read into their routes and built back', () => {
 test('the leading hash sign is optional when parsing', () => {
   assert.deepEqual(parseRoute('/documents/3'), { view: 'documents', number: 3 });
   assert.deepEqual(parseRoute('/types'), { view: 'types' });
+  assert.deepEqual(parseRoute('/simplifications'), { view: 'simplifications' });
 });
 
 test('a file name travels as one encoded segment, whatever characters it has', () => {
@@ -38,7 +40,7 @@ test('a file name travels as one encoded segment, whatever characters it has', (
 });
 
 test('an address the page does not know shows the folder', () => {
-  for (const hash of ['', '#', '#/', '#folder', '#/nothing', '#/folder/a/b', '#/documents/1/2', '#/types/invoice', '#/%E0%A4%A', 'documents']) {
+  for (const hash of ['', '#', '#/', '#folder', '#/nothing', '#/folder/a/b', '#/documents/1/2', '#/types/invoice', '#/simplifications/x', '#/Simplifications', '#/%E0%A4%A', 'documents']) {
     assert.deepEqual(parseRoute(hash), defaultRoute, JSON.stringify(hash));
   }
 });

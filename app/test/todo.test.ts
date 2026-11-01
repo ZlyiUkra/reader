@@ -116,6 +116,7 @@ test('/api/health lists every simplification with both languages, as config/todo
     pageSizes: [10, 20, 50, 100],
     sandbox: 'runc',
     checkDb: async () => true,
+    checkParser: async () => true,
     readiness: async () => ({ state: 'missing', digest: null }),
   });
   const health = (await app.inject({ url: '/api/health', headers: { host: '127.0.0.1:3000' } })).json();

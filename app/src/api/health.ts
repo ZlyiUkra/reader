@@ -3,8 +3,8 @@ import { constants } from '../constants.ts';
 import { todoList } from '../config/todo.ts';
 
 /**
- * `GET /api/health` (contracts/api.md, FR-037, FR-052): the state of the database and the model, the sandbox runtime and
- * the list of named simplifications that the page header shows. It never throws: a database that does not answer is
+ * `GET /api/health` (contracts/api.md, FR-037, FR-052, FR-065): the state of the database, the model and the parser, the
+ * sandbox runtime and the list of named simplifications that the page header counts and the page lists. It never throws: a database that does not answer is
  * reported as `down`, because the page needs the answer most when something is wrong.
  */
 
@@ -20,6 +20,8 @@ export type HealthDeps = {
   checkDb: () => Promise<boolean>;
   /** The readiness of the model; until the Ollama adapter is wired in (T067) it reports `missing`. */
   readiness: () => Promise<ModelReadiness>;
+  /** True when the parser's socket accepts a connection; it never waits long for a parser that is not there. */
+  checkParser: () => Promise<boolean>;
   /** The parser's runtime, from `READER_SANDBOX_RUNTIME`. */
   sandbox: string;
 };
@@ -44,11 +46,12 @@ export function registerHealth(api: FastifyInstance, deps: HealthDeps): void {
         response: {
           200: {
             type: 'object',
-            required: ['db', 'model', 'modelDigest', 'sandbox', 'schemaVersion', 'todo'],
+            required: ['db', 'model', 'modelDigest', 'parser', 'sandbox', 'schemaVersion', 'todo'],
             properties: {
               db: { enum: ['ok', 'down'] },
               model: { enum: ['missing', 'ready'] },
               modelDigest: { type: ['string', 'null'] },
+              parser: { enum: ['ok', 'down'] },
               sandbox: { type: 'string' },
               schemaVersion: { type: 'integer' },
               todo: { type: 'array', items: simplificationSchema },
@@ -58,11 +61,12 @@ export function registerHealth(api: FastifyInstance, deps: HealthDeps): void {
       },
     },
     async () => {
-      const [dbUp, model] = await Promise.all([deps.checkDb(), deps.readiness()]);
+      const [dbUp, model, parserUp] = await Promise.all([deps.checkDb(), deps.readiness(), deps.checkParser()]);
       return {
         db: dbUp ? 'ok' : 'down',
         model: model.state,
         modelDigest: model.digest,
+        parser: parserUp ? 'ok' : 'down',
         sandbox: deps.sandbox,
         schemaVersion: constants.schemaVersion,
         todo: todoList,

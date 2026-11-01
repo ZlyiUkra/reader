@@ -38,6 +38,7 @@ const app = await buildServer({
   pageSizes: [10, 20, 50, 100],
   sandbox: 'runc',
   checkDb: async () => true,
+  checkParser: async () => true,
   readiness: async () => ({ state: 'missing', digest: null }),
   intake: { pool, inboxDir, blobRoot, maxBytes, classes: config.classes, logger: { info: () => undefined, warn: () => undefined } },
 });

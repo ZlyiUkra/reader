@@ -23,7 +23,7 @@ curl -s http://127.0.0.1:3000/api/health   # db ok, model ready, sandbox runc, t
 ```
 
 Expected: every service `Up`; `model-pull` exited 0; health shows `"model":"ready"` after the warm-up; the browser
-page at `http://127.0.0.1:3000` shows the TODO list in its header; no document is FAILED. Then
+page at `http://127.0.0.1:3000` shows the TODO count in its header and the list at `#/simplifications`; no document is FAILED. Then
 `docker compose down && docker compose up -d` downloads nothing.
 
 ## Contract test (check 1, needs the GPU)
@@ -168,7 +168,7 @@ thresholds, which is its specified behaviour (the first row of the journal in `R
 - Check 2, first start: every service up, `model-pull` exited 0, health `db ok`, `model ready`, `sandbox runc`, 13
   simplifications; `docker compose down` and `up -d` again: `model-pull` ran 1.8 s and downloaded nothing (its layer of
   2.6 GB cannot arrive in that time). In a real browser the header lists all 13 simplifications and their triggers in the
-  page language, none in the other. No document is FAILED.
+  page language, none in the other (since slice 7d the header counts them and `#/simplifications` lists them). No document is FAILED.
 - Check 3, sandbox: only `lo`, uid 10001, `touch` fails on a read-only file system, `none true [ALL]
   [no-new-privileges:true]`, memory 2 GiB, pids 256, `reader_backend` internal, `curl` to 11434 exits 7.
 - Fixtures: the generator reports every file `unchanged` and the hashes of the whole inbox are identical on a second

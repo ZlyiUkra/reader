@@ -17,7 +17,7 @@ const registry = createRegistry(config.typeSchemas);
 const reasons = createReasons(config.reasons);
 
 /** A server on port 3000 whose database answers as `dbUp` says. */
-async function server(dbUp = true): Promise<FastifyInstance> {
+async function server(dbUp = true, parserUp = true): Promise<FastifyInstance> {
   return buildServer({
     logger: false,
     publicPort: 3000,
@@ -28,6 +28,7 @@ async function server(dbUp = true): Promise<FastifyInstance> {
     pageSizes: [10, 20, 50, 100],
     sandbox: 'runc',
     checkDb: async () => dbUp,
+    checkParser: async () => parserUp,
     readiness: async () => ({ state: 'missing', digest: null }),
   });
 }
@@ -107,12 +108,13 @@ test('errors leave in one shape, and a server error does not name its cause', as
   await app.close();
 });
 
-test('health reports the database, the model, the sandbox and all thirteen named simplifications', async () => {
+test('health reports the database, the model, the parser, the sandbox and all thirteen named simplifications', async () => {
   const up = await server(true);
   const health = (await up.inject({ url: '/api/health', headers: host })).json();
   assert.equal(health.db, 'ok');
   assert.equal(health.model, 'missing');
   assert.equal(health.modelDigest, null);
+  assert.equal(health.parser, 'ok');
   assert.equal(health.sandbox, 'runc');
   assert.equal(health.schemaVersion, 1);
   assert.equal(health.todo.length, 13);
@@ -123,6 +125,12 @@ test('health reports the database, the model, the sandbox and all thirteen named
   const down = await server(false);
   assert.equal((await down.inject({ url: '/api/health', headers: host })).json().db, 'down');
   await down.close();
+
+  const noParser = await server(true, false);
+  const answer = (await noParser.inject({ url: '/api/health', headers: host })).json();
+  assert.equal(answer.parser, 'down');
+  assert.equal(answer.db, 'ok');
+  await noParser.close();
 });
 
 test('meta lists the registered types and the reasons with their variants, and no statuses (the page names them itself)', async () => {

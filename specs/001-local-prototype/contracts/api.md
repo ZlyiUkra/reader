@@ -19,13 +19,16 @@ relative to `/api`. All responses are `application/json; charset=utf-8` except p
 { "db": "ok" | "down",
   "model": "missing" | "ready",
   "modelDigest": string | null,
+  "parser": "ok" | "down",
   "sandbox": "runc",
   "schemaVersion": number,
   "todo": [ { "id": string, "uk": string, "en": string, "trigger": { "uk": string, "en": string } } ] }
 ```
 
 `todo` is the list of named simplifications (FR-052); it is never empty in the prototype. `model: "ready"` means the
-pinned digest is present in the model server's tag list and a warm-up call passed (FR-037). `sandbox` is the value of
+pinned digest is present in the model server's tag list and a warm-up call passed (FR-037). `parser` is `ok` when the parser's socket in the jobs
+volume accepts a connection (which is closed at once, so no job is started) and `down` when it does not, or does not
+within about a second (FR-065). `sandbox` is the value of
 `READER_SANDBOX_RUNTIME`, set on the app service in compose.yaml to the parser's runtime (`runc` until gVisor).
 
 ## GET /inbox

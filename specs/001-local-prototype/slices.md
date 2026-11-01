@@ -497,7 +497,7 @@ names in both interface languages and both themes, a narrow width. Mark each
 finished task [X] in tasks.md. Then run the after_implement hook (agile-tasks).
 ```
 
-## Slice 7c - One card in a window, addresses and an orderly page (added after the cross-cutting slice; dashboard phase 7)
+## Slice 7c - One card in a window, addresses and an orderly page (added after the cross-cutting slice; dashboard phase 7; done, committed in 18bcd98)
 
 - **Why**: owner decisions of 2026-11-01. The document card is a tab of its own although both lists lead to it; the
   result of "Read folder" repeats the folder list; nothing on the page says what the folder or a document is; the views
@@ -535,6 +535,43 @@ with the slice 7c closing checks and show their output: the five addresses, Back
 is not a document, the state column before and after "Read folder", the types tab, both interface languages and both
 themes, a narrow width; yarn build, both type checks, the whole suite, check 13. Mark each finished task [X] in
 tasks.md. Then run the after_implement hook (agile-tasks).
+```
+
+## Slice 7d - State indicators in the header and a tab for the simplifications (added after slice 7c; dashboard phase 7)
+
+- **Why**: owner decisions of 2026-11-01. The state of the system is three lines of plain text that do not say what
+  they are, the parser is not reported at all, the list of named simplifications opens under the header of every page,
+  and the theme and language buttons differ in size. The owner wants the state always in view as signal indicators with
+  acronyms, of one size with the buttons, each with a tooltip, and the simplifications under an address of their own.
+- **Choices made by me, open to a veto**: the indicators are DB, LLM, PRS, the runtime in capitals (RUNC) and TODO with
+  its count, which keeps the simplifications visible in the header as constitution XII asks; the parser state is a new
+  field of `GET /health` (`parser`), found by connecting to its socket and closing at once, which starts no job and
+  changes nothing in the parser; the tooltips are the native `title` with an `aria-label`, no library. On 2026-11-01 the
+  owner agreed to the tab and to the real parser indicator.
+- **Servers** (dashboard): the slice 7 set. **Start set** (12): the same twelve; the start and stop commands are
+  those of slice 7.
+- **Tasks**:
+  - T100 `parser` in `GET /health`: the probe of the socket, the contract, the tests
+  - T101 the sixth address `#/simplifications` in `shared/route.ts` and its test
+  - T102 the health answer read once in `App`, `parser` in its type, the texts of the tooltips and of the tab
+  - T103 the header: the indicators and the two buttons of one size, tooltips, the list under the header goes
+  - T104 the Simplifications view and the fourth tab
+  - T105 `README.md` in step with the page
+  - T106 verify in a real browser, both languages and themes, a narrow width, the parser stopped and started; build,
+    type checks, suite, check 13
+- **Closes when**: the indicators and the two buttons measure the same size, each has a tooltip in the page language,
+  PRS turns red when the parser is stopped and green when it is started, TODO opens the list at `#/simplifications`
+  with all 13 simplifications, the six addresses open straight into their views, and the build, both type checks and
+  the whole suite pass.
+
+**Run** (type `/speckit-implement`, then paste):
+
+```text
+Slice 7d only: T100, T101, T102, T103, T104, T105, T106. Do not start any other task. Finish with the slice 7d closing
+checks and show their output: the indicators and the two buttons of one size, their tooltips in both interface
+languages, the parser indicator red with the parser stopped and green after it is started, the TODO indicator and the
+simplifications tab at its address, the six addresses, both themes, a narrow width; yarn build, both type checks, the
+whole suite, check 13. Mark each finished task [X] in tasks.md. Then run the after_implement hook (agile-tasks).
 ```
 
 ## Slice 8 - Measurement (done, committed in c8cc2b0)

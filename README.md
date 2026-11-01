@@ -49,16 +49,17 @@ one Docker Compose file. A later port of the same prototype to Go is planned and
 
 The browser page lives in `app/web/src`. Its modules by role:
 
-- `main.tsx` starts React; `App.tsx` is the shell: the header, the three tabs and the view the address names.
+- `main.tsx` starts React; `App.tsx` is the shell: the header, the four tabs and the view the address names.
 - `router.ts` reads and sets the address (`#/folder`, `#/folder/<file>`, `#/documents`, `#/documents/<number>`,
-  `#/types`); `pager.ts` keeps the paging of both lists; `theme.ts` the light and dark themes.
+  `#/types`, `#/simplifications`); `pager.ts` keeps the paging of both lists; `theme.ts` the light and dark themes.
 - `api/` is the only door to the server: `client.ts` (requests), `usePolledAnswer.ts` (the one way a view fetches and
   polls), `shapes.ts` (readers that narrow what arrives) and `answers.ts` (the type and parser of every answer).
 - `i18n/` holds the two dictionaries (`uk.json`, `en.json`), `t.ts` (looking a text up), `display.ts` (labels, reason
   messages, values and times built from what the server sends) and `errors.ts`.
-- `views/` has one file per tab (`Inbox.tsx`, `Documents.tsx`, `Types.tsx`); `components/` the parts they share
-  (`Window.tsx`, `DocumentCard.tsx`, `FileNote.tsx`, `Upload.tsx`, `Pager.tsx`, `Header.tsx`, `NewVersion.tsx`,
-  `ReasonList.tsx`, `StatusBadge.tsx`).
+- `views/` has one file per tab (`Inbox.tsx`, `Documents.tsx`, `Types.tsx`, `Simplifications.tsx`); `components/` the
+  parts they share (`Window.tsx`, `DocumentCard.tsx`, `FileNote.tsx`, `Upload.tsx`, `Pager.tsx`, `NewVersion.tsx`,
+  `ReasonList.tsx`, `StatusBadge.tsx`) and the header (`Header.tsx`), whose row of state indicators (DB, LLM, PRS, the
+  sandbox runtime and TODO with its count) and two buttons are of one size, each with a tooltip.
 - `@shared/<module>.ts` is code the page shares with the server (`app/src/shared`): the pager arithmetic, the routes,
   the text formatter. Field labels, field order and reason messages are not in the page: they come from `/api/meta`.
 
@@ -82,7 +83,7 @@ GPU).
    prove they need no GPU.
 
 The named simplifications of the prototype, each with what ends it, are the `todo` list of `GET /api/health`, the
-list in the page header and one WARN line each at start. The acceptance checks are in
+TODO count in the page header, the list at `#/simplifications` and one WARN line each at start. The acceptance checks are in
 `specs/001-local-prototype/quickstart.md`, with the outcome of their last full run at its end.
 
 ## Measurement journal

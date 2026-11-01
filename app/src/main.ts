@@ -14,6 +14,7 @@ import type { IntakeDeps } from './intake/take.ts';
 import { createDispatcher } from './llm/dispatcher.ts';
 import { createOllamaAdapter } from './llm/ollama.ts';
 import { modelSettings } from './llm/settings.ts';
+import { parserSocketPath, probeParser } from './parser-client/client.ts';
 import { createCheckStep } from './pipeline/check.ts';
 import { createClassifyStep } from './pipeline/classify.ts';
 import { createExtractStep } from './pipeline/extract.ts';
@@ -159,6 +160,7 @@ const app = await buildServer({
   },
   // The model is ready only for the pinned digest after a warm-up (FR-037); until then no step is claimed.
   readiness: () => modelAdapter.readiness(),
+  checkParser: () => probeParser(parserSocketPath(jobsDir)),
 });
 
 logTodoWarnings(app.log);

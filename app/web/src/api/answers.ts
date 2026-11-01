@@ -87,8 +87,8 @@ export function parseMeta(value: unknown): Meta {
 /** One named simplification of the to-do list (FR-052). */
 export type Todo = { id: string; uk: string; en: string; trigger: LanguageTexts };
 
-/** `GET /health`: what the header shows (FR-037, FR-052). */
-export type Health = { db: string; model: string; sandbox: string; todo: Todo[] };
+/** `GET /health`: what the header's indicators show and what the simplifications view lists (FR-037, FR-052, FR-065). */
+export type Health = { db: string; model: string; parser: string; sandbox: string; todo: Todo[] };
 
 /** Parses `GET /health`. */
 export function parseHealth(value: unknown): Health {
@@ -96,6 +96,7 @@ export function parseHealth(value: unknown): Health {
   return {
     db: asString(member(root, 'db'), 'health.db'),
     model: asString(member(root, 'model'), 'health.model'),
+    parser: asString(member(root, 'parser'), 'health.parser'),
     sandbox: asString(member(root, 'sandbox'), 'health.sandbox'),
     todo: mapArray(member(root, 'todo'), 'health.todo', (item, at) => {
       const todo = asObject(item, at);

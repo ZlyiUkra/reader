@@ -1,4 +1,6 @@
 import { request } from 'node:http';
+import { connect } from 'node:net';
+import path from 'node:path/posix';
 import type { ThresholdsFile } from '../config/types.ts';
 
 /**
@@ -153,4 +155,28 @@ export async function requestParse(options: ParseRequest): Promise<ParserAnswer>
     }
     return { ok: false, code: code as ParserReason, params: params as Record<string, string | number> };
   }
+}
+
+/** Where the parser listens: `parser.sock` in the shared jobs folder, the one place the app and the health probe both read. */
+export function parserSocketPath(jobsDir: string): string {
+  return path.join(jobsDir, 'parser.sock');
+}
+
+/**
+ * Whether the parser is there (FR-065): true when its socket accepts a connection, which is closed at once, so the parser
+ * sees an empty connection and starts no job (a parse is always a `POST /parse`). A missing socket file, a refused connection,
+ * any other error and no answer within `timeoutMs` are all false, so a stopped or stuck parser never holds the health answer
+ * for longer than that.
+ */
+export function probeParser(socketPath: string, timeoutMs = 1000): Promise<boolean> {
+  return new Promise((resolve) => {
+    const socket = connect({ path: socketPath });
+    const finish = (up: boolean): void => {
+      socket.destroy();
+      resolve(up);
+    };
+    socket.setTimeout(timeoutMs, () => finish(false));
+    socket.once('connect', () => finish(true));
+    socket.once('error', () => finish(false));
+  });
 }

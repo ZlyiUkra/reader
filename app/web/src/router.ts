@@ -5,7 +5,7 @@ import type { Route } from '@shared/route.ts';
 /**
  * The page's own routes over the hash of its URL (FR-060, FR-064): the pure parse and build live in `@shared/route.ts`
  * with their table test, and this module adds the browser's part, the current route as state and the two moves between
- * routes. There is no router library; the five addresses need none.
+ * routes. There is no router library; the six addresses need none.
  */
 
 /** True for a route that has a window open above its list: a file of the folder or a document. */

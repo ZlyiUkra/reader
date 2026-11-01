@@ -157,7 +157,7 @@ app/                         # Node package: API, worker, front build
     ├── vite.config.ts       # base: ''
     └── src/
         ├── main.tsx, App.tsx, styles.css, theme.ts
-        ├── components/      # Header.tsx: health, TODO list, one-button language and theme switches
+        ├── components/      # Header.tsx: state indicators and the TODO count, one-button language and theme switches
         ├── views/           # Inbox.tsx, Documents.tsx, Document.tsx
         ├── api.ts           # fetch wrapper with X-Reader-Request, polling
         └── i18n/            # uk.json, en.json, t()
@@ -205,7 +205,7 @@ Testing Library, Playwright (R3, R9, R10).
 
 ## Complexity Tracking
 
-Named simplifications: each is a startup WARN and a `/api/health` `todo` entry shown in the page header
+Named simplifications: each is a startup WARN and a `/api/health` `todo` entry counted in the page header and listed at `#/simplifications`
 (constitution XII). They are the only justified departures.
 
 | Violation | Why Needed | Simpler Alternative Rejected Because | Undo trigger |

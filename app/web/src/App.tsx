@@ -1,5 +1,5 @@
 import React from 'react';
-import { parseMeta } from './api/answers.ts';
+import { parseHealth, parseMeta } from './api/answers.ts';
 import { usePolledAnswer } from './api/usePolledAnswer.ts';
 import { Header } from './components/Header.tsx';
 import { NewVersion } from './components/NewVersion.tsx';
@@ -11,13 +11,14 @@ import { applyTheme, readTheme, storeTheme } from './theme.ts';
 import type { Theme } from './theme.ts';
 import { Documents } from './views/Documents.tsx';
 import { Inbox } from './views/Inbox.tsx';
+import { Simplifications } from './views/Simplifications.tsx';
 import { Types } from './views/Types.tsx';
 
 /**
- * The three views of the page (FR-053) as a closed list, each with an address (FR-060). The document card is not one of
+ * The four views of the page (FR-053) as a closed list, each with an address (FR-060). The document card is not one of
  * them: it opens in a window above the folder list or the documents table, and the route says which.
  */
-const views = ['folder', 'documents', 'types'] as const;
+const views = ['folder', 'documents', 'types', 'simplifications'] as const;
 type View = (typeof views)[number];
 
 /** Dictionary key of the navigation label of each view. */
@@ -25,15 +26,17 @@ const viewTexts: Record<View, TextKey> = {
   folder: 'nav.folder',
   documents: 'nav.documents',
   types: 'nav.types',
+  simplifications: 'nav.simplifications',
 };
 
 /**
- * Shell of the page: the header with the language and theme switches, the navigation of the three views and the panel of
- * the active view. The language and the theme are read once from the browser's memory, applied to the document and changed
+ * Shell of the page: the header with its state indicators and the language and theme switches, the navigation of the four
+ * views and the panel of the active view. The language and the theme are read once from the browser's memory, applied to the document and changed
  * through their switches, which also remember the choice; the view and the open window come from the route, the address in
  * the page's URL (`router.ts`). The registry's labels and the reasons' templates are fetched once (`GET /api/meta`) and handed
  * to the views that show them; until they have arrived the views say they are loading, and a failed fetch is tried again,
- * because the server may simply not be up yet. The paging of both lists lives here (`pager.ts`), because the views come and
+ * because the server may simply not be up yet. The health answer is read once here too and handed to the header, whose
+ * indicators show it, and to the simplifications view, which lists the same `todo`. The paging of both lists lives here (`pager.ts`), because the views come and
  * go as the owner moves between them and the lists keep their place. A notice appears when the server starts serving a newer
  * build of the page.
  */
@@ -42,6 +45,7 @@ export function App(): React.JSX.Element {
   const [theme, setTheme] = React.useState(readTheme);
   const route = useRoute();
   const { data: meta } = usePolledAnswer('meta', parseMeta, { once: true });
+  const { data: health, failure: healthFailure } = usePolledAnswer('health', parseHealth);
   const pagers = usePagers(meta);
 
   React.useEffect(() => {
@@ -72,7 +76,7 @@ export function App(): React.JSX.Element {
 
   return (
     <div className="page">
-      <Header lang={lang} onLangChange={changeLang} theme={theme} onThemeChange={changeTheme} />
+      <Header lang={lang} onLangChange={changeLang} theme={theme} onThemeChange={changeTheme} health={health} unreachable={healthFailure !== null} />
       <NewVersion lang={lang} />
       <nav className="tabs" aria-label={translate(lang, 'nav.label')}>
         {views.map((name) => (
@@ -91,6 +95,7 @@ export function App(): React.JSX.Element {
           )
         ) : null}
         {route.view === 'types' ? <Types lang={lang} meta={meta} /> : null}
+        {route.view === 'simplifications' ? <Simplifications lang={lang} health={health} /> : null}
       </main>
     </div>
   );

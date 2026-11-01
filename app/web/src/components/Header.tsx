@@ -1,8 +1,8 @@
 import React from 'react';
-import { usePolledAnswer } from '../api/usePolledAnswer.ts';
-import { parseHealth } from '../api/answers.ts';
+import type { Health } from '../api/answers.ts';
 import { nextLang, translate, translateName } from '../i18n/t.ts';
 import type { Lang, TextKey } from '../i18n/t.ts';
+import { navigate } from '../router.ts';
 import { nextTheme } from '../theme.ts';
 import type { Theme } from '../theme.ts';
 
@@ -37,40 +37,76 @@ const themeIcons: Record<Theme, React.JSX.Element> = {
   ),
 };
 
-/** The header takes the active language and theme and a way to change each; both live in `App`, which owns the page. */
+/**
+ * What one state indicator shows and says: the acronym drawn in the box, the state that colours the box (the value the
+ * server reported, or `info` for a box that reports no state) and the tooltip, which is also the name a screen reader reads.
+ */
+type IndicatorProps = {
+  acronym: string;
+  state: string;
+  tip: string;
+};
+
+/**
+ * One box of the row of state indicators (FR-065). The acronym is the same in both languages, like the codes of the language
+ * button; the colour comes from the state and is never the only sign, since the acronym is always written; the tooltip, in the
+ * page language, says what the element is and what its state means.
+ */
+function Indicator({ acronym, state, tip }: IndicatorProps): React.JSX.Element {
+  return (
+    <li>
+      <span className="chip" data-state={state} role="img" aria-label={tip} title={tip}>
+        {acronym}
+      </span>
+    </li>
+  );
+}
+
+/**
+ * The header takes the active language and theme and a way to change each, and the health answer the page reads once
+ * (`null` until it has arrived, with `unreachable` set while the server does not answer). The language and the theme live in
+ * `App`, which owns the page.
+ */
 type HeaderProps = {
   lang: Lang;
   onLangChange: (lang: Lang) => void;
   theme: Theme;
   onThemeChange: (theme: Theme) => void;
+  health: Health | null;
+  unreachable: boolean;
 };
 
 /**
- * Top bar of the page: the title, the theme button and the language button (FR-057). Each is one button that switches
- * to the other value of its closed list and shows that other value, a sun or a moon for the theme and a language code
- * for the language. Its name, which a screen reader reads and the tooltip shows, says the action in the active language.
- * Beside them it shows what `GET /api/health` reports, polled every two seconds: the database, the model, the sandbox
- * runtime, and the list of named simplifications of the prototype with what ends each one (FR-052, constitution XII). The
- * list is one line with its count until the owner opens it; every text of it is set as text, in the active language.
+ * Top bar of the page: the title, the row of state indicators and the theme and language buttons (FR-057, FR-065). The
+ * indicators are DB, LLM, PRS, the sandbox runtime and TODO with the count of the named simplifications, which is also the
+ * button that opens their list (FR-066); an API indicator comes first while the server does not answer. They and the two
+ * buttons are of one fixed size. Each theme or language button is one button that switches to the other value of its closed
+ * list and shows that other value, a sun or a moon for the theme and a language code for the language; its name says the
+ * action in the active language, and every box of the row carries a tooltip of what it is.
  */
-export function Header({ lang, onLangChange, theme, onThemeChange }: HeaderProps): React.JSX.Element {
+export function Header({ lang, onLangChange, theme, onThemeChange, health, unreachable }: HeaderProps): React.JSX.Element {
   const toLang = nextLang(lang);
   const toTheme = nextTheme(theme);
-  const { data: health, failure } = usePolledAnswer('health', parseHealth);
-  const unreachable = failure !== null;
+  const todoTip = health === null ? '' : translate(lang, 'chip.todo', { count: health.todo.length });
 
   return (
     <header className="header">
       <h1>{translate(lang, 'app.title')}</h1>
       <ul className="health" aria-label={translate(lang, 'header.health')}>
+        {unreachable ? <Indicator acronym="API" state="down" tip={translate(lang, 'chip.api.down')} /> : null}
         {health === null ? null : (
           <>
-            <li data-state={health.db}>{translate(lang, 'header.db', { state: translateName(lang, 'health.db', health.db) })}</li>
-            <li data-state={health.model}>{translate(lang, 'header.model', { state: translateName(lang, 'health.model', health.model) })}</li>
-            <li>{translate(lang, 'header.sandbox', { runtime: health.sandbox })}</li>
+            <Indicator acronym="DB" state={health.db} tip={translateName(lang, 'chip.db', health.db)} />
+            <Indicator acronym="LLM" state={health.model} tip={translateName(lang, 'chip.model', health.model)} />
+            <Indicator acronym="PRS" state={health.parser} tip={translateName(lang, 'chip.parser', health.parser)} />
+            <Indicator acronym={health.sandbox.toUpperCase()} state="info" tip={translate(lang, 'chip.runtime', { runtime: health.sandbox })} />
+            <li>
+              <button type="button" className="chip" data-state={health.todo.length > 0 ? 'warn' : 'ok'} aria-label={todoTip} title={todoTip} onClick={() => navigate({ view: 'simplifications' })}>
+                {`TODO ${health.todo.length}`}
+              </button>
+            </li>
           </>
         )}
-        {unreachable ? <li data-state="down">{translate(lang, 'header.unreachable')}</li> : null}
       </ul>
       <div className="controls">
         <button
@@ -90,18 +126,6 @@ export function Header({ lang, onLangChange, theme, onThemeChange }: HeaderProps
           {languageLabels[toLang]}
         </button>
       </div>
-      {health === null ? null : (
-        <details className="todo">
-          <summary>{translate(lang, 'header.todo', { count: health.todo.length })}</summary>
-          <ul>
-            {health.todo.map((item) => (
-              <li key={item.id}>
-                <span>{item[lang]}</span> <span className="muted">{translate(lang, 'header.todo.trigger', { trigger: item.trigger[lang] })}</span>
-              </li>
-            ))}
-          </ul>
-        </details>
-      )}
     </header>
   );
 }

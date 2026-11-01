@@ -1,7 +1,8 @@
 /**
  * The addresses of the page (FR-060), as a pure module shared with the tests: the page keeps its place in the hash of
  * its own URL, so a link, a reload and the browser's Back button all mean something, and no router library is needed.
- * Five addresses exist: `#/folder`, `#/folder/<file name>`, `#/documents`, `#/documents/<number>` and `#/types`. A file
+ * Six addresses exist: `#/folder`, `#/folder/<file name>`, `#/documents`, `#/documents/<number>`, `#/types` and
+ * `#/simplifications`. A file
  * name is the owner's own text and may hold any character, so it is URL-encoded as one segment. An address the page
  * does not know shows the folder, and a number that is not a positive integer shows the documents list: a mistyped
  * address never ends in an empty page.
@@ -11,7 +12,8 @@
 export type Route =
   | { view: 'folder'; file: string | null }
   | { view: 'documents'; number: number | null }
-  | { view: 'types' };
+  | { view: 'types' }
+  | { view: 'simplifications' };
 
 /** The address the page shows when it is opened without one, or with one it does not know. */
 export const defaultRoute: Route = { view: 'folder', file: null };
@@ -49,8 +51,8 @@ export function parseRoute(hash: string): Route {
   if (view === 'documents') {
     return { view: 'documents', number: item === undefined ? null : documentNumber(item) };
   }
-  if (view === 'types' && item === undefined) {
-    return { view: 'types' };
+  if ((view === 'types' || view === 'simplifications') && item === undefined) {
+    return { view };
   }
   return defaultRoute;
 }
@@ -63,5 +65,5 @@ export function routeHash(route: Route): string {
   if (route.view === 'documents') {
     return route.number === null ? '#/documents' : `#/documents/${route.number}`;
   }
-  return '#/types';
+  return route.view === 'types' ? '#/types' : '#/simplifications';
 }
