@@ -1,26 +1,69 @@
+import { createHash } from 'node:crypto';
 import { constants } from 'node:fs';
 import { lstat, open, readdir } from 'node:fs/promises';
 import type { Dirent } from 'node:fs';
 import path from 'node:path/posix';
+import { documentNumbersBySha256 } from '../db/queries.ts';
 import { BlobTooLargeError } from './store.ts';
 import { generatorHashes, takeBlob } from './take.ts';
 import type { IntakeDeps } from './take.ts';
 
 /**
- * The inbox folder (FR-001, FR-003, FR-005): a list that does not hash, and a read that does. The folder is a read-only
- * mount and holds whatever the owner put there, so every entry is opened without following links and measured before it is
- * read. Only regular files at the top level are considered; subfolders (the generator's `expected/` among them), dot-files
- * and the generator's manifest are not documents.
+ * The inbox folder (FR-001, FR-003, FR-005, FR-061): a list that says what each file is to the system, and a read that
+ * takes the files in. The folder is a read-only mount and holds whatever the owner put there, so every entry is opened
+ * without following links and measured before it is read. Only regular files at the top level are considered; subfolders
+ * (the generator's `expected/` among them), dot-files and the generator's manifest are not documents. The list hashes a
+ * file once, when it first shows it or when its size or modified time changes, and remembers the answer, so a poll of an
+ * unchanged folder reads nothing; it only counts the hash and never opens the bytes as a document, which stays the
+ * sandbox's work.
  */
+
+/** What a row of the folder list says the file is: not read yet, a document already, or a file that cannot be taken. */
+export type InboxState =
+  | { kind: 'unread' }
+  | { kind: 'document'; number: number }
+  | { kind: 'skipped'; reason: 'too_large' | 'unreadable' };
 
 /** One file of the listing. */
 export type InboxFile = {
   name: string;
   sizeBytes: number;
   modifiedAt: string;
+  state: InboxState;
 };
 
-/** `GET /inbox` (contracts/api.md): the folder as configured and its top-level regular files, without hashes. */
+/** What the listing keeps of a file it has looked at: the size and modified time it saw, and the hash or the failure. */
+type Remembered = { sizeBytes: number; modifiedMs: number; sha256: string | null };
+
+/** The listing's memory of hashes by file name; `hash` is a member so a test can count how often it is used. */
+export type HashMemory = {
+  files: Map<string, Remembered>;
+  hash: (file: string) => Promise<string>;
+};
+
+/** The SHA-256 of a regular file, opened without following links and read as a stream. */
+async function hashFile(file: string): Promise<string> {
+  const handle = await open(file, constants.O_RDONLY | constants.O_NOFOLLOW);
+  try {
+    if (!(await handle.stat()).isFile()) {
+      throw new Error('Not a regular file');
+    }
+    const hash = createHash('sha256');
+    for await (const chunk of handle.createReadStream()) {
+      hash.update(chunk);
+    }
+    return hash.digest('hex');
+  } finally {
+    await handle.close().catch(() => undefined);
+  }
+}
+
+/** An empty memory; one lives as long as the server, so a restart simply hashes the folder again. */
+export function createHashMemory(hash: (file: string) => Promise<string> = hashFile): HashMemory {
+  return { files: new Map(), hash };
+}
+
+/** `GET /inbox` (contracts/api.md): the folder as configured and its top-level regular files with their states. */
 export type InboxListing = {
   path: string;
   files: InboxFile[];
@@ -40,21 +83,58 @@ async function candidates(inboxDir: string): Promise<Dirent[]> {
   return entries.filter(isCandidate).sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0));
 }
 
-/** Lists the regular files at the top level of the inbox. Nothing is hashed or read. */
-export async function listInbox(inboxDir: string): Promise<InboxListing> {
-  const files: InboxFile[] = [];
-  for (const entry of await candidates(inboxDir)) {
+/** What the listing needs of the intake: the database, the folder and the size limit. */
+export type ListingDeps = Pick<IntakeDeps, 'pool' | 'inboxDir' | 'maxBytes'>;
+
+/**
+ * Lists the regular files at the top level of the inbox with the state of each (FR-061): a file over the size limit is
+ * skipped without being hashed; any other is hashed if the memory has not seen it at this size and modified time, and its
+ * hash says whether a document has these bytes under any name. A file that cannot be opened is `unreadable` and is not
+ * tried again until it changes. Names the folder no longer holds are dropped from the memory.
+ */
+export async function listInbox(deps: ListingDeps, memory: HashMemory): Promise<InboxListing> {
+  const seen: Array<{ name: string; sizeBytes: number; modifiedAt: string; sha256: string | null; tooLarge: boolean }> = [];
+  for (const entry of await candidates(deps.inboxDir)) {
     if (!entry.isFile()) {
       continue;
     }
+    const file = path.join(deps.inboxDir, entry.name);
+    let info;
     try {
-      const info = await lstat(path.join(inboxDir, entry.name));
-      files.push({ name: entry.name, sizeBytes: info.size, modifiedAt: info.mtime.toISOString() });
+      info = await lstat(file);
     } catch {
-      // The file went away between the listing and the stat; it is simply not listed.
+      continue; // The file went away between the listing and the stat; it is simply not listed.
+    }
+    const row = { name: entry.name, sizeBytes: info.size, modifiedAt: info.mtime.toISOString(), sha256: null as string | null, tooLarge: info.size > deps.maxBytes };
+    if (!row.tooLarge) {
+      let remembered = memory.files.get(entry.name);
+      if (remembered === undefined || remembered.sizeBytes !== info.size || remembered.modifiedMs !== info.mtimeMs) {
+        remembered = { sizeBytes: info.size, modifiedMs: info.mtimeMs, sha256: await memory.hash(file).catch(() => null) };
+        memory.files.set(entry.name, remembered);
+      }
+      row.sha256 = remembered.sha256;
+    }
+    seen.push(row);
+  }
+  const names = new Set(seen.map((row) => row.name));
+  for (const name of memory.files.keys()) {
+    if (!names.has(name)) {
+      memory.files.delete(name);
     }
   }
-  return { path: inboxDir, files };
+  const numbers = await documentNumbersBySha256(deps.pool, seen.flatMap((row) => (row.sha256 === null ? [] : [row.sha256])));
+  const files: InboxFile[] = seen.map((row) => {
+    const number = row.sha256 === null ? undefined : numbers.get(row.sha256);
+    const state: InboxState = row.tooLarge
+      ? { kind: 'skipped', reason: 'too_large' }
+      : row.sha256 === null
+        ? { kind: 'skipped', reason: 'unreadable' }
+        : number === undefined
+          ? { kind: 'unread' }
+          : { kind: 'document', number };
+    return { name: row.name, sizeBytes: row.sizeBytes, modifiedAt: row.modifiedAt, state };
+  });
+  return { path: deps.inboxDir, files };
 }
 
 /** Why a file of the folder was not taken in. */

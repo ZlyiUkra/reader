@@ -1,19 +1,20 @@
 import React from 'react';
-import { ApiError, apiJson, poll } from '../api.ts';
-import { ReasonList } from '../components/ReasonList.tsx';
-import { StatusBadge } from '../components/StatusBadge.tsx';
-import { errorText } from '../errors.ts';
-import { fieldLabel, typeLabel, typeOf, valueText } from '../labels.ts';
-import { parseDocumentDetail, parseRaw } from '../model.ts';
-import type { DetailField, DocumentDetail, Meta, RawCall } from '../model.ts';
-import { translate, translateName } from '../t.ts';
-import type { Lang } from '../t.ts';
+import { ApiError, apiJson } from '../api/client.ts';
+import { usePolledAnswer } from '../api/usePolledAnswer.ts';
+import { ReasonList } from './ReasonList.tsx';
+import { StatusBadge } from './StatusBadge.tsx';
+import { errorText } from '../i18n/errors.ts';
+import { fieldLabel, typeLabel, typeOf, valueText } from '../i18n/display.ts';
+import { parseDocumentDetail, parseRaw } from '../api/answers.ts';
+import type { DetailField, DocumentDetail, Meta, RawCall } from '../api/answers.ts';
+import { translate, translateName } from '../i18n/t.ts';
+import type { Lang } from '../i18n/t.ts';
 
-/** What the detail view takes: the page's language, what it derives from the registry, and the document to show. */
-type DocumentProps = {
+/** What the card takes: the page's language, what it derives from the registry, and the number of the document to show. */
+type DocumentCardProps = {
   lang: Lang;
   meta: Meta;
-  number: number | null;
+  number: number;
 };
 
 /** The fields in the order of the registry's type, which is the order the owner reads a document in; unknown ones last. */
@@ -68,37 +69,16 @@ function RawBlock({ lang, number }: { lang: Lang; number: number }): React.JSX.E
 }
 
 /**
- * The detail view of one document (FR-053, FR-055): its fields with the typed value, the fragment the model quoted and the
- * page it was found on; the pages as lazily loaded previews; the steps with their attempts and durations; the model that
- * ran; the reasons as messages; and the collapsed raw block. The data is polled every two seconds so a document that is
- * still in the pipeline fills in as it goes. Nothing taken from a document is set as markup: values, fragments, names and
- * messages are all text of their elements.
+ * The card of one document (FR-053, FR-055, FR-060), shown in a window above the list it was opened from: its fields with
+ * the typed value, the fragment the model quoted and the page it was found on; the pages as lazily loaded previews; the
+ * steps with their attempts and durations; the model that ran; the reasons as messages; and the collapsed raw block. The
+ * data is polled every two seconds so a document that is still in the pipeline fills in as it goes. Nothing taken from a
+ * document is set as markup: values, fragments, names and messages are all text of their elements. The window keys the card
+ * by the document's number, so opening another document never shows the previous one's data for a moment.
  */
-export function Document({ lang, meta, number }: DocumentProps): React.JSX.Element {
-  const [detail, setDetail] = React.useState<DocumentDetail | null>(null);
-  const [failure, setFailure] = React.useState<unknown>(null);
+export function DocumentCard({ lang, meta, number }: DocumentCardProps): React.JSX.Element {
+  const { data: detail, failure } = usePolledAnswer(`documents/${number}`, parseDocumentDetail);
 
-  React.useEffect(() => {
-    setDetail(null);
-    setFailure(null);
-    if (number === null) {
-      return undefined;
-    }
-    return poll(
-      `documents/${number}`,
-      2000,
-      parseDocumentDetail,
-      (data) => {
-        setDetail(data);
-        setFailure(null);
-      },
-      setFailure,
-    );
-  }, [number]);
-
-  if (number === null) {
-    return <p className="muted">{translate(lang, 'detail.choose')}</p>;
-  }
   if (failure instanceof ApiError && failure.status === 404) {
     return <p role="alert" className="notice">{translate(lang, 'detail.notFound', { number })}</p>;
   }

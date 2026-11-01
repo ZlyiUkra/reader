@@ -216,14 +216,6 @@ p {
   color: var(--color-bad);
 }
 
-.result {
-  display: flex;
-  flex-direction: column;
-  gap: 0.375rem;
-  padding: 0.5rem 0.75rem;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius);
-}
 
 .update {
   display: flex;
@@ -234,23 +226,6 @@ p {
   border: 1px solid var(--color-selected);
   border-radius: var(--radius);
   background: var(--color-panel);
-}
-
-.result-head {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space);
-}
-
-.result .pager {
-  margin-top: 0.375rem;
-}
-
-.result ul {
-  margin: 0;
-  padding-left: 1.25rem;
 }
 
 button:disabled,
@@ -495,4 +470,57 @@ pre {
 .pager select {
   padding-right: 0.5rem;
   padding-left: 0.5rem;
+}
+
+/* A short explanation of what a list is (FR-063): quiet, with a marker on the left, never wider than a line can be read. */
+.explain {
+  max-width: 80ch;
+  margin: 0;
+  padding: 0.375rem 0.75rem;
+  border-left: 3px solid var(--color-selected);
+  color: var(--color-text-muted);
+}
+
+/* The state column of the folder list (FR-061): the colour follows the meaning, and the words are always there too. */
+td[data-state='document'] {
+  color: var(--color-ok);
+}
+
+td[data-state='skipped'] {
+  color: var(--color-warn);
+}
+
+td[data-state='unread'] {
+  color: var(--color-text-muted);
+}
+
+/* The window above a list (FR-060): the browser's own dialog, dimmed page behind it, scrolling inside when the card is tall. */
+dialog.window {
+  box-sizing: border-box;
+  width: min(60rem, calc(100% - 2rem));
+  max-height: calc(100vh - 2rem);
+  padding: 0;
+  overflow: auto;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-panel);
+  color: var(--color-text);
+}
+
+dialog.window::backdrop {
+  background: rgba(0, 0, 0, 0.6);
+}
+
+.window-head {
+  position: sticky;
+  top: 0;
+  display: flex;
+  justify-content: flex-end;
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-panel);
+}
+
+.window-body {
+  padding: var(--space) 0.75rem;
 }

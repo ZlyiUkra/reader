@@ -1,7 +1,7 @@
-import type { FormatParams } from '../../src/shared/format.ts';
-import { renderReason } from '../../src/shared/reason-text.ts';
-import { formatKopiyky } from '../../src/shared/values.ts';
-import type { Meta, MetaType, StoredReason } from './model.ts';
+import type { FormatParams } from '@shared/format.ts';
+import { renderReason } from '@shared/reason-text.ts';
+import { formatKopiyky } from '@shared/values.ts';
+import type { Meta, MetaType, StoredReason } from '../api/answers.ts';
 import { translateName } from './t.ts';
 import type { Lang } from './t.ts';
 

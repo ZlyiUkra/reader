@@ -1,4 +1,4 @@
-import { ApiError } from './api.ts';
+import { ApiError } from '../api/client.ts';
 import { translate } from './t.ts';
 import type { Lang } from './t.ts';
 

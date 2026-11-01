@@ -1,7 +1,7 @@
 import React from 'react';
-import { reasonText } from '../labels.ts';
-import type { Meta, StoredReason } from '../model.ts';
-import type { Lang } from '../t.ts';
+import { reasonText } from '../i18n/display.ts';
+import type { Meta, StoredReason } from '../api/answers.ts';
+import type { Lang } from '../i18n/t.ts';
 
 /** What the list of reasons takes: the stored reasons, the type of their document (for field labels) and the page's language. */
 type ReasonListProps = {

@@ -1,18 +1,8 @@
 import React from 'react';
-import { pageItems, pageWindow } from '../../../src/shared/pager.ts';
-import { translate } from '../t.ts';
-import type { Lang } from '../t.ts';
-
-/** What a view needs to show and drive its pages: the choices, the size and page now, and the two ways to change them. */
-export type PagerControls = {
-  /** The page sizes the owner can choose from, and the one in force. */
-  sizes: number[];
-  size: number;
-  /** The page shown, counted from 1. */
-  page: number;
-  onPage: (page: number) => void;
-  onSize: (size: number) => void;
-};
+import { pageItems, pageWindow } from '@shared/pager.ts';
+import type { PagerControls } from '../pager.ts';
+import { translate } from '../i18n/t.ts';
+import type { Lang } from '../i18n/t.ts';
 
 /** What the pager takes: the page's language, how many rows the list has in all, and the controls of the view. */
 type PagerProps = {

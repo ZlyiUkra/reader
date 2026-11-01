@@ -1,5 +1,5 @@
-import type { FormatParams } from '../../src/shared/format.ts';
-import type { LanguageTexts } from '../../src/shared/reason-text.ts';
+import type { FormatParams } from '@shared/format.ts';
+import type { LanguageTexts } from '@shared/reason-text.ts';
 import { asBoolean, asNullableNumber, asNullableString, asNumber, asObject, asString, mapArray, member } from './shapes.ts';
 import type { Obj } from './shapes.ts';
 
@@ -28,10 +28,10 @@ function formatParams(value: unknown, where: string): FormatParams {
 }
 
 /** A field of a registered type, with its label in both languages (`GET /meta`). */
-export type MetaField = { name: string; kind: string; labels: LanguageTexts };
+export type MetaField = { name: string; kind: string; required: boolean; labels: LanguageTexts };
 
 /** A registered type with its label and its fields in the registry's order. */
-export type MetaType = { name: string; labels: LanguageTexts; fields: MetaField[] };
+export type MetaType = { name: string; schemaId: string; labels: LanguageTexts; fields: MetaField[] };
 
 /** A reason code with its templates, and the variants that replace them for given parameters. */
 export type MetaReason = {
@@ -41,7 +41,7 @@ export type MetaReason = {
 };
 
 /** What the page derives from the registry and the reasons file, fetched once at load (FR-041, FR-058). */
-export type Meta = { types: MetaType[]; reasons: MetaReason[]; statuses: string[]; pageSize: number; pageSizes: number[] };
+export type Meta = { types: MetaType[]; reasons: MetaReason[]; pageSize: number; pageSizes: number[] };
 
 /** Parses `GET /meta`. */
 export function parseMeta(value: unknown): Meta {
@@ -51,12 +51,14 @@ export function parseMeta(value: unknown): Meta {
       const type = asObject(item, at);
       return {
         name: asString(member(type, 'name'), `${at}.name`),
+        schemaId: asString(member(type, 'schemaId'), `${at}.schemaId`),
         labels: languageTexts(member(type, 'labels'), `${at}.labels`),
         fields: mapArray(member(type, 'fields'), `${at}.fields`, (fieldItem, fieldAt) => {
           const field = asObject(fieldItem, fieldAt);
           return {
             name: asString(member(field, 'name'), `${fieldAt}.name`),
             kind: asString(member(field, 'kind'), `${fieldAt}.kind`),
+            required: asBoolean(member(field, 'required'), `${fieldAt}.required`),
             labels: languageTexts(member(field, 'labels'), `${fieldAt}.labels`),
           };
         }),
@@ -77,7 +79,6 @@ export function parseMeta(value: unknown): Meta {
               }),
       };
     }),
-    statuses: mapArray(member(root, 'statuses'), 'meta.statuses', (item, at) => asString(item, at)),
     pageSize: asNumber(member(root, 'pageSize'), 'meta.pageSize'),
     pageSizes: mapArray(member(root, 'pageSizes'), 'meta.pageSizes', (item, at) => asNumber(item, at)),
   };
@@ -109,7 +110,29 @@ export function parseHealth(value: unknown): Health {
 }
 
 /** A file of the inbox listing. */
-export type InboxFile = { name: string; sizeBytes: number; modifiedAt: string };
+export type InboxFile = { name: string; sizeBytes: number; modifiedAt: string; state: InboxState };
+
+/** What the folder list says a file is to the system (FR-061): not read yet, a document already, or a file that cannot be taken. */
+export type InboxState =
+  | { kind: 'unread' }
+  | { kind: 'document'; number: number }
+  | { kind: 'skipped'; reason: string };
+
+/** Parses the state of one file of the folder list. */
+function parseInboxState(value: unknown, where: string): InboxState {
+  const state = asObject(value, where);
+  const kind = asString(member(state, 'kind'), `${where}.kind`);
+  if (kind === 'unread') {
+    return { kind };
+  }
+  if (kind === 'document') {
+    return { kind, number: asNumber(member(state, 'number'), `${where}.number`) };
+  }
+  if (kind === 'skipped') {
+    return { kind, reason: asString(member(state, 'reason'), `${where}.reason`) };
+  }
+  throw new Error(`${where}.kind: expected unread, document or skipped`);
+}
 
 /** `GET /inbox`. */
 export type InboxListing = { path: string; files: InboxFile[] };
@@ -125,6 +148,7 @@ export function parseInbox(value: unknown): InboxListing {
         name: asString(member(file, 'name'), `${at}.name`),
         sizeBytes: asNumber(member(file, 'sizeBytes'), `${at}.sizeBytes`),
         modifiedAt: asString(member(file, 'modifiedAt'), `${at}.modifiedAt`),
+        state: parseInboxState(member(file, 'state'), `${at}.state`),
       };
     }),
   };

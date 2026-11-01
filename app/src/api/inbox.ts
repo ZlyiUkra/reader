@@ -1,11 +1,12 @@
 import type { FastifyInstance } from 'fastify';
-import { listInbox, readInbox } from '../intake/inbox.ts';
+import { createHashMemory, listInbox, readInbox } from '../intake/inbox.ts';
 import type { IntakeDeps } from '../intake/take.ts';
 
 /**
- * `GET /api/inbox` and `POST /api/inbox/read` (contracts/api.md, FR-001, FR-003, FR-005). The first lists the folder
- * without hashing anything; the second hashes and takes every listed file in, and answers which were taken, which were
- * duplicates of a known document and which were skipped and why. The folder is read only when the owner asks.
+ * `GET /api/inbox` and `POST /api/inbox/read` (contracts/api.md, FR-001, FR-003, FR-005, FR-061). The first lists the
+ * folder with the state of each file, hashing a file only the first time it sees it at a given size and modified time; the
+ * second hashes and takes every listed file in, and answers which were taken, which were duplicates of a known document and
+ * which were skipped and why. Files are taken in only when the owner asks.
  */
 
 const listingSchema = {
@@ -17,8 +18,17 @@ const listingSchema = {
       type: 'array',
       items: {
         type: 'object',
-        required: ['name', 'sizeBytes', 'modifiedAt'],
-        properties: { name: { type: 'string' }, sizeBytes: { type: 'integer' }, modifiedAt: { type: 'string' } },
+        required: ['name', 'sizeBytes', 'modifiedAt', 'state'],
+        properties: {
+          name: { type: 'string' },
+          sizeBytes: { type: 'integer' },
+          modifiedAt: { type: 'string' },
+          state: {
+            type: 'object',
+            required: ['kind'],
+            properties: { kind: { enum: ['unread', 'document', 'skipped'] }, number: { type: 'integer' }, reason: { enum: ['too_large', 'unreadable'] } },
+          },
+        },
       },
     },
   },
@@ -57,6 +67,7 @@ const readSchema = {
 
 /** Registers the two routes on the `/api` instance. */
 export function registerInbox(api: FastifyInstance, deps: IntakeDeps): void {
-  api.get('/inbox', { schema: { response: { 200: listingSchema } } }, async () => listInbox(deps.inboxDir));
+  const memory = createHashMemory();
+  api.get('/inbox', { schema: { response: { 200: listingSchema } } }, async () => listInbox(deps, memory));
   api.post('/inbox/read', { schema: { response: { 200: readSchema } } }, async () => readInbox(deps));
 }

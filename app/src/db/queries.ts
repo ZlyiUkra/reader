@@ -52,6 +52,15 @@ export async function insertDocument(db: Queryable, document: NewDocument): Prom
   return result.rows[0]?.id ?? null;
 }
 
+/** The numbers of the documents that have these hashes, by hash: what the folder list needs to say which files are documents already (FR-061). */
+export async function documentNumbersBySha256(db: Queryable, hashes: string[]): Promise<Map<string, number>> {
+  if (hashes.length === 0) {
+    return new Map();
+  }
+  const result = await db.query<{ sha256: string; id: number }>('SELECT sha256, id FROM documents WHERE sha256 = ANY($1::text[])', [hashes]);
+  return new Map(result.rows.map((row) => [row.sha256, row.id]));
+}
+
 /** The document with this content hash, if it is known: identity is the hash (FR-002). */
 export async function documentBySha256(db: Queryable, sha256: string): Promise<DocumentRow | null> {
   const result = await db.query<DocumentRow>('SELECT * FROM documents WHERE sha256 = $1', [sha256]);

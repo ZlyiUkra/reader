@@ -10,7 +10,8 @@
     "verbatimModuleSyntax": true,
     "allowImportingTsExtensions": true,
     "skipLibCheck": true,
-    "types": ["vite/client"]
+    "types": ["vite/client"],
+    "paths": { "@shared/*": ["../src/shared/*"] }
   },
   "include": ["src", "vite.config.ts", "../src/shared"]
 }

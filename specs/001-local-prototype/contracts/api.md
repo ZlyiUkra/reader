@@ -30,12 +30,20 @@ pinned digest is present in the model server's tag list and a warm-up call passe
 
 ## GET /inbox
 
-Top-level regular files of the inbox, without hashes (FR-005, clarification 1). Dot-files, subfolders, the manifest
-and the expected-value files are not listed.
+Top-level regular files of the inbox (FR-005). Dot-files, subfolders, the manifest and the expected-value files are
+not listed. A file is hashed when the list first shows it and again only when its size or modified time changes, so a
+poll of an unchanged folder hashes nothing; the hash is what lets `state` say whether the bytes are already a document.
 
 ```json
-{ "path": string, "files": [ { "name": string, "sizeBytes": number, "modifiedAt": string } ] }
+{ "path": string,
+  "files": [ { "name": string, "sizeBytes": number, "modifiedAt": string,
+               "state": { "kind": "unread" }
+                      | { "kind": "document", "number": number }
+                      | { "kind": "skipped", "reason": "too_large" | "unreadable" } } ] }
 ```
+
+`document` carries the number of the document that has these bytes, whatever name it was taken under (FR-061); the
+hash itself is not part of the answer. `skipped` is a file over the size limit or one that could not be opened.
 
 ## POST /inbox/read
 
@@ -125,7 +133,6 @@ Everything the page derives from the registry and the reasons file (FR-041, FR-0
                  "templates": { "uk": string, "en": string }, "params": [ string ],
                  "variants": [ { "when": object, "params": [ string ],
                                  "templates": { "uk": string, "en": string } } ] } ],
-  "statuses": [ string ],
   "pageSize": number, "pageSizes": [ number ] }
 ```
 

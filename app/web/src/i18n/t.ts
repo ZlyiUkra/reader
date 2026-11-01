@@ -1,7 +1,7 @@
-import uk from './i18n/uk.json';
-import en from './i18n/en.json';
-import { format } from '../../src/shared/format.ts';
-import type { FormatParams } from '../../src/shared/format.ts';
+import uk from './uk.json';
+import en from './en.json';
+import { format } from '@shared/format.ts';
+import type { FormatParams } from '@shared/format.ts';
 
 /**
  * The page's own texts in the two interface languages (FR-057, FR-058, research R9). Field labels and reason templates

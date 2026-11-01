@@ -1,6 +1,6 @@
 import React from 'react';
-import { translateName } from '../t.ts';
-import type { Lang } from '../t.ts';
+import { translateName } from '../i18n/t.ts';
+import type { Lang } from '../i18n/t.ts';
 
 /**
  * A document's status as a labelled badge. The status itself is kept in a data attribute, which the stylesheet colours

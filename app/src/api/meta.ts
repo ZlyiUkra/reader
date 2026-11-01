@@ -1,6 +1,5 @@
 import type { FastifyInstance } from 'fastify';
 import type { Reasons } from '../reasons/reasons.ts';
-import { documentStatuses } from '../reasons/status.ts';
 import type { Registry } from '../registry/registry.ts';
 
 /**
@@ -43,7 +42,6 @@ export function registerMeta(api: FastifyInstance, deps: MetaDeps): void {
         templates: variant.templates,
       })),
     })),
-    statuses: documentStatuses,
     pageSize: deps.pageSize,
     pageSizes: deps.pageSizes,
   };
@@ -55,7 +53,7 @@ export function registerMeta(api: FastifyInstance, deps: MetaDeps): void {
         response: {
           200: {
             type: 'object',
-            required: ['languages', 'defaultLanguage', 'types', 'reasons', 'statuses', 'pageSize', 'pageSizes'],
+            required: ['languages', 'defaultLanguage', 'types', 'reasons', 'pageSize', 'pageSizes'],
             properties: {
               languages: { type: 'array', items: { type: 'string' } },
               defaultLanguage: { type: 'string' },
@@ -105,7 +103,6 @@ export function registerMeta(api: FastifyInstance, deps: MetaDeps): void {
                   },
                 },
               },
-              statuses: { type: 'array', items: { type: 'string' } },
               pageSize: { type: 'integer' },
               pageSizes: { type: 'array', items: { type: 'integer' } },
             },

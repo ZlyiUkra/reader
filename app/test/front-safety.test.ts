@@ -48,14 +48,14 @@ test('the page sources use none of the APIs that parse text as markup', async ()
 });
 
 test('the views that show document text set it as the text of an element', async () => {
-  for (const name of ['views/Documents.tsx', 'views/Document.tsx', 'components/ReasonList.tsx']) {
+  for (const name of ['views/Documents.tsx', 'components/DocumentCard.tsx', 'components/ReasonList.tsx']) {
     const text = await readFile(path.join(webSrc, name), 'utf8');
     assert.ok(/\{[^}]*(originalName|verbatim|reasonText|valueText)[^}]*\}/.test(text), `${name} renders document text through a JSX expression`);
   }
 });
 
 test('the page images come from the API route of the document, never from a path or an address in the data', async () => {
-  const text = await readFile(path.join(webSrc, 'views/Document.tsx'), 'utf8');
+  const text = await readFile(path.join(webSrc, 'components/DocumentCard.tsx'), 'utf8');
   const sources = [...text.matchAll(/src=\{(`[^`]*`)\}/g)].map((match) => match[1] ?? '');
   assert.ok(!/src=\{[^`]/.test(text), 'every image source is a template of the API route');
   assert.equal(sources.length, 1, 'one image element');

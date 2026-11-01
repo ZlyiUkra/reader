@@ -497,6 +497,46 @@ names in both interface languages and both themes, a narrow width. Mark each
 finished task [X] in tasks.md. Then run the after_implement hook (agile-tasks).
 ```
 
+## Slice 7c - One card in a window, addresses and an orderly page (added after the cross-cutting slice; dashboard phase 7)
+
+- **Why**: owner decisions of 2026-11-01. The document card is a tab of its own although both lists lead to it; the
+  result of "Read folder" repeats the folder list; nothing on the page says what the folder or a document is; the views
+  have no addresses; and the page's code is hard to follow: one flat folder of modules with unclear names, imports that
+  leave the package by relative paths, the page-range code written three times, data fetched and never used.
+- **Choices made by me, open to a veto**: the page's own hash routes and no router library (a library would be a new
+  dependency; the owner wants the addresses); the listing hashes a file once and remembers it by name, size and
+  modified time, which changes the rule of FR-005 that listing never hashes; `statuses` leaves `/api/meta`, because no
+  view uses it; the document types are a third tab. On 2026-11-01 the owner had no veto on `statuses` and on the third
+  tab.
+- **Servers** (dashboard): the slice 7 set. **Start set** (12): the same twelve; the start and stop commands are
+  those of slice 7. `mdn` covers `<dialog>` and `hashchange`.
+- **Tasks**:
+  - T089 `shared/route.ts` and its test: the five addresses, parse and build
+  - T090 `state` of each file in `GET /inbox`, with a hash memory
+  - T091 `statuses` out of `GET /meta`
+  - T092 one hook to fetch and poll an answer, one pager hook
+  - T093 the page's modules by role, the `@shared` alias, the module map in `README.md`
+  - T094 the window, the document card in it, the note for a file that cannot be viewed; the third tab goes
+  - T095 Inbox view: one list with a state column, the explanation, no result panel
+  - T096 Documents view: the explanation, rows open the window
+  - T097 Types view: the registered types and their fields
+  - T098 texts of all of it in both dictionaries; unused keys removed
+  - T099 verify in a real browser, both languages and themes, a narrow width; build, type checks, suite, check 13
+- **Closes when**: each of the five addresses opens straight into its view and window, Back and Esc close the window,
+  an unread file's window says why it cannot be viewed, the same card opens from both lists, the state column changes
+  after "Read folder" and there is no second list, the types tab lists the fields of the three types, no import leaves
+  the package by a relative path, and the build, both type checks and the whole suite pass.
+
+**Run** (type `/speckit-implement`, then paste):
+
+```text
+Slice 7c only: T089, T090, T091, T092, T093, T094, T095, T096, T097, T098, T099. Do not start any other task. Finish
+with the slice 7c closing checks and show their output: the five addresses, Back and Esc, the window for a file that
+is not a document, the state column before and after "Read folder", the types tab, both interface languages and both
+themes, a narrow width; yarn build, both type checks, the whole suite, check 13. Mark each finished task [X] in
+tasks.md. Then run the after_implement hook (agile-tasks).
+```
+
 ## Slice 8 - Measurement (done, committed in c8cc2b0)
 
 - **Servers** (dashboard): patterns, docker, nodejs. **+** typescript; ollama (check 12 reads `ollama ps`); jsonschema
@@ -534,7 +574,7 @@ of the measurement journal in README.md; checks 9 and 12. Mark each finished tas
 after_implement hook (agile-tasks).
 ```
 
-## Cross-cutting - Polish and the live registry check
+## Cross-cutting - Polish and the live registry check (done, committed in bcf6ebe)
 
 - **Servers**: owasp (the secrets and logging reviews); docker, nodejs, typescript; jsonschema (check 10). T076 runs
   the whole quickstart, so start the full set of the last section.

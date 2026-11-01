@@ -1,7 +1,7 @@
 import React from 'react';
-import { assetsOf, isNewBuild } from '../../../src/shared/build.ts';
-import { translate } from '../t.ts';
-import type { Lang } from '../t.ts';
+import { assetsOf, isNewBuild } from '@shared/build.ts';
+import { translate } from '../i18n/t.ts';
+import type { Lang } from '../i18n/t.ts';
 
 /** How often the page asks the server for its own HTML to see whether a newer build is served, in milliseconds. */
 const checkEveryMs = 30000;

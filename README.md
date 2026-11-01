@@ -45,6 +45,23 @@ one Docker Compose file. A later port of the same prototype to Go is planned and
    visible at runtime.
 4. Numbers that were not measured on this product are estimates and are labelled as such.
 
+## The page
+
+The browser page lives in `app/web/src`. Its modules by role:
+
+- `main.tsx` starts React; `App.tsx` is the shell: the header, the three tabs and the view the address names.
+- `router.ts` reads and sets the address (`#/folder`, `#/folder/<file>`, `#/documents`, `#/documents/<number>`,
+  `#/types`); `pager.ts` keeps the paging of both lists; `theme.ts` the light and dark themes.
+- `api/` is the only door to the server: `client.ts` (requests), `usePolledAnswer.ts` (the one way a view fetches and
+  polls), `shapes.ts` (readers that narrow what arrives) and `answers.ts` (the type and parser of every answer).
+- `i18n/` holds the two dictionaries (`uk.json`, `en.json`), `t.ts` (looking a text up), `display.ts` (labels, reason
+  messages, values and times built from what the server sends) and `errors.ts`.
+- `views/` has one file per tab (`Inbox.tsx`, `Documents.tsx`, `Types.tsx`); `components/` the parts they share
+  (`Window.tsx`, `DocumentCard.tsx`, `FileNote.tsx`, `Upload.tsx`, `Pager.tsx`, `Header.tsx`, `NewVersion.tsx`,
+  `ReasonList.tsx`, `StatusBadge.tsx`).
+- `@shared/<module>.ts` is code the page shares with the server (`app/src/shared`): the pager arithmetic, the routes,
+  the text formatter. Field labels, field order and reason messages are not in the page: they come from `/api/meta`.
+
 ## Running it
 
 Everything runs in containers from the repository root, in WSL with the NVIDIA Container Toolkit (the model needs the

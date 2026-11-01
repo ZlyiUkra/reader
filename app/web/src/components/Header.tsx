@@ -1,9 +1,8 @@
 import React from 'react';
-import { poll } from '../api.ts';
-import { parseHealth } from '../model.ts';
-import type { Health } from '../model.ts';
-import { nextLang, translate, translateName } from '../t.ts';
-import type { Lang, TextKey } from '../t.ts';
+import { usePolledAnswer } from '../api/usePolledAnswer.ts';
+import { parseHealth } from '../api/answers.ts';
+import { nextLang, translate, translateName } from '../i18n/t.ts';
+import type { Lang, TextKey } from '../i18n/t.ts';
 import { nextTheme } from '../theme.ts';
 import type { Theme } from '../theme.ts';
 
@@ -57,23 +56,8 @@ type HeaderProps = {
 export function Header({ lang, onLangChange, theme, onThemeChange }: HeaderProps): React.JSX.Element {
   const toLang = nextLang(lang);
   const toTheme = nextTheme(theme);
-  const [health, setHealth] = React.useState<Health | null>(null);
-  const [unreachable, setUnreachable] = React.useState(false);
-
-  React.useEffect(
-    () =>
-      poll(
-        'health',
-        2000,
-        parseHealth,
-        (data) => {
-          setHealth(data);
-          setUnreachable(false);
-        },
-        () => setUnreachable(true),
-      ),
-    [],
-  );
+  const { data: health, failure } = usePolledAnswer('health', parseHealth);
+  const unreachable = failure !== null;
 
   return (
     <header className="header">

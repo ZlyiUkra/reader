@@ -13,6 +13,9 @@ export default defineConfig({
   root: new URL('.', import.meta.url).pathname,
   base: '',
   plugins: [react()],
+  // `@shared/<module>.ts` is the code the page shares with the server (app/src/shared), so no import leaves the package
+  // by a relative path (FR-064). The same name is declared for the type check in tsconfig.json.
+  resolve: { alias: { '@shared': new URL('../src/shared', import.meta.url).pathname } },
   build: {
     outDir: '../dist/web',
     emptyOutDir: true,

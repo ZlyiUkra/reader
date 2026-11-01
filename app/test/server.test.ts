@@ -125,7 +125,7 @@ test('health reports the database, the model, the sandbox and all thirteen named
   await down.close();
 });
 
-test('meta lists the registered types, the reasons with their variants and the statuses', async () => {
+test('meta lists the registered types and the reasons with their variants, and no statuses (the page names them itself)', async () => {
   const app = await server();
   const meta = (await app.inject({ url: '/api/meta', headers: host })).json();
   assert.deepEqual(meta.languages, ['uk', 'en']);
@@ -141,6 +141,6 @@ test('meta lists the registered types, the reasons with their variants and the s
   assert.equal(failed.variants.length, 5);
   assert.deepEqual(failed.params, ['field', 'fragment', 'page']);
   assert.equal(meta.reasons.find((reason: { code: string }) => reason.code === 'ENCRYPTED').variants, undefined);
-  assert.deepEqual(meta.statuses, ['RECEIVED', 'PARSE', 'CLASSIFY', 'EXTRACT', 'CHECK', 'ACCEPTED', 'NEEDS_REVIEW', 'REJECTED', 'FAILED']);
+  assert.equal('statuses' in meta, false);
   await app.close();
 });

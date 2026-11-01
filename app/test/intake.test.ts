@@ -1,12 +1,12 @@
 import assert from 'node:assert/strict';
 import { createHash, randomUUID } from 'node:crypto';
-import { copyFile, mkdir, mkdtemp, readdir, readFile, symlink, writeFile } from 'node:fs/promises';
+import { copyFile, mkdir, mkdtemp, readdir, readFile, rm, symlink, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path/posix';
 import { after, test } from 'node:test';
 import { loadConfig, resolveConfigDirs } from '../src/config/load.ts';
 import { countDocuments } from '../src/db/queries.ts';
-import { listInbox, readInbox } from '../src/intake/inbox.ts';
+import { createHashMemory, listInbox, readInbox } from '../src/intake/inbox.ts';
 import { blobKeyOf } from '../src/intake/store.ts';
 import type { IntakeDeps } from '../src/intake/take.ts';
 import { testDatabase } from './support/db.ts';
@@ -40,14 +40,76 @@ async function setup(files: Record<string, string>, maxBytes = 1000): Promise<{ 
 
 test('the listing shows the regular files at the top level and nothing the generator or the system owns', async () => {
   const token = randomUUID();
-  const { inboxDir } = await setup({ 'b.txt': `b ${token}`, 'a.txt': `a ${token}`, '.hidden': 'x', 'manifest.json': '[]' });
+  const { deps, inboxDir } = await setup({ 'b.txt': `b ${token}`, 'a.txt': `a ${token}`, '.hidden': 'x', 'manifest.json': '[]' });
   await mkdir(path.join(inboxDir, 'expected'));
   await writeFile(path.join(inboxDir, 'expected', 'one.json'), '{}');
   await symlink(path.join(inboxDir, 'a.txt'), path.join(inboxDir, 'link.txt'));
-  const listing = await listInbox(inboxDir);
+  const listing = await listInbox(deps, createHashMemory());
   assert.equal(listing.path, inboxDir);
   assert.deepEqual(listing.files.map((file) => [file.name, file.sizeBytes]), [['a.txt', 38], ['b.txt', 38]]);
   assert.match(listing.files[0]?.modifiedAt ?? '', /^\d{4}-\d{2}-\d{2}T/);
+  assert.deepEqual(listing.files.map((file) => file.state), [{ kind: 'unread' }, { kind: 'unread' }]);
+});
+
+/** A memory whose hash function counts its calls, so a test can say how often the listing read a file. */
+function countingMemory(): { memory: ReturnType<typeof createHashMemory>; calls: string[] } {
+  const calls: string[] = [];
+  const inner = createHashMemory();
+  return { memory: { files: inner.files, hash: async (file) => (calls.push(file), inner.hash(file)) }, calls };
+}
+
+test('the listing hashes a file once and again only when its size or modified time changes (FR-005)', async () => {
+  const token = randomUUID();
+  const { deps, inboxDir } = await setup({ 'a.txt': `alpha ${token}`, 'b.txt': `beta ${token}` });
+  const { memory, calls } = countingMemory();
+
+  await listInbox(deps, memory);
+  await listInbox(deps, memory);
+  await listInbox(deps, memory);
+  assert.equal(calls.length, 2, 'two files, polled three times, are hashed twice in all');
+
+  await writeFile(path.join(inboxDir, 'a.txt'), `alpha changed ${token}`);
+  await listInbox(deps, memory);
+  assert.equal(calls.length, 3, 'only the changed file is hashed again');
+
+  await rm(path.join(inboxDir, 'b.txt'));
+  await listInbox(deps, memory);
+  assert.deepEqual([...memory.files.keys()], ['a.txt'], 'a file that left the folder leaves the memory');
+});
+
+test('each row says what the file is: unread, a document under the number of its first copy, or skipped (FR-061)', async () => {
+  const token = randomUUID();
+  const { deps, inboxDir } = await setup({ 'a.txt': `alpha ${token}`, 'big.bin': 'x'.repeat(1001) });
+  const taken = await readInbox(deps);
+  const number = taken.taken[0]?.number;
+  assert.ok(number !== undefined);
+  assert.deepEqual(taken.skipped, [{ name: 'big.bin', reason: 'too_large' }]);
+
+  await copyFile(path.join(inboxDir, 'a.txt'), path.join(inboxDir, 'copy.txt'));
+  await writeFile(path.join(inboxDir, 'new.txt'), `new ${token}`);
+  const rows = Object.fromEntries((await listInbox(deps, createHashMemory())).files.map((file) => [file.name, file.state]));
+  assert.deepEqual(rows['a.txt'], { kind: 'document', number });
+  assert.deepEqual(rows['copy.txt'], { kind: 'document', number }, 'the same bytes under another name are the same document');
+  assert.deepEqual(rows['new.txt'], { kind: 'unread' });
+  assert.deepEqual(rows['big.bin'], { kind: 'skipped', reason: 'too_large' });
+});
+
+test('a file that cannot be opened is skipped as unreadable and is not tried again until it changes', async () => {
+  const token = randomUUID();
+  const { deps, inboxDir } = await setup({ 'a.txt': `alpha ${token}` });
+  let calls = 0;
+  const memory = createHashMemory(async () => {
+    calls += 1;
+    throw new Error('EACCES');
+  });
+  const first = await listInbox(deps, memory);
+  await listInbox(deps, memory);
+  assert.deepEqual(first.files[0]?.state, { kind: 'skipped', reason: 'unreadable' });
+  assert.equal(calls, 1);
+
+  await writeFile(path.join(inboxDir, 'a.txt'), `alpha changed ${token}`);
+  await listInbox(deps, memory);
+  assert.equal(calls, 2);
 });
 
 test('a read takes new files in, a second read and a renamed copy are duplicates and the count does not move', async () => {

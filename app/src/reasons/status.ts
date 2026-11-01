@@ -35,12 +35,6 @@ export type TerminalStatus = keyof typeof terminalStatuses;
  */
 export const currentStep = 'CURRENT_STEP' as const;
 
-/**
- * Every status the page can meet, in the order of a document's life. The reserved `QUARANTINED` is left out: nothing
- * emits it, and the list is what `GET /api/meta` hands to the page.
- */
-export const documentStatuses = [...Object.keys(stepStatuses), 'ACCEPTED', 'NEEDS_REVIEW', 'REJECTED', 'FAILED'];
-
 /** What `status()` answers: a terminal status, or `currentStep`. */
 export type StatusResult = TerminalStatus | typeof currentStep;
 
