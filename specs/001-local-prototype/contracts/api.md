@@ -12,6 +12,9 @@ relative to `/api`. All responses are `application/json; charset=utf-8` except p
   `X-Content-Type-Options: nosniff`.
 - Errors use one shape: `{ "error": { "code": string, "message": string } }`. `message` is English and technical;
   it is not shown to the owner as is.
+- A `GET` for a path outside `/api` that is not a built file and asks for `text/html` is answered with the page itself,
+  with `<base href="/">` added and the status `404` (FR-067), so that the page can show its not-found view; any other
+  unknown path, and every unknown path under `/api`, answers the JSON error with the code `not_found`.
 
 ## GET /health
 

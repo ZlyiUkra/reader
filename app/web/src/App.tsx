@@ -11,12 +11,14 @@ import { applyTheme, readTheme, storeTheme } from './theme.ts';
 import type { Theme } from './theme.ts';
 import { Documents } from './views/Documents.tsx';
 import { Inbox } from './views/Inbox.tsx';
+import { NotFound } from './views/NotFound.tsx';
 import { Simplifications } from './views/Simplifications.tsx';
 import { Types } from './views/Types.tsx';
 
 /**
  * The four views of the page (FR-053) as a closed list, each with an address (FR-060). The document card is not one of
- * them: it opens in a window above the folder list or the documents table, and the route says which.
+ * them: it opens in a window above the folder list or the documents table, and the route says which. The not-found page
+ * (FR-067) is none of them either: no tab is pressed on it.
  */
 const views = ['folder', 'documents', 'types', 'simplifications'] as const;
 type View = (typeof views)[number];
@@ -96,6 +98,7 @@ export function App(): React.JSX.Element {
         ) : null}
         {route.view === 'types' ? <Types lang={lang} meta={meta} /> : null}
         {route.view === 'simplifications' ? <Simplifications lang={lang} health={health} /> : null}
+        {route.view === 'notFound' ? <NotFound lang={lang} address={route.address} /> : null}
       </main>
     </div>
   );

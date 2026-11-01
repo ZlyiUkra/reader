@@ -537,7 +537,7 @@ themes, a narrow width; yarn build, both type checks, the whole suite, check 13.
 tasks.md. Then run the after_implement hook (agile-tasks).
 ```
 
-## Slice 7d - State indicators in the header and a tab for the simplifications (added after slice 7c; dashboard phase 7)
+## Slice 7d - State indicators in the header and a tab for the simplifications (added after slice 7c; dashboard phase 7; done, committed in 0e24dc9)
 
 - **Why**: owner decisions of 2026-11-01. The state of the system is three lines of plain text that do not say what
   they are, the parser is not reported at all, the list of named simplifications opens under the header of every page,
@@ -572,6 +572,42 @@ checks and show their output: the indicators and the two buttons of one size, th
 languages, the parser indicator red with the parser stopped and green after it is started, the TODO indicator and the
 simplifications tab at its address, the six addresses, both themes, a narrow width; yarn build, both type checks, the
 whole suite, check 13. Mark each finished task [X] in tasks.md. Then run the after_implement hook (agile-tasks).
+```
+
+## Slice 7e - A page for an unknown address (added after slice 7d; dashboard phase 7)
+
+- **Why**: owner decisions of 2026-11-01. An unknown hash shows the folder and leaves the typed text in the address bar,
+  and an unknown path answers raw JSON. The owner wants a not-found page for both, and the empty address sent to the
+  default page, which is the folder.
+- **Choices made by me, open to a veto**: the not-found page has an address of its own, `#/_404/<address as typed>`, and
+  the underscore, the owner's idea, keeps it from ever matching a document number; `#/documents/abc` and a number that
+  is not a positive integer are unknown addresses, while a well-formed number or file name that is not there keeps its
+  window with the message that it does not exist; the server answers an HTML request for an unknown path with the page
+  itself, the status 404 and a base address of `/`, because the page's files are linked relatively and a nested path
+  would not find them. UUID keys, which the owner brought up again, stay postponed and the addresses keep numbers.
+- **Servers** (dashboard): the slice 7 set. **Start set** (12): the same twelve; the start and stop commands are
+  those of slice 7. No documentation server is connected now; `<base>` and `history.replaceState` are known behaviour
+  and are checked in the real browser.
+- **Tasks**:
+  - T107 the `notFound` route, the empty address, `parseLocation` and the rewritten route test
+  - T108 the server answers an unknown path with the page and the status 404; its test and the contract
+  - T109 the router keeps the address in order on load and on every change
+  - T110 the not-found view and its texts
+  - T111 `README.md` and `quickstart.md` in step with the page
+  - T112 verify in a real browser, both languages and themes, a narrow width; build, type checks, suite, check 13
+- **Closes when**: an unknown hash, a bad document number and an unknown path, nested ones included, all end on the
+  not-found page at `#/_404/...` with the text, the typed address and the button; the button leads to the folder; an
+  empty address goes to the folder; the server answers the page with 404 for an HTML request and JSON for the rest;
+  Back is not trapped; the six addresses still open; and the build, both type checks and the whole suite pass.
+
+**Run** (type `/speckit-implement`, then paste):
+
+```text
+Slice 7e only: T107, T108, T109, T110, T111, T112. Do not start any other task. Finish with the slice 7e closing
+checks and show their output: an unknown hash, a bad document number and a malformed name, an unknown and a nested
+path, the empty address, the button, Back, the six addresses, both interface languages and both themes, a narrow
+width; yarn build, both type checks, the whole suite, check 13. Mark each finished task [X] in tasks.md. Then run
+the after_implement hook (agile-tasks).
 ```
 
 ## Slice 8 - Measurement (done, committed in c8cc2b0)

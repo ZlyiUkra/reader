@@ -1,11 +1,11 @@
 import React from 'react';
-import { parseRoute, routeHash } from '@shared/route.ts';
+import { canonicalUrl, parseLocation, routeHash } from '@shared/route.ts';
 import type { Route } from '@shared/route.ts';
 
 /**
- * The page's own routes over the hash of its URL (FR-060, FR-064): the pure parse and build live in `@shared/route.ts`
- * with their table test, and this module adds the browser's part, the current route as state and the two moves between
- * routes. There is no router library; the six addresses need none.
+ * The page's own routes over the path and the hash of its URL (FR-060, FR-064, FR-067): the pure parse and build live in
+ * `@shared/route.ts` with their table test, and this module adds the browser's part, the current route as state, the two
+ * moves between routes and the keeping of the address bar in order. There is no router library; the six addresses need none.
  */
 
 /** True for a route that has a window open above its list: a file of the folder or a document. */
@@ -21,9 +21,22 @@ function listOf(route: Route): Route {
   return route.view === 'documents' ? { view: 'documents', number: null } : route;
 }
 
-/** The route the address bar holds now. */
+/** The route the address bar holds now, read from its path and its hash. */
 function current(): Route {
-  return parseRoute(window.location.hash);
+  return parseLocation(window.location.pathname, window.location.search, window.location.hash);
+}
+
+/**
+ * Rewrites the address bar in place to the canonical address of the route it shows, when it differs: the empty address
+ * becomes the default page, an unknown hash or path becomes the not-found address with the typed text inside it, and a
+ * path goes back to the root. It replaces the history entry and adds none, so the browser's Back button is not trapped
+ * on an address that would only be rewritten again.
+ */
+function keepInOrder(route: Route): void {
+  const canonical = canonicalUrl(route);
+  if (window.location.pathname + window.location.search + window.location.hash !== canonical) {
+    window.history.replaceState(null, '', canonical);
+  }
 }
 
 /**
@@ -49,17 +62,15 @@ export function closeWindow(): void {
   window.dispatchEvent(new HashChangeEvent('hashchange'));
 }
 
-/** The current route, kept in step with the address bar. An address the page does not know is rewritten to the one it shows. */
+/** The current route, kept in step with the address bar, which is kept in order on load and on every change (FR-067). */
 export function useRoute(): Route {
   const [route, setRoute] = React.useState<Route>(current);
 
   React.useEffect(() => {
-    const canonical = routeHash(current());
-    if (window.location.hash !== canonical) {
-      window.history.replaceState(null, '', canonical);
-    }
+    keepInOrder(current());
     const onChange = (): void => {
       const next = current();
+      keepInOrder(next);
       if (!hasWindow(next)) {
         openedHere = false;
       }

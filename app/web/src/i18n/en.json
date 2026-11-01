@@ -189,5 +189,7 @@
   "nav.simplifications": "Simplifications (what the prototype defers)",
   "simplifications.explain": "A named simplification is a place where the prototype is deliberately simpler than the product will be. Each is written here together with what ends it; none is deferred silently. Their count stands in the header of every page.",
   "simplifications.col.what": "Simplification",
-  "simplifications.col.ends": "Ends when"
+  "simplifications.col.ends": "Ends when",
+  "notFound.text": "No such address exists.",
+  "notFound.home": "To the main page"
 }

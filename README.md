@@ -51,12 +51,13 @@ The browser page lives in `app/web/src`. Its modules by role:
 
 - `main.tsx` starts React; `App.tsx` is the shell: the header, the four tabs and the view the address names.
 - `router.ts` reads and sets the address (`#/folder`, `#/folder/<file>`, `#/documents`, `#/documents/<number>`,
-  `#/types`, `#/simplifications`); `pager.ts` keeps the paging of both lists; `theme.ts` the light and dark themes.
+  `#/types`, `#/simplifications`) and keeps the address bar in order: the empty address goes to the default page (the
+  folder), and any other, a hash or a path, becomes `#/_404/<the address as typed>`, the not-found page; `pager.ts` keeps the paging of both lists; `theme.ts` the light and dark themes.
 - `api/` is the only door to the server: `client.ts` (requests), `usePolledAnswer.ts` (the one way a view fetches and
   polls), `shapes.ts` (readers that narrow what arrives) and `answers.ts` (the type and parser of every answer).
 - `i18n/` holds the two dictionaries (`uk.json`, `en.json`), `t.ts` (looking a text up), `display.ts` (labels, reason
   messages, values and times built from what the server sends) and `errors.ts`.
-- `views/` has one file per tab (`Inbox.tsx`, `Documents.tsx`, `Types.tsx`, `Simplifications.tsx`); `components/` the
+- `views/` has one file per tab (`Inbox.tsx`, `Documents.tsx`, `Types.tsx`, `Simplifications.tsx`) and `NotFound.tsx`; `components/` the
   parts they share (`Window.tsx`, `DocumentCard.tsx`, `FileNote.tsx`, `Upload.tsx`, `Pager.tsx`, `NewVersion.tsx`,
   `ReasonList.tsx`, `StatusBadge.tsx`) and the header (`Header.tsx`), whose row of state indicators (DB, LLM, PRS, the
   sandbox runtime and TODO with its count) and two buttons are of one size, each with a tooltip.

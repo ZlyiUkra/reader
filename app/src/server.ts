@@ -8,6 +8,7 @@ import { registerHealth } from './api/health.ts';
 import type { HealthDeps } from './api/health.ts';
 import { registerInbox } from './api/inbox.ts';
 import { registerMeta } from './api/meta.ts';
+import { createNotFoundHandler } from './api/not-found.ts';
 import type { MetaDeps } from './api/meta.ts';
 import { registerPages } from './api/pages.ts';
 import { registerRaw } from './api/raw.ts';
@@ -85,7 +86,7 @@ export async function buildServer(deps: ServerDeps): Promise<FastifyInstance> {
     const code = error instanceof HttpError ? error.code : statusCode === 404 ? 'not_found' : statusCode < 500 ? 'bad_request' : 'internal_error';
     return reply.code(statusCode).send({ error: { code, message: statusCode >= 500 ? 'Internal error.' : error.message } });
   });
-  app.setNotFoundHandler((_request, reply) => reply.code(404).send({ error: { code: 'not_found', message: 'No such resource.' } }));
+  app.setNotFoundHandler(createNotFoundHandler(deps.webRoot));
 
   await app.register(
     async (api) => {

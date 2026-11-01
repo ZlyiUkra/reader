@@ -336,6 +336,12 @@ tbody tr:nth-child(even) {
   overflow-wrap: normal;
 }
 
+/* The address the owner typed, on the not-found page: any length and any characters, broken wherever it must be. */
+.address {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
 .mono,
 pre {
   font-family: ui-monospace, 'Cascadia Mono', Consolas, 'Liberation Mono', monospace;
